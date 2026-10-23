@@ -67,7 +67,7 @@ $A^\top A$ 与 $AA^\top$ 的非零特征值**完全相同**，都等于 $\sigma_
 
 ### 2.3 实际算法：不要显式构造 $A^\top A$
 
-LAPACK 的 `gesdd`/`gesvd` 走的是**双对角化 + 隐式 QR**：先用 Householder 变换把 $A$ 化成上双对角矩阵（$O(mn^2)$），再迭代求奇异值。全程只对 $A$ 做正交变换，从不形成 $A^\top A$。NumPy 的 `np.linalg.svd`、PyTorch 的 `torch.linalg.svd` 都调用它。
+LAPACK 的 `gesdd`/`gesvd` 走的是**双对角化 + 隐式 QR**（[Golub–Kahan](#ref-golub-kahan-1965) 1965 年给出的算法）：先用 Householder 变换把 $A$ 化成上双对角矩阵（$O(mn^2)$），再迭代求奇异值。全程只对 $A$ 做正交变换，从不形成 $A^\top A$。NumPy 的 `np.linalg.svd`、PyTorch 的 `torch.linalg.svd` 都调用它。
 
 ## 3. 为什么这样定义
 
@@ -160,7 +160,7 @@ $$
 2. **误区**：$\sigma_i=\lvert\lambda_i\rvert$ 总是成立。
    **纠正**：只对正规矩阵成立。$\begin{bmatrix}1&1\\0&1\end{bmatrix}$ 特征值双 1，奇异值是 $1.618$ 与 $0.618$（黄金比例）。
 3. **误区**：算出一个很小的奇异值就说明矩阵秩亏。
-   **纠正**：先看阈值。NumPy 的 `matrix_rank` 用 $\sigma_i>\max(m,n)\cdot\varepsilon\cdot\sigma_1$；低于阈值的才算 0（数值秩，第 7.4 节）。
+   **纠正**：先看阈值。NumPy 的 `matrix_rank` 用 $\sigma_i>\max(m,n)\cdot\varepsilon\cdot\sigma_1$；低于阈值的才算 0（数值秩，第 7.4 节）。这个数值秩判据在 [Golub 与 Van Loan](#ref-golub-van-loan-2013) 里有系统讨论。
 4. **误区**：奇异值算得准，奇异向量也算得准。
    **纠正**：$\sigma_i\approx\sigma_{i+1}$ 时，对应子空间内的任意正交组合都是合法的奇异向量，单个向量的数值结果没有意义，只有**子空间**稳定。
 
@@ -213,6 +213,13 @@ print(s[0], s[-1], s[0] / s[-1])
 - $A^\top A$ 与 $AA^\top$ 非零特征值相同，都是 $\sigma_i^2$。
 - $\|A\|_2=\sigma_1$，$\|A\|_F^2=\sum\sigma_i^2$，$\kappa_2=\sigma_1/\sigma_r$，$\lvert\det A\rvert=\prod\sigma_i$。
 - 特征分解只对方阵、可能有复数；SVD 对任意矩阵、一定非负；手算用 $A^\top A$，数值计算用 LAPACK，显式乘 $A^\top A$ 会把 $\kappa$ 平方。
+
+## 11. 参考文献与致谢
+
+这一页的知识不是凭空来的。下面列出本页直接借用的原始工作与权威整理；正文中的人名、定理名已链接到对应条目。链接优先指向 DOI、arXiv 或可长期访问的原文存档。
+
+- <a id="ref-golub-kahan-1965"></a>**Golub 与 Kahan（Gene H. Golub & William Kahan, 1965）**：*Calculating the Singular Values and Pseudo-Inverse of a Matrix*。把 SVD 计算化成「Householder 双对角化 + QR 迭代」，全程不形成 $A^\top A$，因此不会把条件数平方；这就是本页第 2.3 节里 LAPACK `gesvd`/`gesdd` 的算法祖先。[SIAM J. Numer. Anal. 2(2)](https://doi.org/10.1137/0702016)
+- <a id="ref-golub-van-loan-2013"></a>**Golub 与 Van Loan（Gene H. Golub & Charles F. Van Loan, 2013）**：*Matrix Computations*（4th ed.）。对 SVD 的存在性、数值秩、条件数与最小二乘给出标准处理，本页第 4.2 节的性质清单与第 6 节的秩判据都可在此查证。[Johns Hopkins University Press](https://doi.org/10.56021/9781421407944)
 
 ---
 

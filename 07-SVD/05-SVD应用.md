@@ -32,7 +32,7 @@ llm_hooks: [lora, pca, recommendation]
 
 **推荐**：用户的口味不是 5 万维的独立偏好，而是少数几个潜在因子（动作/文艺/年代/明星）。用户向量与物品向量的内积就是预测评分。
 
-**LoRA**：与其在 4096 个方向上都改一点，不如只改 16 个方向——如果任务适配真的只需要 16 个方向。
+**LoRA**（[Hu 等, 2021](#ref-hu-2021)）：与其在 4096 个方向上都改一点，不如只改 16 个方向——如果任务适配真的只需要 16 个方向。
 
 > 💡 **一句话直觉**：**三者都在问「这个矩阵/数据云的有效秩是多少」，然后用前 $k$ 个方向做事。**
 
@@ -42,7 +42,7 @@ llm_hooks: [lora, pca, recommendation]
 
 ### 2.1 PCA：中心化后做 SVD
 
-PCA（principal component analysis，主成分分析）的流程是「减均值、做 SVD、取前 $k$ 列」。给定数据矩阵 $X\in\mathbb{R}^{n\times d}$（$n$ 个样本、$d$ 个特征），先做**中心化（centering）**：$\tilde X=X-\mathbf{1}\boldsymbol\mu^\top$，其中 $\boldsymbol\mu$ 是列均值。
+PCA（principal component analysis，主成分分析）的流程是「减均值、做 SVD、取前 $k$ 列」。它最早由 [Pearson](#ref-pearson-1901) 以「最接近点云的直线与平面」提出。给定数据矩阵 $X\in\mathbb{R}^{n\times d}$（$n$ 个样本、$d$ 个特征），先做**中心化（centering）**：$\tilde X=X-\mathbf{1}\boldsymbol\mu^\top$，其中 $\boldsymbol\mu$ 是列均值。
 
 协方差矩阵 $C=\tilde X^\top\tilde X/(n-1)$。PCA 取 $C$ 的前 $k$ 个特征向量 $\mathbf{v}_1,\dots,\mathbf{v}_k$ 作为**主成分（principal components）**。用 SVD 写：
 
@@ -60,7 +60,7 @@ $$
 R\approx PQ^\top,\qquad P\in\mathbb{R}^{m\times r},\ Q\in\mathbb{R}^{n\times r}
 $$
 
-$P$ 的第 $i$ 行是用户 $i$ 的**潜在因子（latent factors）**，$Q$ 的第 $j$ 行是物品 $j$ 的因子，预测评分为 $\hat R_{ij}=\mathbf{p}_i^\top\mathbf{q}_j$。实际训练最小化**只对观测项**的损失 $\sum_{(i,j)\in\Omega}(R_{ij}-\mathbf{p}_i^\top\mathbf{q}_j)^2+\lambda_{\text{reg}}(\|P\|_F^2+\|Q\|_F^2)$。
+$P$ 的第 $i$ 行是用户 $i$ 的**潜在因子（latent factors）**，$Q$ 的第 $j$ 行是物品 $j$ 的因子，预测评分为 $\hat R_{ij}=\mathbf{p}_i^\top\mathbf{q}_j$。实际训练最小化**只对观测项**的损失 $\sum_{(i,j)\in\Omega}(R_{ij}-\mathbf{p}_i^\top\mathbf{q}_j)^2+\lambda_{\text{reg}}(\|P\|_F^2+\|Q\|_F^2)$。只对观测项拟合、用交替最小二乘或 SGD 求解的系统做法见 [Koren 等](#ref-koren-2009)。
 
 ### 2.3 LoRA：把更新约束成低秩
 
@@ -213,6 +213,14 @@ print((s[:32] ** 2).sum() / (s ** 2).sum())                # 前 32 维解释的
 - 推荐 = 评分矩阵的秩 $r$ 分解 $R\approx PQ^\top$，只对观测项拟合；精确 SVD 只在矩阵完整时可用。
 - LoRA = $\Delta W=BA$，参数量 $2Dr$、秩 $\le r$；$A,B$ 不是 SVD 因子。
 - 三者共享「有效秩」假设，但秩的来源不同：方差、偏好、优化约束；上线前都要看谱衰减与 $\eta_k$，不能只看参数量。
+
+## 11. 参考文献与致谢
+
+这一页的知识不是凭空来的。下面列出本页直接借用的原始工作与权威整理；正文中的人名、定理名已链接到对应条目。链接优先指向 DOI、arXiv 或可长期访问的原文存档。
+
+- <a id="ref-pearson-1901"></a>**皮尔逊（Karl Pearson, 1901）**：*On Lines and Planes of Closest Fit to Systems of Points in Space*。用「最接近点云的直线与平面」提出主成分，本页第 2.1 节「减均值后取方差最大的方向」就是它的现代写法。[Philosophical Magazine 2(11)](https://doi.org/10.1080/14786440109462720)
+- <a id="ref-koren-2009"></a>**Koren 等（Yehuda Koren et al., 2009）**：*Matrix Factorization Techniques for Recommender Systems*。把评分矩阵写成 $R\approx PQ^\top$、只对观测项做正则化最小二乘并用 ALS/SGD 求解，本页第 2.2 节的推荐模型与第 3 节的「为什么不用精确 SVD」都以它为标准做法。[IEEE Computer 42(8)](https://doi.org/10.1109/MC.2009.263)
+- <a id="ref-hu-2021"></a>**Hu 等（Edward J. Hu et al., 2021）**：*LoRA: Low-Rank Adaptation of Large Language Models*。提出 $\Delta W=BA$ 的低秩适配，本页第 2.3 节的参数量 $2Dr$、$B=0$ 初始化与「更新秩远小于 $D$」的假设都出自这里。[arXiv:2106.09685](https://arxiv.org/abs/2106.09685)
 
 ---
 

@@ -31,6 +31,8 @@ llm_hooks: [weight-spectrum, spectral-norm]
 
 若 $A=\begin{bmatrix}3&0\\4&5\end{bmatrix}$，椭圆就**歪**了。但关键事实不变：**结果仍是椭圆**，只是两根轴不沿 $x$、$y$。
 
+这个「单位球的像是超椭圆」的表述，[Trefethen 与 Bau](#ref-trefethen-1997) 第 4 讲给出了完整证明。
+
 于是有三问：椭圆两根轴指向哪（两个**正交**的输出方向 $\mathbf{u}_1,\mathbf{u}_2$）？它们多长（非负数 $\sigma_1,\sigma_2$）？圆上哪两个**正交**方向被拉成了它们（$\mathbf{v}_1,\mathbf{v}_2$）？合起来就是
 
 $$
@@ -79,6 +81,8 @@ $$
 **为什么不叫特征分解？** 特征分解（eigendecomposition）$A=P\Lambda P^{-1}$ 要求 $A$ 是方阵且可对角化，$\Lambda$ 可以是复数或负数。SVD 对**任意** $m\times n$ 矩阵存在，$\sigma_i$ 一定是非负实数。代价是 SVD 用**两组**基（$U$ 和 $V$），特征分解只用一组：SVD 描述的是「输入、输出各自换基后的对角形」，不是同一个空间里的换基。
 
 **它从哪里来？** 预告（第 7.2 节展开）：$A^\top A$ 是 $n\times n$ 对称半正定矩阵，谱定理保证它有正交特征基，特征值 $\lambda_i\ge0$；取 $\sigma_i=\sqrt{\lambda_i}$、$V$ 的列为特征向量，再由 $\mathbf{u}_i=A\mathbf{v}_i/\sigma_i$ 定义左奇异向量，就得到 SVD。
+
+更早的历史线索是：Beltrami（1873）与 Jordan（1874）分别对实、复方阵给出了这种分解，之后才推广到长方形矩阵；[Stewart 的综述](#ref-stewart-1993) 把这段谱系考据得很清楚。
 
 ## 4. 性质与推导
 
@@ -205,6 +209,13 @@ print(s[0], s[-1], s[0] / s[-1])
 - $\sigma_i\ge0$ 是椭球半轴长；$\operatorname{rank}=\#\{\sigma_i>0\}$；$\lvert\det A\rvert=\prod\sigma_i$（方阵）。
 - $\|A\mathbf{x}\|\le\sigma_1\|\mathbf{x}\|$，等号在 $\mathbf{x}\parallel\mathbf{v}_1$；$\sigma_1$ 就是谱范数。
 - $A$ 与 $A^\top$ 共享奇异值，$\mathbf{u}_i=A\mathbf{v}_i/\sigma_i$ 自动正交；符号与重奇异值带来不唯一性，NumPy 差个负号是正常的。
+
+## 11. 参考文献与致谢
+
+这一页的知识不是凭空来的。下面列出本页直接借用的原始工作与权威整理；正文中的人名、定理名已链接到对应条目。链接优先指向 DOI、arXiv 或可长期访问的原文存档。
+
+- <a id="ref-stewart-1993"></a>**斯图尔特（G. W. Stewart, 1993）**：*On the Early History of the Singular Value Decomposition*。考据了 SVD 的早期谱系——Beltrami（1873）与 Jordan（1874）先对实、复方阵给出分解，此后才推广到长方形矩阵，正是本页第 3 节「它从哪里来」的时间线依据。[SIAM Review 35(4)](https://doi.org/10.1137/1035134)
+- <a id="ref-trefethen-1997"></a>**Trefethen 与 Bau（Lloyd N. Trefethen & David Bau III, 1997）**：*Numerical Linear Algebra*。第 4 讲把 SVD 讲成「单位球的像是超椭圆，半轴长就是奇异值」，并用 Theorem 4.1 证明任意 $m\times n$ 矩阵都有 SVD，是本页第 1–2 节几何图像与存在性的直接来源。[SIAM, 1997](https://doi.org/10.1137/1.9780898719574)
 
 ---
 
