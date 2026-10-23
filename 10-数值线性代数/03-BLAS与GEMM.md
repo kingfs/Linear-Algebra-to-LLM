@@ -35,7 +35,7 @@ $$
 > 💡 **一句话直觉**：**算术强度高的运算，GPU 才快；GEMM 的强度随分块尺寸增长。**
 
 类比边界：厨房类比忽略了并行度与延迟。GPU 有上万个线程，延迟靠切换隐藏，不只是「带宽够不够」。
-### 1.2 Roofline：两个天花板取较小者
+### 1.2 [Roofline](#ref-williams-2009)：两个天花板取较小者
 一个 kernel 的时间至少是
 
 $$
@@ -54,7 +54,7 @@ $$
 
 其中 $\alpha,\beta$ 是标量。形状记成 `[M, K] @ [K, N] -> [M, N]`；一次乘加算 2 个 FLOP（1 次乘、1 次加），所以总运算量是 $2MNK$。
 ### 2.2 BLAS 的三个层级
-**BLAS（Basic Linear Algebra Subprograms）** 是一组标准接口，按运算量分三层：
+[BLAS（Basic Linear Algebra Subprograms）](#ref-lawson-1979) 是一组标准接口，按运算量分三层：
 
 | 层级 | 典型函数 | 运算 | 复杂度 | 算术强度 |
 |---|---|---|---|---|
@@ -205,6 +205,15 @@ CUTLASS 把这些策略写成模板；cuBLAS 则是闭源的高度调优版本�
 - 算术强度 = FLOPs / Bytes；Roofline 时间取「算力」与「带宽」两个上界的较大者。
 - 分块让 AI 从 $0.25$ 升到 $b/4$；$b=128$ 时约 $32$ FLOP/byte。
 - prefill 计算受限、decode 访存受限；decode 速度上界约为带宽除以每步读取字节数。
+
+## 11. 参考文献与致谢
+
+这一页的知识不是凭空来的。下面列出本页直接借用的原始工作与权威整理；正文中的人名、定理名已链接到对应条目。链接优先指向 DOI、arXiv 或可长期访问的原文存档。
+
+- <a id="ref-lawson-1979"></a>**Lawson 等（1979）**：*Basic Linear Algebra Subprograms for Fortran Usage*。BLAS 的原始接口规范，本页 §2.2 的 Level 1/2/3 分层由此而来。[ACM Transactions on Mathematical Software](https://doi.org/10.1145/355841.355847)
+- <a id="ref-dongarra-1990"></a>**Dongarra 等（1990）**：*A Set of Level 3 Basic Linear Algebra Subprograms*。Level-3 BLAS（GEMM 一族）的标准化，让厂商可以针对矩阵-矩阵乘写专用 kernel。[ACM Transactions on Mathematical Software](https://doi.org/10.1145/77626.79170)
+- <a id="ref-williams-2009"></a>**Williams, Waterman & Patterson（2009）**：*Roofline: An Insightful Visual Performance Model for Multicore Architectures*。Roofline 模型与「拐点」的出处，本页 §1.2 直接使用。[Communications of the ACM](https://doi.org/10.1145/1498765.1498785)
+- <a id="ref-strassen-1969"></a>**Strassen（1969）**：*Gaussian Elimination Is Not Optimal*。矩阵乘法可以少于 $O(n^3)$ 次标量乘，说明 GEMM 的「计算量」本身也是可优化的对象。[Numerische Mathematik](https://doi.org/10.1007/BF02165411)
 
 ---
 
