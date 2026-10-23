@@ -18,7 +18,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 LINK_RE = re.compile(r"\[[^\]]*\]\(([^)\s]+)\)")
 SKIP_PREFIX = ("http://", "https://", "mailto:", "#", "tel:")
-SKIP_DIRS = {".git", "node_modules", "dist", ".astro"}
+SKIP_DIRS = {".git", ".worktrees", "node_modules", "dist", ".astro"}
 
 
 def ignored(path: Path) -> bool:
