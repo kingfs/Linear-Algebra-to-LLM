@@ -35,6 +35,7 @@
 | 学习进度 | 完成 | 阅读、正确率、薄弱概念、到期卡片；IndexedDB 本地保存 |
 | 生成图 | 完成 | 8 张 Matplotlib SVG，按概念自动插入 |
 | 质量门禁 | 完成 | `pnpm build`、`pnpm check`、`check-quiz.mjs`、`check-site-links.mjs`、12 项 Playwright E2E |
+| 子路径部署 | 完成 | `BASE_PATH=/LinearAlgebra/` 构建验证；tag 触发 GitHub Pages workflow |
 
 ```bash
 cd web && pnpm dev --port 4321   # http://127.0.0.1:4321/
@@ -91,3 +92,4 @@ cd web && pnpm build && pnpm links && node scripts/e2e.mjs   # 0 断链 / 12 che
 | 2026-10-23 | 全仓总检：81 篇文档、131 个 Markdown 链接、12 个 lab 全部通过 | — |
 | 2026-10-23 | 新增 Web 学习平台：Astro 阅读站、358 题题库、402 张知识卡、8 张生成图、错题本与本地进度 | 2f04eca |
 | 2026-10-23 | 修复 MoE `id: 11.10` 解析冲突、M10/M12 三处内容笔误 | 0584c9b |
+| 2026-10-23 | 支持 `/LinearAlgebra/` 子路径构建、搜索/React 链接适配与 tag 触发 Pages 部署 | 7daef01 |
