@@ -179,4 +179,4 @@ python3 scripts/check_links.py
 
 ## 许可证
 
-本项目（代码与课程文字）采用 [MIT License](LICENSE) 发布：可以自由使用、修改、分发，保留版权与许可声明即可。
+本项目（代码与课程文字）采用 [MIT License](https://github.com/kingfs/Linear-Algebra-to-LLM/blob/main/LICENSE) 发布：可以自由使用、修改、分发，保留版权与许可声明即可。
