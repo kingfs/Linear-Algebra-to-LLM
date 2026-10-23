@@ -53,8 +53,7 @@ r2_stable = c / (a * r1)
 print(f"  判别式 = {float(disc):.6e}（1e16-4 在 fp32 里就是 1e16）")
 print(f"  求根公式：r1 = {float(r1):.6e}, r2 = {float(r2):.6e}")
 print(f"  韦达定理：r2 = c/(a·r1) = {float(r2_stable):.6e}  ← 正确的小根")
-print(f"  两法之比 = {float(r2_stable) / max(float(r2), 1e-30):.3e}"
-      "（直接法把 1e-8 算成了 0）")
+print("  直接法把 1e-8 算成了 0：两个相近大数相减，有效信息全丢。")
 
 
 # ---------------------------------------------------------------- 2
@@ -132,7 +131,7 @@ x0 = np.linalg.solve(A, bb)
 x1 = np.linalg.solve(A, bb + db)
 rel_b = np.linalg.norm(db) / np.linalg.norm(bb)
 rel_x = np.linalg.norm(x1 - x0) / rel(x0)
-print(f"  σ_max={s[0]:.4f}, σ_min={s[-1]:.4f}, κ={s[0] / s[-1]:.1f}")
+print(f"  σ_max={s[0]:.4e}, σ_min={s[-1]:.4e}, κ={s[0] / s[-1]:.1f}")
 print(f"  相对扰动={rel_b:.2e}, 实际相对误差={rel_x:.2e}, "
       f"κ·相对扰动={np.linalg.cond(A) * rel_b:.2e}")
 print("  实际误差几乎顶到上界：这个扰动正好落在最敏感方向。")
@@ -192,7 +191,7 @@ for M in (1, 8, 64, 256, 1024):
     dt, flops, nbytes = bench_gemm(M, 2048, 2048)
     print(f"{M:>6}{dt * 1e3:>12.3f}{flops / dt / 1e9:>12.1f}"
           f"{flops / nbytes:>10.1f}")
-print("  M=1 时 AI≈1，GFLOPS 很低：权重只读一遍、每个数只做一次乘加；")
+print("  M=1 时 AI≈0.5（fp32），GFLOPS 很低：权重只读一遍、每个数只做一次乘加；")
 print("  M 增大后同一份权重被复用 M 次，AI 上升，GFLOPS 才爬向峰值。")
 
 
@@ -222,16 +221,15 @@ def spmv_coo(rows, cols, data, x, n):
 
 
 def spmv_csr(indptr, indices, data, x):
-    y = np.zeros(len(indptr) - 1, dtype=np.float32)
-    for i in range(len(y)):
-        s, e = indptr[i], indptr[i + 1]
-        if e > s:
-            y[i] = data[s:e] @ x[indices[s:e]]
-    return y
+    """按行压缩：用 indptr 生成每个非零元的行号，再按行求和。"""
+    n = len(indptr) - 1
+    row_ids = np.repeat(np.arange(n), np.diff(indptr))
+    contrib = data * x[indices]
+    return np.bincount(row_ids, weights=contrib, minlength=n).astype(np.float32)
 
 
-n = 2000
-rows, cols, data, indptr = build_sparse(n, 0.005)
+n = 4000
+rows, cols, data, indptr = build_sparse(n, 0.001)
 indices = cols.astype(np.int32)
 nnz = len(data)
 print(f"矩阵 {n}×{n}，nnz = {nnz}，密度 = {nnz / (n * n):.5%}，"
