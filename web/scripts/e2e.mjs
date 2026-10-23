@@ -66,7 +66,7 @@ try {
   const first = await page.locator(".search-item").first().getAttribute("href");
   if (!first) throw new Error("search item has no href");
   await page.locator(".search-item").first().click();
-  await page.waitForURL(/what-is-a-vector/);
+  await page.waitForURL(/\/learn\//);
   const pathname = new URL(page.url()).pathname;
   const basePath = new URL(BASE).pathname.replace(/\/$/, "");
   if (!pathname.startsWith(basePath + "/learn/")) {
