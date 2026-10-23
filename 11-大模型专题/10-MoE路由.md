@@ -1,5 +1,5 @@
 ---
-id: 11.10
+id: "11.10"
 title: MoE 路由与专家矩阵
 module: M11
 slug: moe-routing

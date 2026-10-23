@@ -72,7 +72,10 @@ def parse_front_matter(text: str) -> tuple[dict[str, str], int] | None:
         if ":" not in line:
             continue
         key, value = line.split(":", 1)
-        data[key.strip()] = value.strip()
+        value = value.strip()
+        if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
+            value = value[1:-1]
+        data[key.strip()] = value
     return data, end + 1
 
 
