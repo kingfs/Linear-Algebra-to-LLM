@@ -154,7 +154,7 @@ flowchart LR
 
 ```bash
 python3 scripts/check.py        # 81 篇概念文档：0 error / 0 warning
-python3 scripts/check_links.py  # 131 个 Markdown：0 断链
+python3 scripts/check_links.py  # 134 个 Markdown：0 断链
 ```
 
 逐模块状态与变更记录见 [`PROGRESS.md`](PROGRESS.md)。
@@ -171,3 +171,9 @@ python3 scripts/check_links.py
 ```
 
 所有概念文档遵循统一模板与十一节结构（0–10）；新增内容必须通过两个检查后再提交。
+
+---
+
+## 许可证
+
+本项目（代码与课程文字）采用 [MIT License](LICENSE) 发布：可以自由使用、修改、分发，保留版权与许可声明即可。

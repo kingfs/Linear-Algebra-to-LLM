@@ -96,4 +96,5 @@ cd web && pnpm build && pnpm links && node scripts/e2e.mjs   # 0 断链 / 13 che
 | 2026-10-23 | 对齐 KaTeX 版本修复分数字号、Mermaid 空行截断、流水线图重绘为 SVG、单选题选项字母改为圆形徽章 | — |
 | 2026-10-23 | 更名「从线性代数到大模型」（仓库 `Linear-Algebra-to-LLM`），同步站点品牌、README 描述、子路径与 Pages 默认配置 | — |
 | 2026-10-23 | 发布 v1.0.0 并部署 GitHub Pages（`/Linear-Algebra-to-LLM/`），放行 `v*` tag 部署策略 | — |
+| 2026-10-23 | 仓库采用 MIT 许可证；补充 GitHub 仓库 description 与 topics | — |
 | 2026-10-23 | 支持 `/linear-algebra-to-llm/` 子路径构建、搜索/React 链接适配与 tag 触发 Pages 部署 | 7daef01 |
