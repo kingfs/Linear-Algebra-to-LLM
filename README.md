@@ -5,6 +5,8 @@
 
 **一句话简介**：用几何直觉 + 场景化例子，把线性代数从「考试公式」还原成「描述高维世界的语言」，并一路讲到 Attention、LoRA、KV Cache、量化背后的矩阵运算。
 
+**规模**：13 个模块 · 81 篇概念文档 · 13 组习题 · 12 个可运行 lab · 2 份速查表。
+
 ---
 
 ## 这门课为谁而写
@@ -126,7 +128,14 @@ flowchart LR
 
 ## 当前进度
 
-见 [`PROGRESS.md`](PROGRESS.md)。课程按模块增量建设，每个模块完成后本地提交一次。
+课程已完整建成：13 个模块、81 篇概念文档、13 组习题、12 个 lab。全仓通过：
+
+```bash
+python3 scripts/check.py        # 81 篇概念文档：0 error / 0 warning
+python3 scripts/check_links.py  # 131 个 Markdown：0 断链
+```
+
+逐模块状态与变更记录见 [`PROGRESS.md`](PROGRESS.md)。
 
 ---
 
@@ -136,6 +145,7 @@ flowchart LR
 
 ```bash
 python3 scripts/check.py
+python3 scripts/check_links.py
 ```
 
-所有概念文档遵循统一模板与十一节结构（0–10）；新增内容必须通过检查后再提交。
+所有概念文档遵循统一模板与十一节结构（0–10）；新增内容必须通过两个检查后再提交。

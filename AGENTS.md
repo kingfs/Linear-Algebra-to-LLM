@@ -177,6 +177,7 @@ llm_hooks: [embedding, attention]
 
 ```bash
 python3 scripts/check.py
+python3 scripts/check_links.py   # 全仓 README/习题/速查表链接
 ```
 
 检查内容：
@@ -185,7 +186,8 @@ python3 scripts/check.py
 3. 「通往大模型」非空（≥ 80 字）；
 4. 站内相对链接可解析；
 5. 无 `TODO` / `TBD` / `待补充` 占位符；
-6. 文件编码 UTF-8。
+6. 文件编码 UTF-8；
+7. `check_links.py` 扫描所有 Markdown，0 断链。
 
 不通过不允许 commit。若确需临时占位，在 `PROGRESS.md` 登记为「草稿」，且不得标记模块完成。
 
