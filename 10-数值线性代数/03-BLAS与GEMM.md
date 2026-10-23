@@ -98,7 +98,7 @@ $$
 \text{FLOPs}=2MNK
 $$
 
-若 $A,B,C$ 各从显存读一次、$C$ 写一次，访存量是 $4(MK+KN+MN)$ 字节（fp32）。$M=N=K=4096$ 时：
+按 $C=\alpha AB$（$\beta=0$）计，$A,B$ 各读一次、$C$ 写一次，访存量是 $4(MK+KN+MN)$ 字节（fp32）。$M=N=K=4096$ 时：
 
 $$
 \text{FLOPs}=1.374\times10^{11},\qquad \text{Bytes}=4\times3\times4096^2=2.013\times10^{8}
@@ -122,7 +122,7 @@ $$
 
 读作：**tile 越大，每个字节被复用得越多**。$b=128$ 时 AI 为 $32$；$b=256$ 时为 $64$。当然，tile 不能无限大——它必须塞进共享内存/寄存器，且要留够并行度。
 ### 4.4 Roofline 的判据
-以 A100 量级为例：fp32 峰值约 $20$ TFLOPS、显存带宽约 $2$ TB/s，拐点约 $10$ FLOP/byte。$n=4096$ 的 GEMM AI 约 $683$，远在拐点右侧，计算受限；$M=1$ 的 GEMV AI 约 $1$，远在左侧，访存受限。
+以 A100 量级为例：fp32 峰值约 $20$ TFLOPS、显存带宽约 $2$ TB/s，拐点约 $10$ FLOP/byte。$n=4096$ 的 GEMM AI 约 $683$，远在拐点右侧，计算受限；$M=1$ 的 GEMV AI 约 $1$（bf16 权重、忽略输出读写），远在左侧，访存受限。
 ## 5. 例子
 ### 5.1 手算：$M=N=K=4096$ 的 GEMM
 $$
@@ -139,7 +139,7 @@ $$
 \text{FLOPs}=2\times1\times4096\times4096=3.355\times10^{7}
 $$
 
-权重 $W\in\mathbb{R}^{4096\times4096}$ 用 bf16 存是 $4096^2\times2=33.55$ MB。算术强度约
+权重 $W\in\mathbb{R}^{4096\times4096}$ 用 bf16 存是 $4096^2\times2=33.55$ MB。忽略 $\mathbf{x}$ 与输出 $\mathbf{y}$ 的读写，算术强度约
 
 $$
 \frac{3.355\times10^{7}}{3.355\times10^{7}}\approx1\ \text{FLOP/byte}
