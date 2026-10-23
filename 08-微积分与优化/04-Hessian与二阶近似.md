@@ -196,6 +196,14 @@ $$
 - 特征值 = 主曲率，条件数 = 曲面狭长程度。
 - 二阶 Taylor：$f+\nabla f^\top\Delta+\frac12\Delta^\top H\Delta$。
 
+## 11. 参考文献与致谢
+
+这一页的知识不是凭空来的。下面列出本页直接借用的原始工作与权威整理；正文中的人名、定理名已链接到对应条目。链接优先指向 DOI、arXiv 或可长期访问的原文存档。
+
+- <a id="ref-nocedal-wright-2006"></a>**Nocedal & Wright（2006）**：*Numerical Optimization*（2nd ed.）。Hessian、二阶充分条件与牛顿法的一阶/二阶框架，本页 §2–§4 的标准参考。[Springer](https://doi.org/10.1007/978-0-387-40065-5)
+- <a id="ref-rockafellar-1970"></a>**Rockafellar（1970）**：*Convex Analysis*。凸性与二阶判据的经典处理；$H\succeq0$ 与凸性的等价关系可在其中找到严格表述。[Princeton University Press](https://doi.org/10.1515/9781400873173)
+- <a id="ref-magnus-neudecker-2019"></a>**Magnus & Neudecker（2019）**：*Matrix Differential Calculus with Applications in Statistics and Econometrics*（4th ed.）。Hessian 作为「梯度的 Jacobian」的矩阵求导规则，本页 §2.3 直接使用。[Wiley](https://doi.org/10.1002/9781119541219)
+
 ---
 
 下一篇 → [8.5 矩阵求导与链式法则](05-矩阵求导与链式法则.md)

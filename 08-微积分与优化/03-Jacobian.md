@@ -22,7 +22,7 @@ llm_hooks: [backpropagation, autograd]
 
 如果输入的第 3 个分量增加 $0.01$，输出会怎么变？如果 768 个输入同时动，3072 个输出各自变多少？
 
-这需要 $3072\times768$ 个数：每个输出对每个输入的偏导。把它们排成矩阵，就是 Jacobian（雅可比矩阵）。**它不是人为构造的怪物，而是「线性映射的矩阵表示」在微积分里的自然出现。**
+这需要 $3072\times768$ 个数：每个输出对每个输入的偏导。把它们排成矩阵，就是 [Jacobian（雅可比矩阵）](#ref-jacobi-1841)。**它不是人为构造的怪物，而是「线性映射的矩阵表示」在微积分里的自然出现。**
 
 ## 1. 直觉
 
@@ -208,6 +208,14 @@ $$
 - $F=A\mathbf{x}+\mathbf{b}$ 的 Jacobian 就是 $A$。
 - 链式法则：$J_{G\circ F}=J_GJ_F$，形状 $[p,m][m,n]=[p,n]$。
 - 反向传播用 VJP，不显式构造 Jacobian。
+
+## 11. 参考文献与致谢
+
+这一页的知识不是凭空来的。下面列出本页直接借用的原始工作与权威整理；正文中的人名、定理名已链接到对应条目。链接优先指向 DOI、arXiv 或可长期访问的原文存档。
+
+- <a id="ref-jacobi-1841"></a>**Jacobi（1841）**：*De Determinantibus Functionalibus*。函数行列式（Jacobian）的原始论文；本页把「多元映射的导数」写成矩阵，正是这项工作开启的语言。[Journal für die reine und angewandte Mathematik](https://doi.org/10.1515/crll.1841.22.319)
+- <a id="ref-nocedal-wright-2006"></a>**Nocedal & Wright（2006）**：*Numerical Optimization*（2nd ed.）。Jacobian 在非线性方程与优化中的用法，可与本页 §4 的链式法则对照。[Springer](https://doi.org/10.1007/978-0-387-40065-5)
+- <a id="ref-goodfellow-2016"></a>**Goodfellow, Bengio & Courville（2016）**：*Deep Learning*。第 6 章用计算图解释 Jacobian 与反向传播，对应本页 §8 的线性层例子。[MIT Press（开放网页版）](https://www.deeplearningbook.org/)
 
 ---
 
