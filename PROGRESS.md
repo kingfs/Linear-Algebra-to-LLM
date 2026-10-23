@@ -27,7 +27,8 @@
 
 | 能力 | 状态 | 规模 / 验证 |
 |---|---|---|
-| 静态阅读站 | 完成 | Astro 7，152 个页面，81 篇概念 + 13 个模块 |
+| 静态阅读站 | 完成 | Astro 7，153 个页面，81 篇概念 + 13 个模块 |
+| 文献与锚点 | 完成 | 81 篇概念页共 247 条文献、222 个正文锚点；`check_refs.py` 校验格式、锚点、DOI/arXiv 元数据 |
 | 随堂测 | 完成 | 358 题，覆盖 81/81 概念，每篇 3–7 题 |
 | 即时判分 | 完成 | 单选/多选/判断/数值；解析 + 回看原文 |
 | 知识卡复习 | 完成 | 402 张，Leitner 间隔重复 |
@@ -39,7 +40,7 @@
 
 ```bash
 cd web && pnpm dev --port 4321   # http://127.0.0.1:4321/
-cd web && pnpm build             # 152 页，输出 web/dist
+cd web && pnpm build             # 153 页，输出 web/dist
 cd web && pnpm build && pnpm links && node scripts/e2e.mjs   # 0 断链 / 13 checks
 ```
 
@@ -66,7 +67,7 @@ cd web && pnpm build && pnpm links && node scripts/e2e.mjs   # 0 断链 / 13 che
 
 ## 已知问题 / 待复核
 
-- 无阻塞问题。全仓 `check.py` 81 篇 0 error/0 warning，`check_links.py` 131 个 Markdown 0 断链，12 个 lab 全部 exit 0。
+- 无阻塞问题。全仓 `check.py` 81 篇 0 error/0 warning，`check_refs.py` 247 条文献 0 error（27 条延伸阅读未在正文链接，允许），`check_links.py` 135 个 Markdown 0 断链，12 个 lab 全部 exit 0。
 - 已知非阻塞偏差：M11/M12 部分文档 220–263 行，略超模板建议的 220 行上限；为容纳形状推导与端到端例子保留，未强行压缩。
 - 已修复：`11-大模型专题/10-MoE路由.md` 的 `id: 11.10` 加引号，避免 YAML 解析成浮点 `11.1`；`scripts/check.py` 同步支持带引号的 id。
 - 已修复三处内容笔误：M10 共轭梯度步数 `6.6→5.56`、M12 奇异值 `√20→5`、M12 einsum 隐式模式规则方向。
@@ -98,3 +99,5 @@ cd web && pnpm build && pnpm links && node scripts/e2e.mjs   # 0 断链 / 13 che
 | 2026-10-23 | 发布 v1.0.0 并部署 GitHub Pages（`/Linear-Algebra-to-LLM/`），放行 `v*` tag 部署策略 | — |
 | 2026-10-23 | 仓库采用 MIT 许可证；补充 GitHub 仓库 description 与 topics | — |
 | 2026-10-23 | 支持 `/linear-algebra-to-llm/` 子路径构建、搜索/React 链接适配与 tag 触发 Pages 部署 | 7daef01 |
+| 2026-10-23 | 为 81 篇概念页补充第 11 节「参考文献与致谢」与正文锚点（247 条文献、222 个锚点）；新增 `check_refs.py`、文献写作规范与模板示例 | 本系列 docs(mNN) |
+

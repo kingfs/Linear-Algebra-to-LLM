@@ -133,6 +133,7 @@ button { font: inherit; }
 
 /* typography */
 .prose { font-family: var(--font-sans); max-width: 100%; }
+.prose [id^="ref-"] { scroll-margin-top: 96px; }
 .prose > h1 { font-family: var(--font-serif); font-size: clamp(28px, 3.6vw, 40px); line-height: 1.25; letter-spacing: -.01em; margin: 4px 0 10px; }
 .prose h2 {
   font-family: var(--font-serif); font-size: 24px; line-height: 1.35; margin: 52px 0 14px;

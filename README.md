@@ -15,7 +15,7 @@
 
 除了读 Markdown，现在还可以在浏览器里学习、做题、翻卡和看生成图：
 
-- 阅读：81 篇概念页，带目录、上下篇、KaTeX 公式、Mermaid 图和 Python 生成的 SVG 图。
+- 阅读：81 篇概念页，带目录、上下篇、KaTeX 公式、Mermaid 图、Python 生成的 SVG 图，以及可跳转的「参考文献与致谢」。
 - 练习：358 道单选/多选/判断/数值题，即时判分、解析回链原文、错题本。
 - 复习：「一页速记」自动转成 402 张知识卡，按间隔重复排期。
 - 进度：阅读、正确率、薄弱概念、到期卡片，全部存在本机 IndexedDB，无需登录。
@@ -48,7 +48,8 @@ pnpm dev --port 4321
 2. **每个概念的四个层次**：直觉 → 定义动机 → 手算例子 → 大模型落点。
 3. **可运行的实验**：`labs/` 里的 NumPy 代码，亲手验证「点积衡量相似度」「SVD 做低秩近似」「attention 的形状」。
 4. **一套可复习的速查体系**：公式卡、符号表、术语中英对照、一页速记。
-5. **一条可持续的研究路线**：最后一章告诉你，线性代数之后该补什么，才能读懂 Transformer 推理。
+5. **可追溯的出处**：每篇文末列出 2–5 条原始论文或权威整理，正文中的人名、定理名可点击跳到对应文献。
+6. **一条可持续的研究路线**：最后一章告诉你，线性代数之后该补什么，才能读懂 Transformer 推理。
 
 ---
 
@@ -134,7 +135,7 @@ flowchart LR
 ├── exercises/         # 每模块习题 + 答案
 ├── labs/              # NumPy 实验
 ├── cheatsheets/       # 速查卡
-└── scripts/check.py   # 质量门禁
+└── scripts/check.py   # 质量门禁；check_refs.py 核对文献与锚点
 ```
 
 ---
@@ -154,7 +155,8 @@ flowchart LR
 
 ```bash
 python3 scripts/check.py        # 81 篇概念文档：0 error / 0 warning
-python3 scripts/check_links.py  # 134 个 Markdown：0 断链
+python3 scripts/check_refs.py    # 81 篇文献与页内锚点：0 error
+python3 scripts/check_links.py  # 135 个 Markdown：0 断链
 ```
 
 逐模块状态与变更记录见 [`PROGRESS.md`](PROGRESS.md)。
@@ -167,10 +169,11 @@ python3 scripts/check_links.py  # 134 个 Markdown：0 断链
 
 ```bash
 python3 scripts/check.py
+python3 scripts/check_refs.py
 python3 scripts/check_links.py
 ```
 
-所有概念文档遵循统一模板与十一节结构（0–10）；新增内容必须通过两个检查后再提交。
+所有概念文档遵循统一模板与十二节结构（0–11，含「参考文献与致谢」）；新增内容必须通过三个检查后再提交。
 
 ---
 

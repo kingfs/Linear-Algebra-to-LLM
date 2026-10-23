@@ -36,7 +36,7 @@ pnpm preview    # 预览 dist
 | `pnpm build` | sync + 静态构建 |
 | `pnpm check` | sync + `astro check`（TypeScript/Astro 类型检查） |
 | `node scripts/e2e.mjs` | 用本机 Chrome 跑 13 项端到端检查 |
-| `pnpm links` | 检查构建后 152 页的站内链接与锚点 |
+| `pnpm links` | 检查构建后 153 页的站内链接与锚点 |
 | `node scripts/check-quiz.mjs` | 校验题库字段、概念 id、source 与锚点 |
 
 ## 内容管线
@@ -134,7 +134,7 @@ for f in figures/scripts/fig_*.py; do uv run --with matplotlib --with numpy pyth
 ```bash
 cd web
 pnpm build
-pnpm links     # 152 页 / 94 个锚点 / 0 断链
+pnpm links     # 153 页 / 95 个锚点 / 0 断链
 node scripts/e2e.mjs
 ```
 

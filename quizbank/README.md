@@ -16,7 +16,7 @@ questions: []
 ```yaml
 - id: q-4.4-001              # 全局唯一；q-<concept>-<三位序号>
   concept: "4.4"             # 必须存在于对应模块文档 front matter
-  section: 5                 # 题目主要考的小节 0–10
+  section: 5                 # 题目主要考的小节 0–11
   type: numeric              # single_choice | multiple_choice | true_false | numeric
   difficulty: 2              # 1–3
   stem: "题干，可含 $...$"
