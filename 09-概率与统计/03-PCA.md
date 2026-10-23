@@ -18,7 +18,7 @@ llm_hooks: [representation-analysis, dimensionality-reduction, kv-cache]
 
 ## 0. 场景引入
 
-一层模型的激活有 4096 维，你只能画二维图；随机挑两个维度，图可能是一团没有结构的云。**主成分分析（principal component analysis, PCA）** 要回答的就是「投到哪两个方向」，把点投影到「最有信息量的两个方向」上，往往能看到按词性、语言或情感分出的条带。
+一层模型的激活有 4096 维，你只能画二维图；随机挑两个维度，图可能是一团没有结构的云。**[主成分分析（principal component analysis, PCA）](#ref-pearson-1901)** 要回答的就是「投到哪两个方向」，把点投影到「最有信息量的两个方向」上，往往能看到按词性、语言或情感分出的条带。
 
 **问题**：哪两个方向最「有信息量」？要用 $k$ 维尽量保住原点云，最该丢哪些方向？丢掉之后误差多大？
 
@@ -26,7 +26,7 @@ llm_hooks: [representation-analysis, dimensionality-reduction, kv-cache]
 
 想象一团被拉长的点云。旋转坐标轴，让第一根轴沿点云最长的方向，第二根与它垂直、沿次长方向。页首的图就是旋转的结果：第一主成分指向点云最舒展的方向，第二主成分与它垂直。
 
-- 第一主成分（first principal component）：投影后方差最大的单位方向；
+- [第一主成分](#ref-hotelling-1933)（first principal component）：投影后方差最大的单位方向；
 - 第二主成分：在与第一主成分正交的方向里方差最大的那个；
 - 以此类推，最多 $D$ 个，彼此正交。
 
@@ -177,7 +177,7 @@ Z = Xc @ Vt[:128].T                         # [N, 128] 前 128 个得分
 print(ratio[:3], ratio[:128].sum())         # 前 128 个累计比
 ```
 
-**与低秩近似的联系**：PCA 的 $X_cV_kV_k^\top$ 正是 $X_c$ 的秩 $k$ 最优近似（Eckart–Young）。所以「PCA 降维」与「低秩压缩」在数学上是同一个操作，只是一个强调坐标，一个强调存储。
+**与低秩近似的联系**：PCA 的 $X_cV_kV_k^\top$ 正是 $X_c$ 的秩 $k$ 最优近似（[Eckart–Young](#ref-eckart-young-1936)）。所以「PCA 降维」与「低秩压缩」在数学上是同一个操作，只是一个强调坐标，一个强调存储。
 
 ## 9. 练习
 
@@ -205,6 +205,15 @@ print(ratio[:3], ratio[:128].sum())         # 前 128 个累计比
 - 解释方差比 $\lambda_i/\sum_j\lambda_j$，累计比用来选 $k$。
 - 重建 $X_cV_kV_k^\top$，误差平方和 $=n\sum_{i>k}\lambda_i$。
 - 不中心化会偏；单位不可比时先标准化；方差大不等于任务重要。
+
+## 11. 参考文献与致谢
+
+这一页的知识不是凭空来的。下面列出本页直接借用的原始工作与权威整理；正文中的人名、定理名已链接到对应条目。链接优先指向 DOI、arXiv 或可长期访问的原文存档。
+
+- <a id="ref-pearson-1901"></a>**皮尔逊（Karl Pearson, 1901）**：*On Lines and Planes of Closest Fit to Systems of Points in Space*。把「用低维线性流形拟合点云」化为最小二乘问题，这是 PCA 的雏形；本页的「找方差最大的方向」是它的主轴版本。[Taylor & Francis（DOI）](https://doi.org/10.1080/14786440109462720)
+- <a id="ref-hotelling-1933"></a>**霍特林（Harold Hotelling, 1933）**：*Analysis of a Complex of Statistical Variables into Principal Components*。把主轴法推广到一般随机变量并给出 principal components 这一名称，本页的得分矩阵 $Z=X_cV$ 就是它的矩阵写法。[APA PsycNet（DOI）](https://doi.org/10.1037/h0071325)
+- <a id="ref-eckart-young-1936"></a>**埃卡特与杨（Carl Eckart & Gale Young, 1936）**：*The Approximation of One Matrix by Another of Lower Rank*。证明秩 $k$ 截断 SVD 是最优低秩近似，本页重建误差 $=n\sum_{i>k}\lambda_i$ 的最优性由它保证。[Springer（DOI）](https://doi.org/10.1007/BF02288367)
+- <a id="ref-jolliffe-2002"></a>**Jolliffe（Ian T. Jolliffe, 2002）**：*Principal Component Analysis*。PCA 的权威专著，本页关于中心化、标准化与选 $k$ 的实践建议在其中有系统讨论。[Springer（DOI）](https://doi.org/10.1007/b98835)
 
 ---
 
