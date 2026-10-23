@@ -42,7 +42,7 @@ $$
 
 ### 2.1 幂迭代
 
-给定 $A\in\mathbb{R}^{n\times n}$ 和非零初始向量 $\mathbf{x}_0$，**幂迭代（power iteration）** 重复：
+给定 $A\in\mathbb{R}^{n\times n}$ 和非零初始向量 $\mathbf{x}_0$，**[幂迭代（power iteration）](#ref-von-mises-1929)** 重复：
 
 $$
 \mathbf{y}_k=A\mathbf{x}_{k-1},\qquad
@@ -71,7 +71,7 @@ $$
 
 ### 2.5 PageRank
 
-把网页链接写成列随机矩阵 $P$：$P_{ij}$ 表示从网页 $j$ 跳到 $i$ 的概率。**PageRank** 用阻尼（damping）修正：
+把网页链接写成列随机矩阵 $P$：$P_{ij}$ 表示从网页 $j$ 跳到 $i$ 的概率。**[PageRank](#ref-brin-page-1998)** 用阻尼（damping）修正：
 
 $$
 G=dP+\frac{1-d}{n}\mathbf{1}\mathbf{1}^\top
@@ -87,7 +87,7 @@ $$
 
 幂迭代每次只做一次矩阵-向量乘法：稀疏矩阵的代价是 $O(\text{非零元个数})$，迭代几十次也远小于 $O(n^3)$。它牺牲的是「只给主特征向量」和「收敛速度依赖谱间隙」，换来的是可扩展性。
 
-PageRank 的阻尼因子解决两个问题。其一是**悬挂节点**：某些网页没有出链，$P$ 的对应列为零，不满足列随机；阻尼项把概率重新分配。其二是**唯一性与收敛**：正矩阵由 Perron–Frobenius 定理保证有唯一正的主特征向量，且 $|\lambda_2(G)|\le d<1$，迭代一定收敛。$d$ 越大，越忠实于链接结构，但收敛越慢；$d$ 越小，越接近均匀分布，收敛越快。
+PageRank 的阻尼因子解决两个问题。其一是**悬挂节点**：某些网页没有出链，$P$ 的对应列为零，不满足列随机；阻尼项把概率重新分配。其二是**唯一性与收敛**：正矩阵由 [Perron–Frobenius 定理](#ref-perron-1907)保证有唯一正的主特征向量，且 $|\lambda_2(G)|\le d<1$，迭代一定收敛。$d$ 越大，越忠实于链接结构，但收敛越慢；$d$ 越小，越接近均匀分布，收敛越快。
 
 ## 4. 性质与推导
 
@@ -116,7 +116,7 @@ $$
 
 ### 4.5 位移与其它特征值
 
-想求最接近 $\sigma$ 的特征值，可以对 $(A-\sigma I)^{-1}$ 做幂迭代（**位移反迭代（shifted inverse iteration）**）：$|\lambda_i-\sigma|$ 最小的特征值成为主特征值。想求第二个特征值，可以用**收缩（deflation）**：对称情形下先算出 $\lambda_1,\mathbf{v}_1$，再从 $A$ 中减去 $\lambda_1\mathbf{v}_1\mathbf{v}_1^\top$，对剩余矩阵继续幂迭代。
+想求最接近 $\sigma$ 的特征值，可以对 $(A-\sigma I)^{-1}$ 做幂迭代（**[位移反迭代（shifted inverse iteration）](#ref-golub-van-loan-2013)**）：$|\lambda_i-\sigma|$ 最小的特征值成为主特征值。想求第二个特征值，可以用**收缩（deflation）**：对称情形下先算出 $\lambda_1,\mathbf{v}_1$，再从 $A$ 中减去 $\lambda_1\mathbf{v}_1\mathbf{v}_1^\top$，对剩余矩阵继续幂迭代。
 
 ## 5. 例子
 
@@ -214,6 +214,15 @@ $P$ 的副特征值是 $-0.5\pm0.5i$，模 $0.7071$；$G$ 的收敛比是 $d|\la
 - Rayleigh 商 $\lambda=\mathbf{x}^\top A\mathbf{x}/\mathbf{x}^\top\mathbf{x}$；对称矩阵误差按平方比收敛。
 - 列随机矩阵有特征值 1，对应平稳分布；PageRank 的 $G=dP+(1-d)\mathbf{1}\mathbf{1}^\top/n$ 保证唯一收敛。
 - 阻尼 $d$ 在「忠实链接结构」与「收敛速度」之间权衡。
+
+## 11. 参考文献与致谢
+
+这一页的知识不是凭空来的。下面列出本页直接借用的原始工作与权威整理；正文中的人名、定理名已链接到对应条目。链接优先指向 DOI、arXiv 或可长期访问的原文存档。
+
+- <a id="ref-von-mises-1929"></a>**冯·米泽斯（Richard von Mises, 1929）**：*Praktische Verfahren der Gleichungsauflösung*。给出幂迭代（反复乘矩阵并归一化）求主特征值与主特征向量的实用算法，本页 §2.1 的迭代格式即源于此。[ZAMM](https://doi.org/10.1002/zamm.19290090206)
+- <a id="ref-perron-1907"></a>**佩龙（Oskar Perron, 1907）**：*Zur Theorie der Matrices*。证明正矩阵有唯一正的主特征向量（Perron 定理），PageRank 的阻尼矩阵 $G>0$ 因此保证平稳分布唯一、幂迭代收敛。[Math. Ann.](https://doi.org/10.1007/BF01449896)
+- <a id="ref-brin-page-1998"></a>**Brin 与 Page（1998）**：*The anatomy of a large-scale hypertextual Web search engine*。公开描述 PageRank：用链接矩阵的主特征向量给网页排序，本页 §2.5 的阻尼修正式与三节点例子都对应这套构造。[Computer Networks](https://www.sciencedirect.com/science/article/pii/S016975529800110X)
+- <a id="ref-golub-van-loan-2013"></a>**Golub 与 Van Loan（2013）**：*Matrix Computations*（4th ed.）。第 7–8 章给出幂迭代、位移反迭代与收缩的收敛分析，本页 §2.3 与 §4.5 的误差估计以它为参照。[JHU Press](https://doi.org/10.56021/9781421407944)
 
 ---
 

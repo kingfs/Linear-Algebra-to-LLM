@@ -57,7 +57,7 @@ $$
 
 ### 2.2 Jordan 标准形
 
-**Jordan 标准形（Jordan canonical form）**：任意复矩阵 $A$ 都相似于分块对角的 $J=\operatorname{diag}(J_{k_1}(\lambda_1),\dots,J_{k_m}(\lambda_m))$，即存在可逆 $P$ 使 $A=PJP^{-1}$；不计块顺序，$J$ 唯一。
+**[Jordan 标准形（Jordan canonical form）](#ref-horn-johnson-2012)**：任意复矩阵 $A$ 都相似于分块对角的 $J=\operatorname{diag}(J_{k_1}(\lambda_1),\dots,J_{k_m}(\lambda_m))$，即存在可逆 $P$ 使 $A=PJP^{-1}$；不计块顺序，$J$ 唯一。
 
 对每个特征值 $\lambda$：代数重数等于该 $\lambda$ 的所有块大小之和；几何重数等于块数；最大块的大小是最小多项式（使 $p(A)=0$ 的最低次多项式）中 $(\lambda-\lambda_0)$ 的重数。所以**可对角化 $\Leftrightarrow$ 所有 Jordan 块都是 $1\times1$**，即几何重数等于代数重数。
 
@@ -87,7 +87,7 @@ $$
 
 Jordan 标准形补上这个缺口：它把所有矩阵按相似关系分类，每一类由一个分块对角的 $J$ 代表；两个矩阵相似，当且仅当它们的 Jordan 形（不计块顺序）相同。
 
-但 Jordan 形在数值上很危险：它对扰动不连续。元素扰动 $10^{-8}$ 可能把一个大块拆成许多小块，$P$ 的条件数可以爆炸。所以实际计算用 **Schur 分解（Schur decomposition）** $A=QTQ^\top$（$Q$ 正交、$T$ 上三角），特征值在对角线上，数值稳定。Jordan 形是理论工具，不是计算工具。
+但 Jordan 形在数值上很危险：它对扰动不连续。元素扰动 $10^{-8}$ 可能把一个大块拆成许多小块，$P$ 的条件数可以爆炸。所以实际计算用 **[Schur 分解（Schur decomposition）](#ref-schur-1909)** $A=QTQ^\top$（$Q$ 正交、$T$ 上三角），特征值在对角线上，数值稳定。Jordan 形是理论工具，不是计算工具。
 
 ## 4. 性质与推导
 
@@ -97,7 +97,7 @@ $A=\begin{bmatrix}1&1\\0&1\end{bmatrix}=I+N$，$N^2=0$，由二项式定理 $A^k
 
 ### 4.2 矩阵指数
 
-**矩阵指数（matrix exponential）** 定义为 $e^{A}=\sum_{m=0}^{\infty}A^m/m!$。对 $A=\lambda I+N$（$N^k=0$），因为 $\lambda I$ 与 $N$ 可交换，
+**[矩阵指数（matrix exponential）](#ref-higham-2008)** 定义为 $e^{A}=\sum_{m=0}^{\infty}A^m/m!$。对 $A=\lambda I+N$（$N^k=0$），因为 $\lambda I$ 与 $N$ 可交换，
 
 $$
 e^{At}=e^{\lambda t}\sum_{m=0}^{k-1}\frac{(tN)^m}{m!}
@@ -152,7 +152,7 @@ $$
 2. **误区**：特征值重复就一定不可对角化。**纠正**：$2I$ 的特征值 2 重数为 2，但已经是 Jordan 形（两个 $1\times1$ 块）；要看几何重数是否等于代数重数。
 3. **误区**：Jordan 形唯一，所以 $P$ 也唯一。**纠正**：$J$ 在不计块顺序时唯一，$P$ 远不唯一；广义特征向量可以缩放、混合。
 4. **误区**：$e^{A+B}=e^Ae^B$ 总成立。**纠正**：仅当 $AB=BA$ 时成立；$\lambda I$ 与 $N$ 可交换，所以 $e^{\lambda I+N}=e^{\lambda I}e^N$，一般的 $A,B$ 不行。
-5. **误区**：实际计算应先算 Jordan 形再算 $e^{At}$。**纠正**：Jordan 形对扰动不连续，$P$ 可能极度病态；实际用 Schur 分解或 Padé 近似（`scipy.linalg.expm`）。
+5. **误区**：实际计算应先算 Jordan 形再算 $e^{At}$。**纠正**：Jordan 形对扰动不连续，$P$ 可能极度病态；实际用 Schur 分解或 [Padé 近似](#ref-moler-van-loan-1978)（`scipy.linalg.expm`）。
 6. **误区**：特征值实部为负就一定单调衰减。**纠正**：非正规矩阵可能先瞬态增长（§5.3），Jordan 块还带来 $t^{m-1}$ 因子。
 
 ## 7. 概念网络
@@ -197,6 +197,15 @@ $$
 - 可对角化 $\Leftrightarrow$ 所有 Jordan 块为 $1\times1$。
 - $f(J)$ 的对角线是 $f(\lambda)$，上对角线是 $f'(\lambda)$；$e^{At}=e^{\lambda t}\sum (tN)^m/m!$。
 - 稳定性看 $\operatorname{Re}\lambda$（连续）或 $|\lambda|$（离散）；非正规矩阵可能有瞬态增长。
+
+## 11. 参考文献与致谢
+
+这一页的知识不是凭空来的。下面列出本页直接借用的原始工作与权威整理；正文中的人名、定理名已链接到对应条目。链接优先指向 DOI、arXiv 或可长期访问的原文存档。
+
+- <a id="ref-higham-2008"></a>**海厄姆（Nicholas J. Higham, 2008）**：*Functions of Matrices: Theory and Computation*。系统处理矩阵函数 $f(A)$ 的定义、Jordan 块上的导数公式与 $e^{A}$ 的算法，本页 §2.4 与 §4.2 的主要依据。[SIAM](https://doi.org/10.1137/1.9780898717778)
+- <a id="ref-horn-johnson-2012"></a>**Horn 与 Johnson（2012）**：*Matrix Analysis*（2nd ed.）。第 3 章给出 Jordan 标准形、Jordan 链与最小多项式的完整证明，本页的表述以这一现代整理为准。[Cambridge](https://doi.org/10.1017/CBO9781139020411)
+- <a id="ref-schur-1909"></a>**舒尔（Issai Schur, 1909）**：*Beiträge zur Theorie der Gruppen linearer homogener Substitutionen*。证明任意复矩阵可由酉相似化成上三角，给出数值上替代 Jordan 形的稳定路线，本页 §3 的 Schur 分解即由此得名。[Trans. AMS](https://doi.org/10.1090/s0002-9947-1909-1500832-1)
+- <a id="ref-moler-van-loan-1978"></a>**Moler 与 Van Loan（1978）**：*Nineteen Dubious Ways to Compute the Exponential of a Matrix*。比较十九种计算 $e^{A}$ 的方法，说明为什么实际实现用 Padé 近似加缩放平方，本页 §6 对 `expm` 的建议来自这篇综述。[SIAM Review](https://doi.org/10.1137/1020098)
 
 ---
 
