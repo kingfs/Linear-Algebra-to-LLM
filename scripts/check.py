@@ -119,10 +119,6 @@ def check_doc(path: Path, all_ids: dict[str, Path], errors: list[str], warnings:
     concept_id = fm.get("id", "")
     if not re.fullmatch(r"\d+\.\d+", concept_id):
         errors.append(f"{rel}: id '{concept_id}' 应形如 1.3")
-    elif concept_id in all_ids:
-        errors.append(f"{rel}: id {concept_id} 与 {all_ids[concept_id].relative_to(ROOT)} 重复")
-    else:
-        all_ids[concept_id] = path
 
     module = fm.get("module", "")
     dir_match = MODULE_DIR_RE.match(path.parent.name)
@@ -196,6 +192,30 @@ def main() -> int:
     parser.add_argument("--quiet", action="store_true", help="只输出错误")
     args = parser.parse_args()
 
+    errors: list[str] = []
+    warnings: list[str] = []
+    all_ids: dict[str, Path] = {}
+
+    # 全局 id 注册表（用于跨模块 prereq 与重复检测）
+    all_concepts = collect_concepts()
+    for path in all_concepts:
+        text = read_text(path, errors)
+        if text is None:
+            continue
+        parsed = parse_front_matter(text)
+        if not parsed:
+            continue
+        concept_id = parsed[0].get("id", "")
+        if not re.fullmatch(r"\d+\.\d+", concept_id):
+            continue
+        if concept_id in all_ids:
+            errors.append(
+                f"{path.relative_to(ROOT)}: id {concept_id} 与 "
+                f"{all_ids[concept_id].relative_to(ROOT)} 重复"
+            )
+        else:
+            all_ids[concept_id] = path
+
     if args.paths:
         files: list[Path] = []
         for raw in args.paths:
@@ -209,11 +229,8 @@ def main() -> int:
                 print(f"找不到路径: {raw}", file=sys.stderr)
                 return 2
     else:
-        files = collect_concepts()
+        files = all_concepts
 
-    errors: list[str] = []
-    warnings: list[str] = []
-    all_ids: dict[str, Path] = {}
     for path in files:
         check_doc(path, all_ids, errors, warnings)
 
