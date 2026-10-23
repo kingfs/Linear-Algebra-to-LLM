@@ -166,12 +166,12 @@ pnpm build
 
 默认 `BASE_PATH=/`，输出 `web/dist`，直接部署即可。
 
-### 子路径（如 `http://yongzhen.wang/linear-algebra-to-llm`）
+### 子路径（如 `https://yongzhen.wang/Linear-Algebra-to-LLM/`）
 
 ```bash
 cd web
-BASE_PATH=/linear-algebra-to-llm/ pnpm build
-BASE_PATH=/linear-algebra-to-llm/ pnpm links
+BASE_PATH=/Linear-Algebra-to-LLM/ pnpm build
+BASE_PATH=/Linear-Algebra-to-LLM/ pnpm links
 ```
 
 - `astro.config.mjs` 会把 `BASE_PATH` 传给 Astro 的 `base`；
@@ -184,11 +184,11 @@ BASE_PATH=/linear-algebra-to-llm/ pnpm links
 仓库带 `.github/workflows/deploy-pages.yml`：
 
 - 只在 push `v*` tag（或手动 `workflow_dispatch`）时构建、部署；
-- 默认 `BASE_PATH=/linear-algebra-to-llm/`；
+- 默认 `BASE_PATH=/Linear-Algebra-to-LLM/`；
 - 如果自定义域名把项目站挂在根路径，在仓库 **Settings → Secrets and variables → Actions → Variables** 添加 `PAGES_BASE_PATH=/`，无需改代码；
 - GitHub Pages 的 Source 选 **GitHub Actions**。
 
-> 注意：GitHub Pages 的自定义域名可能把项目站挂在域名根路径（`https://yongzhen.wang/`），而不是 `/linear-algebra-to-llm/`。若实际访问是根路径，把 `PAGES_BASE_PATH` 改成 `/`；若确实要挂在 `/linear-algebra-to-llm/`，需要由反向代理或托管平台提供该子路径。
+> 注意：GitHub Pages 的自定义域名可能把项目站挂在域名根路径（`https://yongzhen.wang/`），而不是 `/Linear-Algebra-to-LLM/`。若实际访问是根路径，把 `PAGES_BASE_PATH` 改成 `/`；若确实要挂在 `/Linear-Algebra-to-LLM/`，需要由反向代理或托管平台提供该子路径。
 
 ## 已知取舍
 

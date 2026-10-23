@@ -3,7 +3,7 @@
 > 一门为「想真正读懂大模型」的人重写的课：从线性代数开始，一路讲到大模型底层。
 > 不从行列式开始，而从「一句话怎么变成一串数字、又怎么变成另一串数字」开始。
 
-**仓库名**：`linear-algebra-to-llm`（中文名：从线性代数到大模型）。
+**仓库**：[`kingfs/Linear-Algebra-to-LLM`](https://github.com/kingfs/Linear-Algebra-to-LLM) ｜ **在线站点**：<https://yongzhen.wang/Linear-Algebra-to-LLM/>
 
 **一句话简介**：用几何直觉 + 场景化例子，把线性代数从「考试公式」还原成「描述高维世界的语言」，并一路讲到 Attention、LoRA、KV Cache、量化背后的矩阵运算。
 

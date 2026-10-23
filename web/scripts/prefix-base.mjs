@@ -6,7 +6,7 @@
  * Astro 的 base 只影响它自己生成的资源，不会改写这些链接，所以需要这一层。
  *
  * 用法：
- *   BASE_PATH=/linear-algebra-to-llm/ pnpm build
+ *   BASE_PATH=/Linear-Algebra-to-LLM/ pnpm build
  *   BASE_PATH=/ pnpm build          # 默认，无操作
  */
 import fs from "node:fs";

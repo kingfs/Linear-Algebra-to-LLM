@@ -1,5 +1,5 @@
 /**
- * 部署在子路径时（例如 /linear-algebra-to-llm/），所有站内链接都要带上 BASE_URL。
+ * 部署在子路径时（例如 /Linear-Algebra-to-LLM/），所有站内链接都要带上 BASE_URL。
  * 本地开发默认 BASE_URL=/，行为不变。
  */
 export const BASE = import.meta.env.BASE_URL || "/";

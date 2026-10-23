@@ -35,7 +35,7 @@
 | 学习进度 | 完成 | 阅读、正确率、薄弱概念、到期卡片；IndexedDB 本地保存 |
 | 生成图 | 完成 | 16 张 Matplotlib SVG：8 张页首 + 8 张正文内联 |
 | 质量门禁 | 完成 | `pnpm build`、`pnpm check`、`check-quiz.mjs`、`check-site-links.mjs`、`check-render.mjs`、13 项 Playwright E2E |
-| 子路径部署 | 完成 | `BASE_PATH=/linear-algebra-to-llm/` 构建验证；tag 触发 GitHub Pages workflow |
+| 子路径部署 | 完成 | `BASE_PATH=/Linear-Algebra-to-LLM/` 构建验证；tag 触发 GitHub Pages workflow |
 
 ```bash
 cd web && pnpm dev --port 4321   # http://127.0.0.1:4321/
