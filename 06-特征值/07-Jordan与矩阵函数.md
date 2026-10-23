@@ -59,7 +59,7 @@ $$
 
 **Jordan 标准形（Jordan canonical form）**：任意复矩阵 $A$ 都相似于分块对角的 $J=\operatorname{diag}(J_{k_1}(\lambda_1),\dots,J_{k_m}(\lambda_m))$，即存在可逆 $P$ 使 $A=PJP^{-1}$；不计块顺序，$J$ 唯一。
 
-对每个特征值 $\lambda$：代数重数等于该 $\lambda$ 的所有块大小之和；几何重数等于块数；最大块的大小是最小多项式中 $(\lambda-\lambda_0)$ 的重数。所以**可对角化 $\Leftrightarrow$ 所有 Jordan 块都是 $1\times1$**，即几何重数等于代数重数。
+对每个特征值 $\lambda$：代数重数等于该 $\lambda$ 的所有块大小之和；几何重数等于块数；最大块的大小是最小多项式（使 $p(A)=0$ 的最低次多项式）中 $(\lambda-\lambda_0)$ 的重数。所以**可对角化 $\Leftrightarrow$ 所有 Jordan 块都是 $1\times1$**，即几何重数等于代数重数。
 
 ### 2.3 广义特征向量
 
@@ -79,7 +79,7 @@ $$
 f(J_2(\lambda))=\begin{bmatrix}f(\lambda)&f'(\lambda)\\0&f(\lambda)\end{bmatrix}
 $$
 
-对角线上是 $f(\lambda)$，上对角线是导数；$k\times k$ 块则一直排到 $f^{(k-1)}/(k-1)!$。取 $f(x)=x^n$ 得 $f'(\lambda)=n\lambda^{n-1}$，正好是 §1 的 $A^k$ 公式。
+对角线上是 $f(\lambda)$，第 $m$ 条上对角线是 $f^{(m)}(\lambda)/m!$，一直排到 $m=k-1$。取 $f(x)=x^n$ 得 $f'(\lambda)=n\lambda^{n-1}$，正好是 §1 的 $A^k$ 公式。
 
 ## 3. 为什么这样定义
 
@@ -112,7 +112,7 @@ $$
 
 ### 4.4 稳定性与多项式因子
 
-若 $\lambda=a+bi$，则 $|e^{\lambda t}|=e^{at}$。Jordan 块额外带来 $t^{m-1}$ 因子，但指数最终压倒多项式：$a<0$ 时 $t^{m-1}e^{at}\to0$。所以连续时间系统的稳定性只看 $\operatorname{Re}\lambda$：全部 $<0$ 渐近稳定，有 $>0$ 发散，$=0$ 时多项式因子导致增长。离散时间看 $|\lambda|$：全部 $<1$ 稳定。实矩阵的复特征值 $a\pm bi$ 对应块 $\begin{bmatrix}a&-b\\b&a\end{bmatrix}$，其指数是 $e^{at}$ 乘旋转。
+若 $\lambda=a+bi$，则 $|e^{\lambda t}|=e^{at}$。Jordan 块额外带来 $t^{m-1}$ 因子，但指数最终压倒多项式：$a<0$ 时 $t^{m-1}e^{at}\to0$。所以连续时间系统的稳定性只看 $\operatorname{Re}\lambda$：全部 $<0$ 渐近稳定，有 $>0$ 发散；$=0$ 时若块大小为 1 则有界振荡，块更大则出现多项式增长。离散时间看 $|\lambda|$：全部 $<1$ 稳定。实矩阵的复特征值 $a\pm bi$ 对应块 $\begin{bmatrix}a&-b\\b&a\end{bmatrix}$，其指数是 $e^{at}$ 乘旋转。
 
 ## 5. 例子
 
@@ -134,7 +134,7 @@ $$
 e^{Jt}=e^{2t}\begin{bmatrix}1&t&\frac{t^2}{2}\\0&1&t\\0&0&1\end{bmatrix}
 $$
 
-$t^2/2$ 来自 $N^2/2!$。若把 $2$ 换成 $-1$，则 $e^{-t}(1,t,t^2/2)$ 仍衰减到 0，只是先短暂增大——多项式因子不改变最终的指数衰减。
+$t^2/2$ 来自 $N^2/2!$。若把 $2$ 换成 $-1$，则 $e^{-t}(1,t,t^2/2)$ 仍衰减到 0——多项式因子不改变最终的指数衰减，只改变衰减的细节。
 
 ### 5.3 场景：非正规矩阵的瞬态增长
 
