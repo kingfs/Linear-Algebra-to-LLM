@@ -14,7 +14,7 @@ interface Props {
   wide?: boolean;
 }
 
-const { title, description = "面向大模型学习者的线性代数课程", module, toc = [], source, wide = false } = Astro.props;
+const { title, description = "从线性代数到大模型：一门讲到大模型底层的数学课", module, toc = [], source, wide = false } = Astro.props;
 const rawPath = Astro.url.pathname;
 const path = BASE !== "/" && rawPath.startsWith(BASE)
   ? "/" + rawPath.slice(BASE.length)
@@ -31,7 +31,7 @@ const modules = nav as any[];
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" href={withBase("/favicon.svg")} type="image/svg+xml" />
     <meta name="description" content={description} />
-    <title>{title} · 线性代数 · 大模型基础</title>
+    <title>{title} · 从线性代数到大模型</title>
     <script is:inline>
       try {
         const saved = localStorage.getItem("la-theme");
@@ -46,8 +46,8 @@ const modules = nav as any[];
         <a class="brand" href={withBase("/")}>
           <span class="brand-mark">线</span>
           <span>
-            <span class="brand-title">线性代数 · 大模型基础</span>
-            <span class="brand-sub">Linear Algebra for LLMs</span>
+            <span class="brand-title">从线性代数到大模型</span>
+            <span class="brand-sub">From Linear Algebra to LLMs</span>
           </span>
         </a>
 
@@ -128,7 +128,7 @@ const modules = nav as any[];
         </main>
 
         <footer style="border-top:1px solid var(--line); padding:20px 34px; color:var(--ink-faint); font-size:12px; display:flex; gap:12px; flex-wrap:wrap;">
-          <span>线性代数 · 大模型基础</span>
+          <span>从线性代数到大模型</span>
           <span>·</span>
           <a href={withBase("/pages/PROGRESS/")}>课程进度</a>
           <span>·</span>

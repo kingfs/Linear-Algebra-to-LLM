@@ -36,13 +36,13 @@ jobs:
         working-directory: web
         run: pnpm install --frozen-lockfile
 
-      # 默认按项目页 /LinearAlgebra/ 构建。
+      # 默认按项目页 /linear-algebra-to-llm/ 构建。
       # 如果 GitHub Pages 自定义域名把站点挂在根路径，把仓库变量
       # PAGES_BASE_PATH 设为 /（Settings → Secrets and variables → Actions → Variables）。
       - name: Build
         working-directory: web
         env:
-          BASE_PATH: ${{ vars.PAGES_BASE_PATH || '/LinearAlgebra/' }}
+          BASE_PATH: ${{ vars.PAGES_BASE_PATH || '/linear-algebra-to-llm/' }}
         run: pnpm build
 
       - uses: actions/configure-pages@v5

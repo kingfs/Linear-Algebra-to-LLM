@@ -8,7 +8,7 @@
 
 ## 0. 一分钟速览
 
-- **这是什么**：一套面向「想从底层理解大模型」的学习者的线性代数课程。中文、结构化、由浅入深、概念独立成篇。
+- **这是什么**：**从线性代数到大模型**（仓库 `linear-algebra-to-llm`）——一套面向「想从底层理解大模型」的学习者的课程。中文、结构化、由浅入深、概念独立成篇。
 - **写作第一原则**：**先直觉，再定义，再推导，最后落到大模型**。不写「定义—定理—证明」的冷冰冰教科书。
 - **每个概念一个文件**，放在 `NN-模块名/` 下，文件名 `NN-概念名.md`。
 - **完成的定义**：概念文档通过 `python3 scripts/check.py`，模块 `README.md` 与习题已更新，`PROGRESS.md` 状态已改，然后 **本地 git commit**。
@@ -20,7 +20,7 @@
 ## 1. 项目目标与非目标
 
 ### 目标
-1. 覆盖线性代数**完整概念体系**：向量、空间、矩阵、方程组、行列式、特征值、SVD、二次型、数值稳定性，以及为大模型服务的微积分/概率/优化接口。
+1. 覆盖线性代数**完整概念体系**：向量、空间、矩阵、方程组、行列式、特征值、SVD、二次型、数值稳定性，以及为大模型服务的微积分/概率/优化接口；再一路延伸到大模型专题（Attention、RoPE、KV Cache、LoRA、量化、MoE），后续继续扩充。
 2. 每个概念回答四个问题：
    - 它**直觉上**是什么？（几何图像 / 物理类比 / 数据操作）
    - 它**为什么**被这样定义？（没有它会缺什么）
@@ -298,19 +298,19 @@ python3 scripts/check_links.py
 
 ### 14.6 子路径与 GitHub Pages
 
-- 本地默认 `BASE_PATH=/`；部署到 `https://yongzhen.wang/LinearAlgebra/` 这类子路径时：
+- 本地默认 `BASE_PATH=/`；部署到 `https://yongzhen.wang/linear-algebra-to-llm/` 这类子路径时：
   ```bash
   cd web
-  BASE_PATH=/LinearAlgebra/ pnpm build
-  BASE_PATH=/LinearAlgebra/ pnpm links
+  BASE_PATH=/linear-algebra-to-llm/ pnpm build
+  BASE_PATH=/linear-algebra-to-llm/ pnpm links
   ```
 - Astro 的 `base` 由 `BASE_PATH` 注入；`scripts/prefix-base.mjs` 负责给同步生成的 Markdown 链接加前缀；React 组件统一使用 `src/lib/base.ts` 的 `withBase()`。
-- `.github/workflows/deploy-pages.yml` 只在 `v*` tag 或手动触发时部署，默认 `PAGES_BASE_PATH=/LinearAlgebra/`。
+- `.github/workflows/deploy-pages.yml` 只在 `v*` tag 或手动触发时部署，默认 `PAGES_BASE_PATH=/linear-algebra-to-llm/`。
 - 如果 Pages 自定义域名实际挂在根路径，把仓库变量 `PAGES_BASE_PATH` 改为 `/`。
 - 部署前至少验证：
   ```bash
   cd web
-  BASE_PATH=/LinearAlgebra/ pnpm build
-  BASE_PATH=/LinearAlgebra/ pnpm links
-  BASE_URL=http://127.0.0.1:4322/LinearAlgebra node scripts/e2e.mjs
+  BASE_PATH=/linear-algebra-to-llm/ pnpm build
+  BASE_PATH=/linear-algebra-to-llm/ pnpm links
+  BASE_URL=http://127.0.0.1:4322/linear-algebra-to-llm node scripts/e2e.mjs
   ```

@@ -1,10 +1,10 @@
 # Web 学习平台
 
-这是线性代数课程的 Web 层：阅读、随堂测、知识卡、错题本与学习进度。内容仍然来自仓库根目录的 Markdown，Web 不保存第二份正文。
+这是「从线性代数到大模型」课程的 Web 层：阅读、随堂测、知识卡、错题本与学习进度。内容仍然来自仓库根目录的 Markdown，Web 不保存第二份正文。
 
 ## 技术栈
 
-- **Astro 7**：静态生成 150 个页面，正文默认零 JS。
+- **Astro 7**：静态生成 152 个页面，正文默认零 JS。
 - **React islands**：只有题目、卡片、进度这些交互组件按需 hydrate。
 - **KaTeX + remark-math**：构建时渲染数学公式。
 - **Mermaid**：把 Markdown 里的流程图转成 SVG。
@@ -166,12 +166,12 @@ pnpm build
 
 默认 `BASE_PATH=/`，输出 `web/dist`，直接部署即可。
 
-### 子路径（如 `http://yongzhen.wang/LinearAlgebra`）
+### 子路径（如 `http://yongzhen.wang/linear-algebra-to-llm`）
 
 ```bash
 cd web
-BASE_PATH=/LinearAlgebra/ pnpm build
-BASE_PATH=/LinearAlgebra/ pnpm links
+BASE_PATH=/linear-algebra-to-llm/ pnpm build
+BASE_PATH=/linear-algebra-to-llm/ pnpm links
 ```
 
 - `astro.config.mjs` 会把 `BASE_PATH` 传给 Astro 的 `base`；
@@ -184,11 +184,11 @@ BASE_PATH=/LinearAlgebra/ pnpm links
 仓库带 `.github/workflows/deploy-pages.yml`：
 
 - 只在 push `v*` tag（或手动 `workflow_dispatch`）时构建、部署；
-- 默认 `BASE_PATH=/LinearAlgebra/`；
+- 默认 `BASE_PATH=/linear-algebra-to-llm/`；
 - 如果自定义域名把项目站挂在根路径，在仓库 **Settings → Secrets and variables → Actions → Variables** 添加 `PAGES_BASE_PATH=/`，无需改代码；
 - GitHub Pages 的 Source 选 **GitHub Actions**。
 
-> 注意：GitHub Pages 的自定义域名可能把项目站挂在域名根路径（`https://yongzhen.wang/`），而不是 `/LinearAlgebra/`。若实际访问是根路径，把 `PAGES_BASE_PATH` 改成 `/`；若确实要挂在 `/LinearAlgebra/`，需要由反向代理或托管平台提供该子路径。
+> 注意：GitHub Pages 的自定义域名可能把项目站挂在域名根路径（`https://yongzhen.wang/`），而不是 `/linear-algebra-to-llm/`。若实际访问是根路径，把 `PAGES_BASE_PATH` 改成 `/`；若确实要挂在 `/linear-algebra-to-llm/`，需要由反向代理或托管平台提供该子路径。
 
 ## 已知取舍
 
