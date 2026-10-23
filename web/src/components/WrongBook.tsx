@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import Quiz, { type Question } from "./Quiz";
 import MathText from "../lib/MathText";
 import { idbGetAll, type Attempt } from "../lib/db";
+import { withBase } from "../lib/base";
 
 export default function WrongBook({ questions }: { questions: Question[] }) {
   const [attempts, setAttempts] = useState<Attempt[]>([]);
@@ -31,7 +32,7 @@ export default function WrongBook({ questions }: { questions: Question[] }) {
       <div className="empty" style={{ padding: 28 }}>
         <strong>还没有错题。</strong>
         <p style={{ margin: "8px 0 0" }}>做错的题会自动出现在这里；连续答对后仍会保留，方便回看。</p>
-        <div style={{ marginTop: 14 }}><a className="btn primary" href="/practice/">去练习</a></div>
+        <div style={{ marginTop: 14 }}><a className="btn primary" href={withBase("/practice/")}>去练习</a></div>
       </div>
     );
   }
@@ -56,7 +57,7 @@ export default function WrongBook({ questions }: { questions: Question[] }) {
             <div className="m-id">{question.concept} · 最近答错 {new Date(attempt.at).toLocaleDateString("zh-CN")}</div>
             <div style={{ margin: "6px 0", fontSize: 14.5 }}><MathText text={question.stem} /></div>
             <div className="m-meta" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-              <a className="btn" href={question.sourceRoute || "#"}>回看原文</a>
+              <a className="btn" href={question.sourceRoute ? withBase(question.sourceRoute) : "#"}>回看原文</a>
               <button className="btn ghost" onClick={() => setDeck([question])}>只重做这道</button>
             </div>
           </div>

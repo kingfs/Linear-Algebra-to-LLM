@@ -9,6 +9,8 @@ import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DIST = path.resolve(__dirname, "../dist");
+const rawBase = process.env.BASE_PATH || "/";
+const SITE_BASE = rawBase.endsWith("/") ? rawBase : rawBase + "/";
 if (!fs.existsSync(DIST)) {
   console.error("dist 不存在，先运行 pnpm build");
   process.exit(1);
@@ -40,7 +42,11 @@ for (const [file, doc] of docs) {
   for (const href of doc.hrefs) {
     if (!href || /^(#|https?:|mailto:|tel:|javascript:)/.test(href)) continue;
     const url = new URL(href, `https://site.invalid${base}`);
-    let target = path.join(DIST, decodeURIComponent(url.pathname));
+    let pathname = decodeURIComponent(url.pathname);
+    if (SITE_BASE !== "/" && pathname.startsWith(SITE_BASE)) {
+      pathname = "/" + pathname.slice(SITE_BASE.length);
+    }
+    let target = path.join(DIST, pathname);
     if (url.pathname.endsWith("/") || fs.existsSync(target) && fs.statSync(target).isDirectory()) {
       target = path.join(target, "index.html");
     } else if (!path.extname(target)) {

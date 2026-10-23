@@ -1,0 +1,62 @@
+name: Deploy Web to GitHub Pages
+
+# 只在发布 tag（v*）或手动触发时部署；日常 push 不会动 Pages。
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.28.5
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+
+      - name: Install
+        working-directory: web
+        run: pnpm install --frozen-lockfile
+
+      # 默认按项目页 /LinearAlgebra/ 构建。
+      # 如果 GitHub Pages 自定义域名把站点挂在根路径，把仓库变量
+      # PAGES_BASE_PATH 设为 /（Settings → Secrets and variables → Actions → Variables）。
+      - name: Build
+        working-directory: web
+        env:
+          BASE_PATH: ${{ vars.PAGES_BASE_PATH || '/LinearAlgebra/' }}
+        run: pnpm build
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: web/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

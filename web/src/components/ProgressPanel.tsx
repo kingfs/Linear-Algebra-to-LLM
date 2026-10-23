@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { idbGetAll, type Attempt, type CardState, type Progress } from "../lib/db";
+import { withBase } from "../lib/base";
 
 type Module = { id: string; title: string; route: string; concepts: { id: string; title: string; route: string }[] };
 
@@ -79,7 +80,7 @@ export default function ProgressPanel({
           const q = m.concepts.reduce((s, c) => s + (quizbank[c.id]?.length || 0), 0);
           const pct = Math.round((done / Math.max(1, m.concepts.length)) * 100);
           return (
-            <a className="module-progress" href={m.route} key={m.id} style={{ color: "var(--ink)" }}>
+            <a className="module-progress" href={withBase(m.route)} key={m.id} style={{ color: "var(--ink)" }}>
               <h4>{m.id} · {m.title.replace(/^M\d\d\s*/, "")}</h4>
               <div className="pct">{done} / {m.concepts.length} 篇已读 · {q} 题</div>
               <div className="bar"><i style={{ width: `${pct}%` }} /></div>
@@ -88,15 +89,15 @@ export default function ProgressPanel({
         })}
       </div>
 
-      <div className="section-head"><h2>最近作答</h2><a href="/practice/">去练习 →</a></div>
+      <div className="section-head"><h2>最近作答</h2><a href={withBase("/practice/")}>去练习 →</a></div>
       {recent.length === 0 ? (
-        <div className="empty">还没有答题记录。去<a href="/practice/">练习场</a>做几题，这里会出现正确率与薄弱点。</div>
+        <div className="empty">还没有答题记录。去<a href={withBase("/practice/")}>练习场</a>做几题，这里会出现正确率与薄弱点。</div>
       ) : (
         <div className="grid" style={{ gap: 8 }}>
           {recent.map((a) => (
             <div key={a.id} style={{ display: "flex", gap: 12, alignItems: "center", background: "var(--bg-elev)", border: "1px solid var(--line)", borderRadius: 10, padding: "10px 14px" }}>
               <span className={`badge ${a.correct ? "green" : "amber"}`}>{a.correct ? "✓ 正确" : "✗ 错误"}</span>
-              <a href={conceptTitle.get(a.concept)?.route || "#"} style={{ color: "var(--ink)", fontWeight: 600 }}>
+              <a href={withBase(conceptTitle.get(a.concept)?.route || "#")} style={{ color: "var(--ink)", fontWeight: 600 }}>
                 {a.concept} {conceptTitle.get(a.concept)?.title || ""}
               </a>
               <span style={{ marginLeft: "auto", color: "var(--ink-faint)", fontSize: 12 }}>{new Date(a.at).toLocaleString("zh-CN", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })}</span>
@@ -105,13 +106,13 @@ export default function ProgressPanel({
         </div>
       )}
 
-      <div className="section-head"><h2>薄弱概念</h2><a href="/wrong/">打开错题本 →</a></div>
+      <div className="section-head"><h2>薄弱概念</h2><a href={withBase("/wrong/")}>打开错题本 →</a></div>
       {weak.length === 0 ? (
         <div className="empty">做几道题后，这里会按错误率列出需要回看的概念。</div>
       ) : (
         <div className="grid" style={{ gap: 8 }}>
           {weak.map((w) => (
-            <a key={w.concept} href={conceptTitle.get(w.concept)?.route || "#"} className="module-card" style={{ padding: "12px 14px" }}>
+            <a key={w.concept} href={withBase(conceptTitle.get(w.concept)?.route || "#")} className="module-card" style={{ padding: "12px 14px" }}>
               <div className="m-id">{w.concept} · 错 {w.wrong} / {w.total}</div>
               <h3>{conceptTitle.get(w.concept)?.title || ""}</h3>
               <div className="bar"><i style={{ width: `${Math.round(w.rate * 100)}%`, background: "var(--amber)" }} /></div>

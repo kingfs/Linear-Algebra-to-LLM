@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import MathText from "../lib/MathText";
 import { idbPut, type Attempt } from "../lib/db";
+import { withBase } from "../lib/base";
 
 export type Question = {
   id: string;
@@ -134,8 +135,8 @@ export default function Quiz({
           <p>正确率 {pct}%{pct === 100 ? " · 全部答对，漂亮。" : pct >= 60 ? " · 基础过关，错题值得再看一遍。" : " · 建议回读相关小节，再做一次。"}</p>
           <div className="quiz-actions" style={{ justifyContent: "center" }}>
             <button className="btn primary" onClick={retry}>再做一遍</button>
-            <a className="btn" href={q.sourceRoute || "#"}>回看原文</a>
-            <a className="btn ghost" href="/progress/">看学习进度</a>
+            <a className="btn" href={q.sourceRoute ? withBase(q.sourceRoute) : "#"}>回看原文</a>
+            <a className="btn ghost" href={withBase("/progress/")}>看学习进度</a>
           </div>
         </div>
       </div>
@@ -199,7 +200,7 @@ export default function Quiz({
           <strong>{correct ? "✓ 正确" : "✗ 不对"}</strong>
           {!correct && <> · 正确答案：{answerText(q)}</>}
           <div style={{ marginTop: 6 }}><MathText text={q.explanation} /></div>
-          {q.sourceRoute && <div style={{ marginTop: 8 }}><a href={q.sourceRoute}>回看对应小节 →</a></div>}
+          {q.sourceRoute && <div style={{ marginTop: 8 }}><a href={withBase(q.sourceRoute)}>回看对应小节 →</a></div>}
         </div>
       )}
 
@@ -209,7 +210,7 @@ export default function Quiz({
         ) : (
           <button className="btn primary" onClick={next}>{i + 1 >= questions.length ? "查看结果" : "下一题 →"}</button>
         )}
-        <a className="btn ghost" href={q.sourceRoute || "#"}>没思路？看原文</a>
+        <a className="btn ghost" href={q.sourceRoute ? withBase(q.sourceRoute) : "#"}>没思路？看原文</a>
       </div>
     </div>
   );

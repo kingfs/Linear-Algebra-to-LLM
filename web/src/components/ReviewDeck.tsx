@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import MathText from "../lib/MathText";
 import { idbGetAll, idbPut, type CardState } from "../lib/db";
+import { withBase } from "../lib/base";
 
 type Card = { id: string; concept: string; title: string; route: string; front: string; back: string };
 const DAY = 86_400_000;
@@ -79,8 +80,8 @@ export default function ReviewDeck({ cards }: { cards: Card[] }) {
             {nextDue ? `下一张在 ${nextDue.toLocaleString("zh-CN", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })} 到期。` : "去读几篇概念，或做几道题，新的卡片会从这里长出来。"}
           </p>
           <div style={{ marginTop: 14, display: "flex", gap: 8, flexWrap: "wrap" }}>
-            <a className="btn primary" href="/practice/">去做题</a>
-            <a className="btn" href="/">回首页</a>
+            <a className="btn primary" href={withBase("/practice/")}>去做题</a>
+            <a className="btn" href={withBase("/")}>回首页</a>
           </div>
         </div>
       ) : (
@@ -104,7 +105,7 @@ export default function ReviewDeck({ cards }: { cards: Card[] }) {
             <button className="btn" onClick={() => grade(1)} disabled={!flipped}>困难 <span style={{ color: "var(--ink-faint)", fontWeight: 400 }}>1 天</span></button>
             <button className="btn primary" onClick={() => grade(2)} disabled={!flipped}>良好 <span style={{ opacity: .75, fontWeight: 400 }}>按间隔</span></button>
             <button className="btn" onClick={() => grade(3)} disabled={!flipped}>简单 <span style={{ color: "var(--ink-faint)", fontWeight: 400 }}>跳级</span></button>
-            <a className="btn ghost" href={current.route}>回原文</a>
+            <a className="btn ghost" href={withBase(current.route)}>回原文</a>
           </div>
           <p style={{ color: "var(--ink-faint)", fontSize: 12, marginTop: 10 }}>
             卡片由每篇「一页速记」自动生成；评分只保存在本机 IndexedDB，不上传。

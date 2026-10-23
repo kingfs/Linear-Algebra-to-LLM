@@ -43,7 +43,12 @@ try {
 
   await page.getByRole("button", { name: /查看结果/ }).click();
   await page.waitForSelector(".quiz-result", { timeout: 5000 });
-  ok("quiz reaches result screen and records attempts");
+  const sourceHref = await page.locator(".quiz-result a").first().getAttribute("href");
+  const sourceBase = new URL(BASE).pathname.replace(/\/$/, "");
+  if (!sourceHref || !sourceHref.startsWith(sourceBase + "/learn/")) {
+    throw new Error(`quiz source link is outside base: ${sourceHref}`);
+  }
+  ok("quiz reaches result screen and its source link respects base");
 
   const mark = page.getByRole("button", { name: "标记为已读" });
   if (await mark.count()) {
@@ -59,8 +64,15 @@ try {
   await page.locator("#search-input").fill("点积");
   await page.waitForSelector(".search-item", { timeout: 5000 });
   const first = await page.locator(".search-item").first().getAttribute("href");
-  ok(`search returns result: ${first}`);
-  await page.keyboard.press("Escape");
+  if (!first) throw new Error("search item has no href");
+  await page.locator(".search-item").first().click();
+  await page.waitForURL(/what-is-a-vector/);
+  const pathname = new URL(page.url()).pathname;
+  const basePath = new URL(BASE).pathname.replace(/\/$/, "");
+  if (!pathname.startsWith(basePath + "/learn/")) {
+    throw new Error(`search navigated outside base: ${pathname}`);
+  }
+  ok(`search returns and navigates inside base: ${pathname}`);
 
   await page.goto(`${BASE}/review/`, { waitUntil: "networkidle" });
   await page.waitForSelector(".flashcard", { timeout: 10000 });

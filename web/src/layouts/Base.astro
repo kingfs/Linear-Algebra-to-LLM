@@ -2,6 +2,7 @@
 import "../styles/global.css";
 import "katex/dist/katex.min.css";
 import nav from "../data/nav.json";
+import { BASE, withBase } from "../lib/base";
 
 interface Props {
   title: string;
@@ -14,7 +15,10 @@ interface Props {
 }
 
 const { title, description = "面向大模型学习者的线性代数课程", module, toc = [], source, wide = false } = Astro.props;
-const path = Astro.url.pathname;
+const rawPath = Astro.url.pathname;
+const path = BASE !== "/" && rawPath.startsWith(BASE)
+  ? "/" + rawPath.slice(BASE.length)
+  : rawPath;
 const h2s = toc.filter((h) => h.depth === 2);
 const currentModule = module || (path.match(/^\/(?:learn|modules)\/(m\d\d)/)?.[1]?.toUpperCase() ?? "");
 const modules = nav as any[];
@@ -25,7 +29,7 @@ const modules = nav as any[];
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href={withBase("/favicon.svg")} type="image/svg+xml" />
     <meta name="description" content={description} />
     <title>{title} · 线性代数 · 大模型基础</title>
     <script is:inline>
@@ -39,7 +43,7 @@ const modules = nav as any[];
   <body>
     <div class="shell">
       <aside class="sidebar" id="sidebar">
-        <a class="brand" href="/">
+        <a class="brand" href={withBase("/")}>
           <span class="brand-mark">线</span>
           <span>
             <span class="brand-title">线性代数 · 大模型基础</span>
@@ -48,11 +52,11 @@ const modules = nav as any[];
         </a>
 
         <nav class="side-links">
-          <a class:list={["side-link", { active: path === "/" }]} href="/">⌂ 首页</a>
-          <a class:list={["side-link", { active: path.startsWith("/practice") }]} href="/practice/">✎ 练习场</a>
-          <a class:list={["side-link", { active: path.startsWith("/review") }]} href="/review/">◈ 知识卡</a>
-          <a class:list={["side-link", { active: path.startsWith("/wrong") }]} href="/wrong/">✗ 错题本</a>
-          <a class:list={["side-link", { active: path.startsWith("/progress") }]} href="/progress/">▤ 学习进度</a>
+          <a class:list={["side-link", { active: path === "/" }]} href={withBase("/")}>⌂ 首页</a>
+          <a class:list={["side-link", { active: path.startsWith("/practice") }]} href={withBase("/practice/")}>✎ 练习场</a>
+          <a class:list={["side-link", { active: path.startsWith("/review") }]} href={withBase("/review/")}>◈ 知识卡</a>
+          <a class:list={["side-link", { active: path.startsWith("/wrong") }]} href={withBase("/wrong/")}>✗ 错题本</a>
+          <a class:list={["side-link", { active: path.startsWith("/progress") }]} href={withBase("/progress/")}>▤ 学习进度</a>
         </nav>
 
         <div class="side-label">课程模块</div>
@@ -64,9 +68,9 @@ const modules = nav as any[];
               <span class="caret">▶</span>
             </summary>
             <div class="concept-links">
-              <a class:list={["concept-link", { active: path === m.route }]} href={m.route}>模块导览</a>
+              <a class:list={["concept-link", { active: path === m.route }]} href={withBase(m.route)}>模块导览</a>
               {m.concepts.map((c: any) => (
-                <a class:list={["concept-link", { active: path === c.route }]} href={c.route}>
+                <a class:list={["concept-link", { active: path === c.route }]} href={withBase(c.route)}>
                   {c.id} {c.title.split("：")[0]}
                 </a>
               ))}
@@ -76,10 +80,10 @@ const modules = nav as any[];
 
         <div class="side-label">附录</div>
         <div class="side-links">
-          <a class="side-link" href="/pages/cheatsheets/公式速查/">公式速查</a>
-          <a class="side-link" href="/pages/cheatsheets/术语中英对照/">术语中英对照</a>
-          <a class="side-link" href="/pages/docs/学习地图/">学习地图</a>
-          <a class="side-link" href="/pages/AGENTS/">协作规范</a>
+          <a class="side-link" href={withBase("/pages/cheatsheets/公式速查/")}>公式速查</a>
+          <a class="side-link" href={withBase("/pages/cheatsheets/术语中英对照/")}>术语中英对照</a>
+          <a class="side-link" href={withBase("/pages/docs/学习地图/")}>学习地图</a>
+          <a class="side-link" href={withBase("/pages/AGENTS/")}>协作规范</a>
         </div>
       </aside>
 
@@ -87,8 +91,8 @@ const modules = nav as any[];
         <header class="topbar">
           <button class="icon-btn menu-btn" id="menu-btn" aria-label="打开目录">☰</button>
           <div class="crumb">
-            <a href="/">课程</a>
-            {module && <><span class="sep">/</span><a href={`/modules/${module.toLowerCase()}/`}>{module}</a></>}
+            <a href={withBase("/")}>课程</a>
+            {module && <><span class="sep">/</span><a href={withBase(`/modules/${module.toLowerCase()}/`)}>{module}</a></>}
             {module && <><span class="sep">/</span><span class="now">{title}</span></>}
             {!module && <><span class="sep">/</span><span class="now">{title}</span></>}
           </div>
@@ -126,9 +130,9 @@ const modules = nav as any[];
         <footer style="border-top:1px solid var(--line); padding:20px 34px; color:var(--ink-faint); font-size:12px; display:flex; gap:12px; flex-wrap:wrap;">
           <span>线性代数 · 大模型基础</span>
           <span>·</span>
-          <a href="/pages/PROGRESS/">课程进度</a>
+          <a href={withBase("/pages/PROGRESS/")}>课程进度</a>
           <span>·</span>
-          <a href="/pages/AGENTS/">AGENTS.md</a>
+          <a href={withBase("/pages/AGENTS/")}>AGENTS.md</a>
           <span style="margin-left:auto">本地优先 · 无需登录</span>
         </footer>
       </div>
@@ -147,6 +151,9 @@ const modules = nav as any[];
 
     <script>
       import mermaid from "mermaid";
+
+      const BASE_URL = import.meta.env.BASE_URL || "/";
+      const withBaseUrl = (route: string) => BASE_URL.replace(/\/$/, "") + (route.startsWith("/") ? route : "/" + route);
 
       const menuBtn = document.getElementById("menu-btn");
       menuBtn?.addEventListener("click", () => document.body.classList.toggle("sidebar-open"));
@@ -174,7 +181,7 @@ const modules = nav as any[];
       async function openSearch() {
         if (!dialog) return;
         if (!index.length) {
-          try { index = await fetch("/search.json").then((r) => r.json()); } catch { index = []; }
+          try { index = await fetch(`${BASE_URL}search.json`).then((r) => r.json()); } catch { index = []; }
         }
         dialog.showModal();
         input?.focus();
@@ -213,7 +220,7 @@ const modules = nav as any[];
           return;
         }
         results.innerHTML = filtered
-          .map((d, i) => `<a class="search-item${i === 0 ? " active" : ""}" href="${d.route}">
+          .map((d, i) => `<a class="search-item${i === 0 ? " active" : ""}" href="${withBaseUrl(d.route)}">
             <div class="t">${escapeHtml(d.title)}</div>
             <div class="m">${d.module} · ${escapeHtml((d.tags || []).slice(0, 3).join(" / "))}</div>
           </a>`)
@@ -230,7 +237,7 @@ const modules = nav as any[];
         }
         if (e.key === "Enter") {
           e.preventDefault();
-          location.href = filtered[cursor].route;
+          location.href = withBaseUrl(filtered[cursor].route);
         }
       });
 

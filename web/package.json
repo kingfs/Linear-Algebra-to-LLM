@@ -6,7 +6,7 @@
   "scripts": {
     "sync": "node scripts/sync-content.mjs",
     "dev": "pnpm sync && astro dev",
-    "build": "pnpm sync && astro build",
+    "build": "pnpm sync && astro build && node scripts/prefix-base.mjs",
     "preview": "astro preview",
     "check": "pnpm sync && astro check",
     "quiz": "node scripts/check-quiz.mjs",

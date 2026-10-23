@@ -291,3 +291,22 @@ python3 scripts/check_links.py
 ```
 
 提交时只加源文件：`web/package.json`、`web/pnpm-lock.yaml`、`web/src/**`、`web/scripts/**`、`web/public/favicon.svg`、`web/README.md`、`quizbank/**`、`figures/scripts/**`、`figures/out/**`、`figures/manifest.yaml`。不要提交 `web/node_modules/`、`web/dist/`、`web/src/data/` 等生成物。
+
+### 14.6 子路径与 GitHub Pages
+
+- 本地默认 `BASE_PATH=/`；部署到 `https://yongzhen.wang/LinearAlgebra/` 这类子路径时：
+  ```bash
+  cd web
+  BASE_PATH=/LinearAlgebra/ pnpm build
+  BASE_PATH=/LinearAlgebra/ pnpm links
+  ```
+- Astro 的 `base` 由 `BASE_PATH` 注入；`scripts/prefix-base.mjs` 负责给同步生成的 Markdown 链接加前缀；React 组件统一使用 `src/lib/base.ts` 的 `withBase()`。
+- `.github/workflows/deploy-pages.yml` 只在 `v*` tag 或手动触发时部署，默认 `PAGES_BASE_PATH=/LinearAlgebra/`。
+- 如果 Pages 自定义域名实际挂在根路径，把仓库变量 `PAGES_BASE_PATH` 改为 `/`。
+- 部署前至少验证：
+  ```bash
+  cd web
+  BASE_PATH=/LinearAlgebra/ pnpm build
+  BASE_PATH=/LinearAlgebra/ pnpm links
+  BASE_URL=http://127.0.0.1:4322/LinearAlgebra node scripts/e2e.mjs
+  ```

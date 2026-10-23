@@ -155,11 +155,40 @@ node scripts/e2e.mjs
 
 ## 部署
 
-`web/dist` 是纯静态目录，可以直接放到 Cloudflare Pages、GitHub Pages、Netlify 或任意静态服务器。
+`web/dist` 是纯静态目录，可以直接放到 GitHub Pages、Cloudflare Pages、Netlify 或任意静态服务器。
 
-- 构建命令：`cd web && pnpm build`
-- 输出目录：`web/dist`
-- 如果部署在子路径（如 GitHub Pages 的 `/repo/`），在 `astro.config.mjs` 设置 `base: '/repo/'`，并同步调整站内绝对链接（当前按根路径 `/` 设计）。
+### 根路径（本地、用户主页、自定义域名根）
+
+```bash
+cd web
+pnpm build
+```
+
+默认 `BASE_PATH=/`，输出 `web/dist`，直接部署即可。
+
+### 子路径（如 `http://yongzhen.wang/LinearAlgebra`）
+
+```bash
+cd web
+BASE_PATH=/LinearAlgebra/ pnpm build
+BASE_PATH=/LinearAlgebra/ pnpm links
+```
+
+- `astro.config.mjs` 会把 `BASE_PATH` 传给 Astro 的 `base`；
+- `scripts/prefix-base.mjs` 会给静态 HTML 里的根路径链接加前缀；
+- React island 里的运行时链接通过 `src/lib/base.ts` 的 `withBase()` 加前缀；
+- 搜索请求 `/search.json` 也会跟随 `BASE_URL`。
+
+### GitHub Pages（tag 触发）
+
+仓库带 `.github/workflows/deploy-pages.yml`：
+
+- 只在 push `v*` tag（或手动 `workflow_dispatch`）时构建、部署；
+- 默认 `BASE_PATH=/LinearAlgebra/`；
+- 如果自定义域名把项目站挂在根路径，在仓库 **Settings → Secrets and variables → Actions → Variables** 添加 `PAGES_BASE_PATH=/`，无需改代码；
+- GitHub Pages 的 Source 选 **GitHub Actions**。
+
+> 注意：GitHub Pages 的自定义域名可能把项目站挂在域名根路径（`https://yongzhen.wang/`），而不是 `/LinearAlgebra/`。若实际访问是根路径，把 `PAGES_BASE_PATH` 改成 `/`；若确实要挂在 `/LinearAlgebra/`，需要由反向代理或托管平台提供该子路径。
 
 ## 已知取舍
 
