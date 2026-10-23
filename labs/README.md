@@ -18,7 +18,7 @@ python3 lab01_相似度与投影.py
 
 ```bash
 cd labs
-uv run --with numpy --with matplotlib python lab01_相似度与投影.py
+uv run --with numpy python lab01_相似度与投影.py
 ```
 
 ## 实验清单
@@ -26,16 +26,17 @@ uv run --with numpy --with matplotlib python lab01_相似度与投影.py
 | Lab | 对应章节 | 验证什么 |
 |---|---|---|
 | lab01 相似度与投影 | 1.3–1.6 | 点积/余弦/投影的几何关系 |
-| lab02 基与秩 | 2.3–2.6 | 线性无关、秩、Gram–Schmidt |
+| lab02 基与秩 | 2.3–2.6 | 线性无关、秩、Gram–Schmidt、相似变换 |
 | lab03 矩阵四视角 | 3.1–3.3 | 行视角/列视角/映射视角一致 |
-| lab04 最小二乘 | 4.4 | 正规方程与正交投影 |
-| lab05 行列式 | 5.1–5.2 | 面积缩放与可逆性 |
-| lab06 特征值与幂迭代 | 6.1–6.6 | 特征方向、收敛速度 |
-| lab07 SVD 与低秩 | 7.1–7.3 | 奇异值衰减、低秩近似误差 |
-| lab08 梯度与反向传播 | 8.1–8.5 | 数值梯度校验 |
-| lab09 PCA | 9.3 | 特征分解 = 最大方差方向 |
-| lab10 数值稳定性 | 10.1–10.2 | 条件数放大误差 |
-| lab11 Attention 形状 | 11.3–11.4 | 单头 attention 全流程 |
+| lab04 最小二乘 | 4.4–4.6 | 正规方程、投影残差、条件数 |
+| lab05 行列式 | 5.1–5.4 | 面积/体积缩放、det(AB)、Jacobian |
+| lab06 特征值与幂迭代 | 6.1–6.6 | 特征方向、对角化、收敛速度、PageRank |
+| lab07 SVD 与低秩 | 7.1–7.4 | 奇异值衰减、截断误差、伪逆 |
+| lab08 梯度与反向传播 | 8.1–8.5 | 数值梯度校验、GD、手写反向传播 |
+| lab09 PCA 与马尔可夫 | 9.3–9.5 | 主成分、白化、稳态分布 |
+| lab10 数值误差与 GEMM | 10.1–10.3 | 机器精度、条件数、矩阵乘耗时 |
+| lab11 Transformer 形状链 | 11.1–11.11 | embedding→attention→KV Cache→LoRA→采样 |
+| lab12 einsum 与随机矩阵 | 12.1–12.2 | einsum 等价性、谱范数、MP 律 |
 
 ## 约定
 
