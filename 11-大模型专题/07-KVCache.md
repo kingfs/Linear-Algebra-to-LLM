@@ -84,7 +84,7 @@ $$
 
 （K、V 各一份。）字节数再乘每个元素的字节数。
 
-对 GQA（$H_{kv}$ 组 KV）：
+对 [GQA](#ref-ainslie-2023)（$H_{kv}$ 组 KV）：
 
 $$
 \#\text{elements}=2\times B\times H_{kv}\times T\times d_k
@@ -99,7 +99,7 @@ $$
 
 如果没有缓存，每生成一个 token 都要重算历史 K/V，计算量随 $T^3$ 增长。缓存把「已经算过的」保存下来，把每步 attention 的计算降到 $O(Td_k)$（对单个新 token）。
 
-代价是显存：缓存大小随 $T$ 线性增长，且每层、每个头都要存。于是有了 GQA/MQA（减少 $H_{kv}$）、量化缓存（减少字节数）、滑动窗口/驱逐（减少 $T$）、PagedAttention（减少碎片）等一系列优化。
+代价是显存：缓存大小随 $T$ 线性增长，且每层、每个头都要存。于是有了 GQA/MQA（减少 $H_{kv}$）、量化缓存（减少字节数）、滑动窗口/驱逐（减少 $T$）、[PagedAttention](#ref-kwon-2023)（减少碎片）等一系列优化。
 
 ## 4. 性质与推导
 
@@ -129,6 +129,8 @@ $$
 ### 4.4 带宽瓶颈
 
 Decode 每步要读取整个 KV Cache 才能算 attention。以 2 GiB 缓存、每秒 100 步为例，仅读缓存就需要 $200$ GiB/s 带宽——已接近高端 GPU 的 HBM 带宽上限。因此长上下文推理往往**不是算力不够，而是带宽不够**。
+
+这笔账不是本页的粗略估计：[Pope 等, 2022](#ref-pope-2022) 把推理拆成 prefill 与 decode 两段，分别核算算力、显存与带宽，结论一致——decode 每步只处理一个 token，算术强度低，时间主要花在搬运权重与 KV Cache 上。
 
 ### 4.5 缓存与位置
 
@@ -221,6 +223,14 @@ $$
 - GQA/MQA 减少 $H_{kv}$，直接省缓存。
 - Prefill 计算密集，decode 带宽密集。
 - 缓存用显存换计算，长上下文的核心成本之一。
+
+## 11. 参考文献与致谢
+
+这一页的知识不是凭空来的。下面列出本页直接借用的原始工作与权威整理；正文中的人名、定理名已链接到对应条目。链接优先指向 DOI、arXiv 或可长期访问的原文存档。
+
+- <a id="ref-kwon-2023"></a>**Kwon 等（2023）**：*Efficient Memory Management for Large Language Model Serving with PagedAttention*。PagedAttention 与 vLLM 的原始论文：把 KV Cache 切成固定大小的块、按页表寻址，消除连续分配带来的显存碎片，正是本页 5.3 节描述的问题。[DOI](https://doi.org/10.1145/3600006.3613165)
+- <a id="ref-pope-2022"></a>**Pope 等（2022）**：*Efficiently Scaling Transformer Inference*。把自回归推理拆成 prefill 与 decode 两段，核算算力、显存与带宽，结论与本页 4.4 的估算一致：decode 每步只处理一个 token，瓶颈在搬运权重与 KV Cache 的带宽。[arXiv:2211.05102](https://arxiv.org/abs/2211.05102)
+- <a id="ref-ainslie-2023"></a>**Ainslie 等（2023）**：*GQA: Training Generalized Multi-Query Transformer Models from Multi-Head Checkpoints*。GQA 的原始论文：让多个 query 头共享一组 KV 头，把 $H_{kv}$ 从 $H$ 降下来，直接按比例缩小本页 2.3 的缓存公式。[arXiv:2305.13245](https://arxiv.org/abs/2305.13245)
 
 ---
 

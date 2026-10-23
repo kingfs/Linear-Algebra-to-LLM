@@ -35,7 +35,7 @@ query 和「动物」的 key 点积很大，和「马路」的 key 点积较小�
 - **Key（K）**：我有什么标签？（每个 token 的索引）
 - **Value（V）**：如果你选中我，我给你什么内容？（每个 token 的内容）
 
-硬查表是「找到完全匹配的那一条，取它的 value」；软查表是「给每条打一个相似度分数，按分数加权平均所有 value」。
+硬查表是「找到完全匹配的那一条，取它的 value」；软查表是「给每条打一个相似度分数，按分数加权平均所有 value」。这个机制最早由 [Bahdanau 等](#ref-bahdanau-2014) 用来在神经机器翻译里学「对齐」。
 
 > 💡 **一句话直觉**：**attention = 用点积算「问题与标签的匹配度」，softmax 变成权重，再对 value 加权求和。**
 
@@ -54,6 +54,8 @@ $$
 其中 $W_Q,W_K\in\mathbb{R}^{D\times d_k}$，$W_V\in\mathbb{R}^{D\times d_v}$。常见 $d_k=d_v=D/H$。
 
 ### 2.2 缩放点积注意力
+
+Transformer 中最常见的写法是 [Vaswani 等](#ref-vaswani-2017) 提出的缩放点积注意力：
 
 $$
 \operatorname{Attention}(Q,K,V)
@@ -90,7 +92,7 @@ $$
 
 ## 3. 为什么这样定义
 
-**为什么用点积而不是欧氏距离？** 点积是双线性的，计算可以用一次矩阵乘法完成，GPU 友好；而且它衡量「方向一致 + 强度」，适合做匹配分数。
+**为什么用点积而不是欧氏距离？** 点积是双线性的，计算可以用一次矩阵乘法完成，GPU 友好；而且它衡量「方向一致 + 强度」，适合做匹配分数（[Luong 等](#ref-luong-2015) 系统比较过点积与加性打分）。
 
 **为什么要 Q 和 K 分开？** 同一个 token 作为「提问者」和「被查询者」的角色不同。分开投影让模型可以学「我需要什么」与「我能提供什么」两套表示。
 
@@ -121,7 +123,7 @@ softmax 的定义保证对每个 $i$：$\sum_j A_{ij}=1$。因此输出是 value
 
 ### 4.3 计算复杂度
 
-$QK^\top$ 需要 $O(T^2d_k)$，$AV$ 需要 $O(T^2d_v)$，合计 $O(T^2d)$。这就是长上下文昂贵的根源；FlashAttention 通过分块减少显存，但不改变 $O(T^2)$ 的计算量。
+$QK^\top$ 需要 $O(T^2d_k)$，$AV$ 需要 $O(T^2d_v)$，合计 $O(T^2d)$。这就是长上下文昂贵的根源；[FlashAttention](#ref-dao-2022) 通过分块减少显存，但不改变 $O(T^2)$ 的计算量。
 
 ### 4.4 排列等变性（无位置编码时）
 
@@ -245,6 +247,15 @@ print(A.shape, A.sum(axis=-1)[0, 0])  # (2,2,5,5) [1. 1. 1. 1. 1.]
 - 缩放为了控制点积方差；mask 在 softmax 前加 $-\infty$。
 - 复杂度 $O(T^2d)$；因果 attention 权重下三角、行和为 1。
 - 参数量约 $4D^2$/层。
+
+## 11. 参考文献与致谢
+
+这一页的知识不是凭空来的。下面列出本页直接借用的原始工作与权威整理；正文中的人名、方法名已链接到对应条目。链接优先指向 DOI、arXiv 或可长期访问的原文存档。
+
+- <a id="ref-vaswani-2017"></a>**Vaswani 等（2017）**：*Attention Is All You Need*。本页的核心公式 $\operatorname{softmax}(QK^\top/\sqrt{d_k})V$、多头拼接与因果 mask 都出自这里；「除以 $\sqrt{d_k}$ 是为了控制点积方差」也是它给出的理由。[arXiv:1706.03762](https://arxiv.org/abs/1706.03762)
+- <a id="ref-bahdanau-2014"></a>**Bahdanau 等（2014）**：*Neural Machine Translation by Jointly Learning to Align and Translate*。让解码器对源句每个位置学一个权重再加权取信息，attention 作为「可微软对齐」从这一步开始；本页的软查表直觉就是它。[arXiv:1409.0473](https://arxiv.org/abs/1409.0473)
+- <a id="ref-luong-2015"></a>**Luong 等（2015）**：*Effective Approaches to Attention-based Neural Machine Translation*。系统比较乘性（点积）与加性两种打分函数，说明 $QK^\top$ 这种写法既便宜又够用——本页第 3 节「为什么用点积」的依据。[arXiv:1508.04025](https://arxiv.org/abs/1508.04025)
+- <a id="ref-dao-2022"></a>**Dao 等（2022）**：*FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness*。用分块与在线 softmax 避免把 $[T,T]$ 分数矩阵写回显存，显存从 $O(T^2)$ 降到 $O(T)$ 而计算量不变，对应本页第 4.3 节。[arXiv:2205.14135](https://arxiv.org/abs/2205.14135)
 
 ---
 

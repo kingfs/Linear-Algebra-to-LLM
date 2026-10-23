@@ -14,7 +14,7 @@ llm_hooks: [pre-norm, rmsnorm, training-stability]
 
 > **本节位置**：模块 11 · 大模型专题 ｜ **前置**：[1.4](../01-向量与几何/04-范数与距离.md) ｜ **预计**：30 分钟
 >
-> **一句话**：归一化层把每个 token 的向量「摆正」到受控的尺度上，让深层网络不被数值漂移拖垮；LayerNorm 去均值再缩放，RMSNorm 只缩放。
+> **一句话**：归一化层把每个 token 的向量「摆正」到受控的尺度上，让深层网络不被数值漂移拖垮；[LayerNorm](#ref-ba-2016) 去均值再缩放，[RMSNorm](#ref-zhang-2019) 只缩放。
 
 ## 0. 场景引入
 
@@ -78,7 +78,7 @@ $$
 ### 2.3 Pre-Norm 与 Post-Norm
 
 - **Post-Norm**（原始 Transformer）：$\mathbf{h}\leftarrow\operatorname{LN}(\mathbf{h}+\operatorname{Sublayer}(\mathbf{h}))$；
-- **Pre-Norm**（现代大模型常用）：$\mathbf{h}\leftarrow\mathbf{h}+\operatorname{Sublayer}(\operatorname{LN}(\mathbf{h}))$。
+- **Pre-Norm**（现代大模型常用；[Xiong 等, 2020](#ref-xiong-2020) 分析了它与 Post-Norm 的梯度差异）：$\mathbf{h}\leftarrow\mathbf{h}+\operatorname{Sublayer}(\operatorname{LN}(\mathbf{h}))$。
 
 Pre-Norm 让残差路径保持恒等，梯度更易直传，深层训练更稳。
 
@@ -232,6 +232,14 @@ def rms_norm(x, gamma, eps=1e-6):
 - 都是逐 token、逐样本，不跨 batch。
 - Pre-Norm 保残差恒等路径，深层更稳。
 - 归一化是低 FLOPs、高带宽的操作。
+
+## 11. 参考文献与致谢
+
+这一页的知识不是凭空来的。下面列出本页直接借用的原始工作与权威整理；正文中的人名、定理名已链接到对应条目。链接优先指向 DOI、arXiv 或可长期访问的原文存档。
+
+- <a id="ref-ba-2016"></a>**Ba 等（2016）**：*Layer Normalization*。LayerNorm 的原始论文：对单个样本的特征维计算均值与方差，再做仿射变换；本页 2.1 的公式与「逐 token、不跨 batch」都来自这里。[arXiv:1607.06450](https://arxiv.org/abs/1607.06450)
+- <a id="ref-zhang-2019"></a>**Zhang & Sennrich（2019）**：*Root Mean Square Layer Normalization*。RMSNorm 的原始论文：去掉减均值与偏置，只除以均方根，并在多项任务上取得相当或更好的效果——本页 1.2 的「只调音量」说的就是它的几何含义。[arXiv:1910.07467](https://arxiv.org/abs/1910.07467)
+- <a id="ref-xiong-2020"></a>**Xiong 等（2020）**：*On Layer Normalization in the Transformer Architecture*。分析 Pre-Norm 与 Post-Norm 的梯度尺度，说明 Pre-Norm 在初始化附近梯度更稳定，解释了本页 2.3 为何现代大模型偏爱 Pre-Norm。[arXiv:2002.04745](https://arxiv.org/abs/2002.04745)
 
 ---
 

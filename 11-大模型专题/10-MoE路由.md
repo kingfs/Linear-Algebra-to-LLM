@@ -23,7 +23,7 @@ llm_hooks: [mixture-of-experts, top-k, load-balancing]
 MoE 换了个思路：准备 8 个专家（每个都是独立的 FFN），但每个 token 只选 2 个。
 总参数是 8 份，计算量却只有 2 份——**用稀疏性换容量**。
 
-Mixtral 8×7B 就是这类结构：总参数约 47B，但每 token 激活约 13B。
+[Mixtral 8×7B](#ref-jiang-2024) 就是这类结构：总参数约 47B，但每 token 激活约 13B。
 
 **问题**：路由器怎么选？梯度怎么传？为什么会出现「所有 token 都挤向同一个专家」？
 
@@ -82,13 +82,13 @@ $$
 \mathcal{L}_{\text{balance}}=\alpha\cdot E\cdot\sum_{i=1}^{E}f_i p_i
 $$
 
-其中 $f_i$ 是分到专家 $i$ 的 token 比例，$p_i$ 是路由器给专家 $i$ 的平均概率。它鼓励两者都接近 $1/E$。
+其中 $f_i$ 是分到专家 $i$ 的 token 比例，$p_i$ 是路由器给专家 $i$ 的平均概率。它鼓励两者都接近 $1/E$；这个辅助损失由 [Shazeer 等](#ref-shazeer-2017) 提出。
 
 ## 3. 为什么这样定义
 
 **为什么不直接用一个大 FFN？** 参数量与计算量绑定。MoE 解耦二者：总参数随 $E$ 增长，单 token 计算只随 $k$ 增长。
 
-**为什么用 top-k 而不是软加权所有专家？** 软加权仍要算所有专家，失去稀疏性。top-k 是「条件计算」：只算被选中的。
+**为什么用 top-k 而不是软加权所有专家？** 软加权仍要算所有专家，失去稀疏性。top-k 是「条件计算」：只算被选中的。[Switch Transformer](#ref-fedus-2021) 更极端，直接取 $k=1$，仍然能扩展到万亿参数。
 
 **为什么需要负载均衡？** 若路由器把所有 token 都送给同一个专家，其它专家得不到训练，有效容量退化为 1 个专家；并行设备也会闲置。
 
@@ -113,7 +113,7 @@ top-k 的**选择**不可微，但被选中专家的**门控权重** $g_i$ 可�
 
 ### 4.4 专家并行
 
-不同专家放在不同 GPU 上；token 需要被发送到对应设备（all-to-all 通信）。通信开销可能成为瓶颈，尤其在 batch 小、专家多时。
+不同专家放在不同 GPU 上；token 需要被发送到对应设备（all-to-all 通信）。这套专家并行方案在 [GShard](#ref-lepikhin-2020) 中被系统化，通信开销可能成为瓶颈，尤其在 batch 小、专家多时。
 
 ### 4.5 与集成的区别
 
@@ -207,6 +207,15 @@ $E=8$：总专家参数 $1.074\times10^9$；top-2 每 token 激活 $2.68\times10
 - 负载均衡损失防止路由坍缩。
 - 显存按总参数算，计算按激活参数算。
 - 专家并行有 all-to-all 通信成本。
+
+## 11. 参考文献与致谢
+
+这一页的知识不是凭空来的。下面列出本页直接借用的原始工作与权威整理；正文中的人名、定理名已链接到对应条目。链接优先指向 DOI、arXiv 或可长期访问的原文存档。
+
+- <a id="ref-shazeer-2017"></a>**Shazeer 等（2017）**：*Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer*。稀疏门控 MoE 的原始论文：top-k 门控 $\mathbf{r}=W_r\mathbf{x}$ 与容量约束、负载均衡都从这里开始，本页第 2 节是它的简化版。[arXiv:1701.06538](https://arxiv.org/abs/1701.06538)
+- <a id="ref-fedus-2021"></a>**Fedus 等（2021）**：*Switch Transformers: Scaling to Trillion Parameter Models with Simple and Efficient Sparsity*。把路由推到 top-1 并用辅助负载均衡损失稳定万亿参数训练，说明 $k=1$ 也能扩展，是本页 top-k 讨论的极端对照。[arXiv:2101.03961](https://arxiv.org/abs/2101.03961)
+- <a id="ref-lepikhin-2020"></a>**Lepikhin 等（2020）**：*GShard: Scaling Giant Models with Conditional Computation and Automatic Sharding*。top-2 门控、容量因子与专家并行的工程实现，本页 §4.4 的 all-to-all 通信和 §2.3 的容量丢弃都来自这套方案。[arXiv:2006.16668](https://arxiv.org/abs/2006.16668)
+- <a id="ref-jiang-2024"></a>**Jiang 等（2024）**：*Mixtral of Experts*。8 个专家、每 token 选 2 个的稀疏 MoE 模型，总参数约 47B、激活约 13B，本页 §0 与 §5.3 的数字就是它。[arXiv:2401.04088](https://arxiv.org/abs/2401.04088)
 
 ---
 

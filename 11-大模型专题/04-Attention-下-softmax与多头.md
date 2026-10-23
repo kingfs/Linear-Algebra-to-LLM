@@ -24,7 +24,7 @@ llm_hooks: [multi-head, gqa, flash-attention]
 - 语义层：哪个名词短语是动物？
 - 位置层：前一个/后一个词是谁？
 
-一个注意力头很难同时做好所有事。多头注意力的想法是：**开 $H$ 个并行的「频道」，每个频道学一种关系，最后拼接。**
+一个注意力头很难同时做好所有事。[多头注意力](#ref-vaswani-2017) 的想法是：**开 $H$ 个并行的「频道」，每个频道学一种关系，最后拼接。**
 
 **问题**：softmax 具体怎么算？为什么多头比单头大 $H$ 倍参数？MQA/GQA 又改了什么？
 
@@ -48,7 +48,7 @@ llm_hooks: [multi-head, gqa, flash-attention]
 
 ### 2.1 softmax（按行）
 
-对向量 $\mathbf{z}\in\mathbb{R}^{n}$：
+对向量 $\mathbf{z}\in\mathbb{R}^{n}$，[softmax](#ref-bridle-1990) 定义为：
 
 $$
 \operatorname{softmax}(\mathbf{z})_i=\frac{e^{z_i}}{\sum_{j=1}^{n}e^{z_j}}
@@ -95,8 +95,8 @@ $W_O\in\mathbb{R}^{D\times D}$。
 ### 2.4 MHA / MQA / GQA
 
 - **MHA**：每个头有独立的 K、V；$H_{kv}=H$。
-- **MQA**：所有头共享一组 K、V；$H_{kv}=1$。
-- **GQA**：每 $g$ 个 query 头共享一组 K、V；$1<H_{kv}<H$。
+- **MQA**（[Shazeer](#ref-shazeer-2019)）：所有头共享一组 K、V；$H_{kv}=1$。
+- **GQA**（[Ainslie 等](#ref-ainslie-2023)）：每 $g$ 个 query 头共享一组 K、V；$1<H_{kv}<H$。
 
 KV 参数量与缓存随 $H_{kv}$ 线性下降。
 
@@ -240,6 +240,15 @@ out = (a @ v).transpose(1, 2).reshape(B, T, D) @ Wo
 - 参数量仍是 $4D^2$；计算量 $O(T^2D)$。
 - MQA/GQA 减少 KV 头数，省显存。
 - 因果 mask 在 softmax 前加 $-\infty$。
+
+## 11. 参考文献与致谢
+
+这一页的知识不是凭空来的。下面列出本页直接借用的原始工作与权威整理；正文中的人名、方法名已链接到对应条目。链接优先指向 DOI、arXiv 或可长期访问的原文存档。
+
+- <a id="ref-vaswani-2017"></a>**Vaswani 等（2017）**：*Attention Is All You Need*。多头注意力「拆成 $H$ 个 $d_k=D/H$ 子空间、拼接后再乘 $W_O$」的结构与 $4D^2$ 参数账都出自这里，对应本页第 2.2 与 4.3 节。[arXiv:1706.03762](https://arxiv.org/abs/1706.03762)
+- <a id="ref-bridle-1990"></a>**Bridle（1990）**：*Probabilistic Interpretation of Feedforward Classification Network Outputs, with Relationships to Statistical Pattern Recognition*。把前馈网络的输出经指数归一化解释成概率分布，softmax 这个名字与它的最大似然含义由此而来；本页的按行归一化、和为 1 就是它的直接应用。[DOI:10.1007/978-3-642-76153-9_28](https://doi.org/10.1007/978-3-642-76153-9_28)
+- <a id="ref-ainslie-2023"></a>**Ainslie 等（2023）**：*GQA: Training Generalized Multi-Query Transformer Models from Multi-Head Checkpoints*。让多个 query 头共享一组 K、V，并给出从 MHA 检查点「升级」到 GQA 的做法；本页第 2.4 与 5.3 节的 $H_{kv}$ 记法、KV Cache 按比例缩小都来自它。[arXiv:2305.13245](https://arxiv.org/abs/2305.13245)
+- <a id="ref-shazeer-2019"></a>**Shazeer（2019）**：*Fast Transformer Decoding: One Write-Head is All You Need*。MQA：解码时所有 query 头共用一份 K、V，把 KV Cache 压到 $1/H$，是本页 MQA/GQA 讨论的起点。[arXiv:1911.02150](https://arxiv.org/abs/1911.02150)
 
 ---
 

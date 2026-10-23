@@ -50,7 +50,7 @@ $$
 \text{文本}\ \xrightarrow{\text{tokenizer}}\ (t_1,\dots,t_T),\qquad t_i\in\{0,\dots,V-1\}
 $$
 
-$V$ 是词表大小。token 不一定是词，可能是子词、字符或字节。
+$V$ 是词表大小。token 不一定是词，可能是子词、字符或字节（最常见的子词切分是 [BPE](#ref-sennrich-2016)）。
 
 ### 2.2 Embedding 表
 
@@ -94,7 +94,7 @@ $$
 
 ## 3. 为什么这样定义
 
-离散符号无法直接做加减、求导。embedding 把符号映射到连续空间，带来三个好处：
+离散符号无法直接做加减、求导。[word2vec](#ref-mikolov-2013) 之后的标准做法，是用一张可学习的 embedding 表把符号映射到连续空间，带来三个好处：
 
 1. **可学习**：向量随梯度更新，模型自己决定「猫」应该靠近「狗」还是「汽车」；
 2. **可组合**：向量能相加、投影、算相似度；
@@ -120,7 +120,7 @@ $$
 \text{logits}=H W_{\text{vocab}},\qquad W_{\text{vocab}}\in\mathbb{R}^{D\times V}
 $$
 
-若令 $W_{\text{vocab}}=E^\top$，则输入 embedding 与输出 unembedding 共享参数，省下 $V\times D$ 参数。很多语言模型这样做。
+若令 $W_{\text{vocab}}=E^\top$，则输入 embedding 与输出 unembedding 共享参数（[weight tying](#ref-press-wolf-2017)），省下 $V\times D$ 参数。很多语言模型这样做。
 
 ### 4.3 位置信息
 
@@ -253,6 +253,14 @@ print(np.allclose(X[0, 0], E[1]))  # True
 - 初始 embedding 与上下文无关；隐藏状态与上下文相关。
 - 位置编码在 embedding 之后加入。
 - 输出层可绑定 $E^\top$，省 $VD$ 参数。
+
+## 11. 参考文献与致谢
+
+这一页的知识不是凭空来的。下面列出本页直接借用的原始工作与权威整理；正文中的人名、方法名已链接到对应条目。链接优先指向 DOI、arXiv 或可长期访问的原文存档。
+
+- <a id="ref-mikolov-2013"></a>**Mikolov 等（2013）**：*Efficient Estimation of Word Representations in Vector Space*。用 word2vec 把词训练成稠密向量，让「语义相近 = 方向相近」第一次成为可学习的查表；本页的 $E\in\mathbb{R}^{V\times D}$ 与「向量可做相似度、可微」都建立在这个做法上。[arXiv:1301.3781](https://arxiv.org/abs/1301.3781)
+- <a id="ref-sennrich-2016"></a>**Sennrich 等（2016）**：*Neural Machine Translation of Rare Words with Subword Units*。把 BPE 用于子词切分，罕见词被拆成可复用的片段，词表 $V$ 因此可以固定下来——这就是本页「token 不一定是词」的出处。[arXiv:1508.07909](https://arxiv.org/abs/1508.07909)
+- <a id="ref-press-wolf-2017"></a>**Press 与 Wolf（2017）**：*Using the Output Embedding to Improve Language Models*。weight tying：让输出层的 unembedding 直接复用输入 embedding 的转置，省下 $V\times D$ 参数并改善小数据下的训练，对应本页第 4.2 节。[arXiv:1608.05859](https://arxiv.org/abs/1608.05859)
 
 ---
 
