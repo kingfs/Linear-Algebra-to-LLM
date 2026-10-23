@@ -1,10 +1,10 @@
 # 动手实验（Labs）
 
-> 数学不是看会的，是算会、跑会的。每个 lab 用 30–60 行 NumPy 验证一个核心直觉，并附「你应该看到什么」。
+> 数学不是看会的，是算会、跑会的。每个 lab 用 100–230 行 NumPy 验证一个核心直觉，并附「你应该看到什么」。
 
 ## 环境
 
-需要 Python 3.10+ 与 NumPy（可选 Matplotlib 画图）。
+需要 Python 3.10+ 与 NumPy；`requirements.txt` 中的 Matplotlib 仅用于可选画图，所有 lab 都能纯文本运行。
 
 ```bash
 cd labs
