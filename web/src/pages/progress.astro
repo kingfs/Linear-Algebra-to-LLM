@@ -1,0 +1,16 @@
+---
+import Base from "../layouts/Base.astro";
+import ProgressPanel from "../components/ProgressPanel";
+import nav from "../data/nav.json";
+import quizbank from "../data/quizbank.json";
+import stats from "../data/stats.json";
+---
+
+<Base title="学习进度" wide={true}>
+  <div class="hero" style="padding-top:10px">
+    <div class="eyebrow">Local first</div>
+    <h1 style="font-size:clamp(30px,4vw,44px);margin-bottom:10px">学习进度</h1>
+    <p class="lead">阅读、答题、卡片排期都保存在本机 IndexedDB；无需登录，也不会上传。换设备时可用「导出学习数据」备份。</p>
+  </div>
+  <ProgressPanel client:load modules={nav as any} quizbank={quizbank as any} totalConcepts={stats.concepts} />
+</Base>

@@ -1,0 +1,327 @@
+module: M01
+questions:
+  # ---------------- 1.1 向量是什么 ----------------
+  - id: q-1.1-001
+    concept: "1.1"
+    section: 2
+    type: single_choice
+    difficulty: 1
+    stem: "关于向量 $(1,2)$ 与 $(2,1)$，下列说法正确的是？"
+    options:
+      - "它们是同一个向量，只是写法不同"
+      - "它们分量顺序不同，是两个不同的向量，但长度相同"
+      - "它们方向相同，只是长度不同"
+      - "它们互相正交"
+    answer: [1]
+    explanation: "向量是有序组，分量顺序是定义的一部分；两者长度都为 $\\sqrt{5}$，但方向不同。点积 $1\\times2+2\\times1=4\\neq0$，所以也不正交。"
+    source: "01-向量与几何/01-向量是什么.md#2-定义"
+    tags: [向量, 有序组, 定义]
+
+  - id: q-1.1-002
+    concept: "1.1"
+    section: 8
+    type: numeric
+    difficulty: 2
+    stem: "词表大小 $V=50257$、隐藏维度 $D=768$ 的 embedding 表，参数量约为多少（单位：百万）？保留一位小数。"
+    answer: 38.6
+    tolerance: 0.1
+    unit: "百万"
+    explanation: "$V\\times D=50257\\times768=38597376$，约为 3860 万，即 38.6 百万。embedding 表就是 $V$ 行、每行一个 $D$ 维向量。"
+    source: "01-向量与几何/01-向量是什么.md#8-通往大模型embedding-就是查一行"
+    tags: [embedding, 参数量, 大模型]
+
+  - id: q-1.1-003
+    concept: "1.1"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: "高维向量画不成箭头，所以点积、夹角、投影这些几何概念在 4096 维空间里不再有意义。"
+    answer: false
+    explanation: "箭头只是 3 维以内的可视化手段；点积、范数、夹角和投影在任意维都有定义，正交、相似等几何直觉仍然成立。"
+    source: "01-向量与几何/01-向量是什么.md#6-常见误区"
+    tags: [高维, 几何直觉, 误区]
+
+  # ---------------- 1.2 加法、数乘与线性组合 ----------------
+  - id: q-1.2-001
+    concept: "1.2"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: "$\\mathbf{v}_1=(2,-1,3)$，$\\mathbf{v}_2=(0,4,1)$，则 $3\\mathbf{v}_1-2\\mathbf{v}_2$ 的第二个分量是多少？"
+    answer: -11
+    tolerance: 0.001
+    explanation: "$3\\mathbf{v}_1=(6,-3,9)$，$2\\mathbf{v}_2=(0,8,2)$，相减得 $(6,-11,7)$，第二个分量为 $-11$。"
+    source: "01-向量与几何/02-加法数乘与线性组合.md#5-例子"
+    tags: [线性组合, 手算]
+
+  - id: q-1.2-002
+    concept: "1.2"
+    section: 5
+    type: single_choice
+    difficulty: 2
+    stem: "$\\operatorname{span}\\{(1,2),(2,4)\\}$ 是？"
+    options:
+      - "整个 $\\mathbb{R}^2$"
+      - "一条过原点的直线"
+      - "只包含 $(1,2)$ 和 $(2,4)$ 两个向量"
+      - "只包含零向量"
+    answer: [1]
+    explanation: "因为 $(2,4)=2(1,2)$，两者共线，所有线性组合都落在 $\\operatorname{span}\\{(1,2)\\}$ 这条直线上。span 包含无穷多个向量，不只是原来那两个。"
+    source: "01-向量与几何/02-加法数乘与线性组合.md#5-例子"
+    tags: [张成, 线性相关, 手算]
+
+  - id: q-1.2-003
+    concept: "1.2"
+    section: 6
+    type: true_false
+    difficulty: 2
+    stem: "既然 embedding 近似满足「国王 − 男人 + 女人 ≈ 女王」，就可以把向量加法当成可靠的语义推理规则。"
+    answer: false
+    explanation: "这只是训练数据带来的近似几何现象，并非严格代数规律；不同模型、不同词上的偏差可能很大，不能当作可靠推理规则。"
+    source: "01-向量与几何/02-加法数乘与线性组合.md#6-常见误区"
+    tags: [embedding, 语义运算, 误区]
+
+  # ---------------- 1.3 点积 ----------------
+  - id: q-1.3-001
+    concept: "1.3"
+    section: 5
+    type: numeric
+    difficulty: 1
+    stem: "向量 $\\mathbf{x}=(1,2)$ 与 $\\mathbf{y}=(3,4)$ 的点积 $\\mathbf{x}^\\top\\mathbf{y}$ 是多少？"
+    answer: 11
+    tolerance: 0.001
+    explanation: "$1\\times3+2\\times4=3+8=11$。点积是逐项相乘再求和。"
+    source: "01-向量与几何/03-点积.md#5-例子"
+    tags: [点积, 手算]
+
+  - id: q-1.3-002
+    concept: "1.3"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: "对两个非零向量，点积为 0 说明它们互相垂直。"
+    answer: true
+    explanation: "在欧氏空间中，$\\mathbf{x}^\\top\\mathbf{y}=\\|\\mathbf{x}\\|\\|\\mathbf{y}\\|\\cos\\theta$；非零向量点积为 0 意味着 $\\cos\\theta=0$，即 $\\theta=90^\\circ$。"
+    source: "01-向量与几何/03-点积.md#6-常见误区"
+    tags: [正交, 点积]
+
+  - id: q-1.3-003
+    concept: "1.3"
+    section: 8
+    type: single_choice
+    difficulty: 2
+    stem: "attention 打分 $QK^\\top$ 要除以 $\\sqrt{d_k}$，主要目的是？"
+    options:
+      - "把点积改造成余弦相似度"
+      - "减少注意力层的参数量"
+      - "把点积的方差拉回 1 左右，避免 softmax 饱和"
+      - "让所有 key 的范数都变成 1"
+    answer: [2]
+    explanation: "若 $q_i,k_i$ 各分量独立、方差为 1，则 $d_k$ 维点积的方差为 $d_k$；除以 $\\sqrt{d_k}$ 把标准差归一到 1。否则分数波动过大，softmax 输出接近 one-hot、梯度很小。"
+    source: "01-向量与几何/03-点积.md#8-通往大模型为什么-attention-要除以-sqrtd_k"
+    tags: [attention, 缩放点积, 大模型]
+
+  # ---------------- 1.4 范数与距离 ----------------
+  - id: q-1.4-001
+    concept: "1.4"
+    section: 5
+    type: numeric
+    difficulty: 1
+    stem: "向量 $(3,4)$ 的 L2 范数 $\\|\\mathbf{x}\\|_2$ 是多少？"
+    answer: 5
+    tolerance: 0.001
+    explanation: "$\\sqrt{3^2+4^2}=\\sqrt{25}=5$。"
+    source: "01-向量与几何/04-范数与距离.md#5-例子"
+    tags: [范数, 手算]
+
+  - id: q-1.4-002
+    concept: "1.4"
+    section: 5
+    type: numeric
+    difficulty: 1
+    stem: "向量 $\\mathbf{x}=(3,-4)$ 的 L1 范数 $\\|\\mathbf{x}\\|_1$ 是多少？"
+    answer: 7
+    tolerance: 0.001
+    explanation: "$\\|\\mathbf{x}\\|_1=|3|+|-4|=3+4=7$。同一向量的 L2 范数是 5，两种范数给出的「长度」不同。"
+    source: "01-向量与几何/04-范数与距离.md#5-例子"
+    tags: [L1范数, 手算]
+
+  - id: q-1.4-003
+    concept: "1.4"
+    section: 8
+    type: single_choice
+    difficulty: 2
+    stem: "梯度裁剪通常把整个梯度向量按全局 L2 范数等比缩放，而不是逐元素截断，主要原因是？"
+    options:
+      - "等比缩放的计算量更小"
+      - "逐元素截断会让梯度变成稀疏向量"
+      - "等比缩放会让梯度方向发生旋转"
+      - "等比缩放保持梯度方向，只改变步长"
+    answer: [3]
+    explanation: "全局缩放只乘一个标量 $c=\\min(1,\\text{max_norm}/\\|\\mathbf{g}\\|)$，方向不变；逐元素截断会改变各分量比例，也就改变了更新方向。"
+    source: "01-向量与几何/04-范数与距离.md#8-通往大模型三个高频出现的地方"
+    tags: [梯度裁剪, 范数, 大模型]
+
+  - id: q-1.4-004
+    concept: "1.4"
+    section: 6
+    type: true_false
+    difficulty: 2
+    stem: "矩阵的 Frobenius 范数可以衡量该矩阵把任意向量最多放大多少倍。"
+    answer: false
+    explanation: "Frobenius 范数把所有元素平方求和再开方，衡量的是元素层面的整体大小；最大放大倍数要用谱范数 $\\|A\\|_2=\\sigma_{\\max}(A)$。"
+    source: "01-向量与几何/04-范数与距离.md#6-常见误区"
+    tags: [Frobenius范数, 谱范数, 误区]
+
+  # ---------------- 1.5 余弦相似度 ----------------
+  - id: q-1.5-001
+    concept: "1.5"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: "向量 $(1,0)$ 与 $(1,1)$ 的余弦相似度是多少？保留三位小数。"
+    answer: 0.707
+    tolerance: 0.01
+    explanation: "点积为 1，两个范数分别为 1 和 $\\sqrt{2}$，所以 $\\cos\\theta=1/\\sqrt{2}\\approx0.707$。"
+    source: "01-向量与几何/05-余弦相似度.md#5-例子"
+    tags: [余弦相似度, 手算]
+
+  - id: q-1.5-002
+    concept: "1.5"
+    section: 3
+    type: single_choice
+    difficulty: 1
+    stem: "为什么比较向量方向时更常用余弦相似度，而不是点积？"
+    options:
+      - "余弦相似度只保留夹角信息，消除了向量长度的影响"
+      - "余弦相似度计算更快"
+      - "点积只能用于二维向量"
+      - "余弦相似度总是正数"
+    answer: [0]
+    explanation: "点积同时受长度和夹角影响；余弦把两个范数除掉，只留下 $\\cos\\theta$。计算并不更快，也不限制维度。"
+    source: "01-向量与几何/05-余弦相似度.md#3-为什么这样定义"
+    tags: [余弦相似度, 点积]
+
+  - id: q-1.5-003
+    concept: "1.5"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: "两个 embedding 的余弦相似度为 0.95，就可以断定它们语义相同。"
+    answer: false
+    explanation: "余弦只说明在该 embedding 模型的几何里方向接近，分数还可能受模型、领域和整体分数基线影响；要判断语义是否相同还需看具体语境与反例。"
+    source: "01-向量与几何/05-余弦相似度.md#6-常见误区"
+    tags: [余弦相似度, 语义检索, 误区]
+
+  - id: q-1.5-004
+    concept: "1.5"
+    section: 4
+    type: numeric
+    difficulty: 2
+    stem: "两个单位向量的夹角余弦为 0.6，它们之间的欧氏距离是多少？保留三位小数。"
+    answer: 0.894
+    tolerance: 0.01
+    explanation: "对单位向量，$\\|\\hat{\\mathbf{x}}-\\hat{\\mathbf{y}}\\|^2=2-2\\cos\\theta=2-1.2=0.8$，所以距离为 $\\sqrt{0.8}\\approx0.894$。"
+    source: "01-向量与几何/05-余弦相似度.md#4-性质与推导"
+    tags: [余弦相似度, 欧氏距离, 手算]
+
+  # ---------------- 1.6 正交与投影 ----------------
+  - id: q-1.6-001
+    concept: "1.6"
+    section: 4
+    type: single_choice
+    difficulty: 2
+    stem: "把向量 $\\mathbf{x}$ 投影到单位向量 $\\mathbf{u}$ 所在方向，投影向量是？"
+    options:
+      - "$(\\mathbf{u}^\\top\\mathbf{x})\\,\\mathbf{u}$"
+      - "$(\\mathbf{x}^\\top\\mathbf{x})\\,\\mathbf{u}$"
+      - "$\\mathbf{x}-(\\mathbf{u}^\\top\\mathbf{x})\\,\\mathbf{u}$"
+      - "$\\mathbf{u}+\\mathbf{x}$"
+    answer: [0]
+    explanation: "投影长度是 $\\mathbf{u}^\\top\\mathbf{x}$，方向是 $\\mathbf{u}$，所以投影向量为 $(\\mathbf{u}^\\top\\mathbf{x})\\mathbf{u}$。第三项是垂直残差。"
+    source: "01-向量与几何/06-正交与投影.md#4-性质与推导"
+    tags: [投影, 正交]
+
+  - id: q-1.6-002
+    concept: "1.6"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: "把 $\\mathbf{x}=(3,4)$ 投影到 $\\mathbf{u}=(1,1)$ 方向，设投影为 $\\alpha\\mathbf{u}$，求 $\\alpha$。"
+    answer: 3.5
+    tolerance: 0.001
+    explanation: "$\\alpha=\\frac{\\mathbf{x}^\\top\\mathbf{u}}{\\mathbf{u}^\\top\\mathbf{u}}=\\frac{3+4}{1+1}=3.5$，投影向量是 $(3.5,3.5)$。"
+    source: "01-向量与几何/06-正交与投影.md#5-例子"
+    tags: [投影, 手算]
+
+  - id: q-1.6-003
+    concept: "1.6"
+    section: 6
+    type: single_choice
+    difficulty: 2
+    stem: "在 $\\mathbb{R}^2$ 中，对投影矩阵 $P=\\frac{\\mathbf{u}\\mathbf{u}^\\top}{\\mathbf{u}^\\top\\mathbf{u}}$（$\\mathbf{u}\\neq\\mathbf{0}$），下列说法正确的是？"
+    options:
+      - "投影后向量长度一定变大"
+      - "$P$ 可逆，因为 $\\mathbf{u}\\neq\\mathbf{0}$"
+      - "$P^2=P$ 且 $P^\\top=P$"
+      - "$P$ 的特征值都是 1"
+    answer: [2]
+    explanation: "投影两次和投影一次结果相同，所以 $P^2=P$；$\\mathbf{u}\\mathbf{u}^\\top$ 对称，所以 $P^\\top=P$。投影是降维操作，一般不可逆，特征值为 0 和 1。"
+    source: "01-向量与几何/06-正交与投影.md#6-常见误区"
+    tags: [投影矩阵, 幂等, 误区]
+
+  - id: q-1.6-004
+    concept: "1.6"
+    section: 8
+    type: true_false
+    difficulty: 3
+    stem: "用「减去在性别方向 $\\mathbf{d}$ 上的投影」来编辑表示时，编辑后的向量长度只会变短，不会变长。"
+    answer: true
+    explanation: "由勾股定理 $\\|\\mathbf{h}'\\|^2=\\|\\mathbf{h}\\|^2-\\|\\operatorname{proj}_{\\mathbf{d}}\\mathbf{h}\\|^2$，减掉一个正交分量后长度不增。若实现后变长，说明公式或代码有误。"
+    source: "01-向量与几何/06-正交与投影.md#8-通往大模型残差流正交初始化与概念编辑"
+    tags: [投影, 激活引导, 大模型]
+
+  # ---------------- 1.7 叉积与三重积 ----------------
+  - id: q-1.7-001
+    concept: "1.7"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: "$\\mathbf{a}=(1,2,3)$，$\\mathbf{b}=(4,5,6)$，则 $\\|\\mathbf{a}\\times\\mathbf{b}\\|$ 是多少？保留三位小数。"
+    answer: 7.348
+    tolerance: 0.01
+    explanation: "$\\mathbf{a}\\times\\mathbf{b}=(-3,6,-3)$，长度 $\\sqrt{9+36+9}=\\sqrt{54}\\approx7.348$；它也等于两向量张成的平行四边形面积。"
+    source: "01-向量与几何/07-叉积.md#5-例子"
+    tags: [叉积, 手算, 面积]
+
+  - id: q-1.7-002
+    concept: "1.7"
+    section: 4
+    type: single_choice
+    difficulty: 1
+    stem: "关于三维叉积，下列说法正确的是？"
+    options:
+      - "叉积满足结合律，即 $(\\mathbf{a}\\times\\mathbf{b})\\times\\mathbf{c}=\\mathbf{a}\\times(\\mathbf{b}\\times\\mathbf{c})$"
+      - "叉积在任意维度都有定义"
+      - "若 $\\mathbf{a}\\times\\mathbf{b}=\\mathbf{0}$，则 $\\mathbf{a}$ 或 $\\mathbf{b}$ 一定是零向量"
+      - "$\\mathbf{a}\\times\\mathbf{a}=\\mathbf{0}$，且 $\\mathbf{a}\\times\\mathbf{b}=-\\mathbf{b}\\times\\mathbf{a}$"
+    answer: [3]
+    explanation: "叉积反交换且自叉为零；它一般不满足结合律。叉积为零也可能只是两向量共线，不要求其中一个是零向量。"
+    source: "01-向量与几何/07-叉积.md#4-性质与推导"
+    tags: [叉积, 反交换, 性质]
+
+  - id: q-1.7-003
+    concept: "1.7"
+    section: 2
+    type: multiple_choice
+    difficulty: 2
+    stem: "关于三重积 $\\mathbf{a}\\cdot(\\mathbf{b}\\times\\mathbf{c})$，下列说法正确的有？"
+    options:
+      - "其绝对值等于三个向量张成的平行六面体体积"
+      - "等于以 $\\mathbf{a},\\mathbf{b},\\mathbf{c}$ 为行的 $3\\times3$ 矩阵的行列式"
+      - "交换任意两个向量的顺序，三重积不变"
+      - "若三个向量共面，则三重积为 0"
+    answer: [0, 1, 3]
+    explanation: "三重积等于三向量构成的行列式，绝对值是平行六面体体积；交换两个向量会改变符号，共面时体积为 0、行列式也为 0。"
+    source: "01-向量与几何/07-叉积.md#2-定义"
+    tags: [三重积, 行列式, 体积]

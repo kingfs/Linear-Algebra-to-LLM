@@ -1,0 +1,337 @@
+module: M09
+questions:
+  # ===== 9.1 概率与随机变量 =====
+  - id: q-9.1-001
+    concept: "9.1"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: "样本 $(1,2,4)$ 的样本方差（分母取 $n-1$）是多少？保留三位小数。"
+    answer: 2.333
+    tolerance: 0.01
+    explanation: "均值 $\\bar x=7/3$，离差平方和 $14/3$，除以 $n-1=2$ 得 $7/3\\approx2.333$；若除以 $n$ 则只有 $1.556$。"
+    source: "09-概率与统计/01-概率与随机变量.md#5-例子"
+    tags: [样本方差, 无偏估计, 手算]
+
+  - id: q-9.1-002
+    concept: "9.1"
+    section: 4
+    type: single_choice
+    difficulty: 2
+    stem: "关于协方差与相关系数，下列哪一项正确？"
+    options:
+      - "协方差为 $0$ 说明两个随机变量独立"
+      - "相关系数满足 $|\\rho|\\le1$，且 $\\rho=1$ 表示 $Y$ 是 $X$ 的正线性函数"
+      - "$\\operatorname{Var}(X+Y)=\\operatorname{Var}(X)+\\operatorname{Var}(Y)$ 对任意 $X,Y$ 都成立"
+      - "样本协方差除以 $n$ 是无偏估计"
+    answer: [1]
+    explanation: "协方差为 0 只排除线性关系，$Y=X^2$ 时两变量强依赖却协方差为 0；方差可加需要 $\\operatorname{Cov}(X,Y)=0$，而只有除以 $n-1$ 才无偏。"
+    source: "09-概率与统计/01-概率与随机变量.md#4-性质与推导"
+    tags: [协方差, 相关系数, 无偏性]
+
+  - id: q-9.1-003
+    concept: "9.1"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: "若 $\\operatorname{Cov}(X,Y)=0$，则 $X$ 与 $Y$ 一定独立。"
+    answer: false
+    explanation: "只说明没有线性关系。取 $X$ 在 $\\{-1,0,1\\}$ 上均匀、$Y=X^2$，协方差为 0 但 $Y$ 完全由 $X$ 决定；只有联合高斯时不相关才等价于独立。"
+    source: "09-概率与统计/01-概率与随机变量.md#6-常见误区"
+    tags: [误区, 独立性, 协方差]
+
+  - id: q-9.1-004
+    concept: "9.1"
+    section: 3
+    type: multiple_choice
+    difficulty: 2
+    stem: "设 $\\hat\\Sigma=\\frac{1}{n-1}X_c^\\top X_c$ 是 $n$ 个 $D$ 维样本的样本协方差，下列哪些正确？"
+    options:
+      - "$\\hat\\Sigma$ 半正定"
+      - "$\\operatorname{rank}(\\hat\\Sigma)\\le\\min(n-1,D)$"
+      - "$n<D$ 时 $\\hat\\Sigma$ 必然奇异"
+      - "分母取 $n-1$ 是为了让每个特征值都严格为正"
+    answer: [0, 1, 2]
+    explanation: "$\\hat\\Sigma$ 是 Gram 矩阵，故半正定，秩受中心化后有效样本数限制；$n<D$ 时必有零特征值。除以 $n-1$ 的作用是让估计无偏，并不能保证特征值为正。"
+    source: "09-概率与统计/01-概率与随机变量.md#3-为什么这样定义"
+    tags: [样本协方差, 半正定, 秩]
+
+  # ===== 9.2 多元高斯 =====
+  - id: q-9.2-001
+    concept: "9.2"
+    section: 5
+    type: single_choice
+    difficulty: 1
+    stem: "$\\Sigma=\\begin{bmatrix}2&1\\\\1&2\\end{bmatrix}$ 的特征值是？"
+    options:
+      - "$2$ 和 $1$"
+      - "$\\sqrt3$ 和 $1$"
+      - "$3$ 和 $1$"
+      - "$4$ 和 $0$"
+    answer: [2]
+    explanation: "$\\operatorname{tr}\\Sigma=4$、$|\\Sigma|=3$，故特征值为 $3$ 与 $1$；$\\sqrt3$ 与 $1$ 是椭圆半轴长，不是特征值。"
+    source: "09-概率与统计/02-多元高斯.md#5-例子"
+    tags: [特征值, 协方差, 手算]
+
+  - id: q-9.2-002
+    concept: "9.2"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: "对 $\\Sigma=\\begin{bmatrix}2&1\\\\1&2\\end{bmatrix}$，等高线取 $c=1$ 时的长半轴是多少？保留三位小数。"
+    answer: 1.732
+    tolerance: 0.01
+    explanation: "长轴方向为 $(1,1)/\\sqrt2$，半轴长为 $c\\sqrt{\\lambda_1}=\\sqrt3\\approx1.732$；特征值 $3$ 是方差的量纲，不是长度。"
+    source: "09-概率与统计/02-多元高斯.md#5-例子"
+    tags: [椭圆, 半轴, 手算]
+
+  - id: q-9.2-003
+    concept: "9.2"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: "对联合高斯分布，$\\operatorname{Cov}(X_i,X_j)=0$ 与 $X_i,X_j$ 独立是等价的。"
+    answer: true
+    explanation: "联合高斯的密度可分解为各维因子之积，所以不相关即独立；一般分布不成立，$Y=X^2$ 的反例说明不相关只排除线性关系。"
+    source: "09-概率与统计/02-多元高斯.md#6-常见误区"
+    tags: [高斯, 独立性, 不相关]
+
+  - id: q-9.2-004
+    concept: "9.2"
+    section: 4
+    type: multiple_choice
+    difficulty: 2
+    stem: "设 $\\mathbf{x}\\sim\\mathcal{N}(\\boldsymbol\\mu,\\Sigma)$，$\\mathbf{y}=A\\mathbf{x}+\\mathbf{b}$，下列哪些正确？"
+    options:
+      - "$\\mathbf{y}\\sim\\mathcal{N}(A\\boldsymbol\\mu+\\mathbf{b},\\,A\\Sigma A^\\top)$"
+      - "$\\operatorname{Cov}(\\mathbf{y})=A\\Sigma A^\\top$"
+      - "只有 $A$ 可逆时 $\\mathbf{y}$ 才是高斯"
+      - "对任意单位向量 $\\mathbf{u}$，$\\operatorname{Var}(\\mathbf{u}^\\top\\mathbf{x})=\\mathbf{u}^\\top\\Sigma\\mathbf{u}$"
+    answer: [0, 1, 3]
+    explanation: "高斯族对线性变换封闭，与 $A$ 是否可逆无关；协方差按 $A\\Sigma A^\\top$ 变换，而投影方差正是二次型 $\\mathbf{u}^\\top\\Sigma\\mathbf{u}\\in[\\lambda_{\\min},\\lambda_{\\max}]$。"
+    source: "09-概率与统计/02-多元高斯.md#4-性质与推导"
+    tags: [线性变换, 协方差, 投影方差]
+
+  # ===== 9.3 PCA =====
+  - id: q-9.3-001
+    concept: "9.3"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: "已中心化的数据 $X=\\begin{bmatrix}1&2\\\\2&1\\\\-1&-2\\\\-2&-1\\end{bmatrix}$，总体协方差 $S=\\frac14X^\\top X$ 的最大特征值是多少？"
+    answer: 4.5
+    tolerance: 0.01
+    explanation: "$X^\\top X=\\begin{bmatrix}10&8\\\\8&10\\end{bmatrix}$，除以 $4$ 得 $\\begin{bmatrix}2.5&2\\\\2&2.5\\end{bmatrix}$，特征值为 $4.5$ 与 $0.5$。"
+    source: "09-概率与统计/03-PCA.md#5-例子"
+    tags: [PCA, 特征值, 总体协方差, 手算]
+
+  - id: q-9.3-002
+    concept: "9.3"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: "对同一组数据取 $k=1$ 做 PCA 重建，四个点的重建误差平方和（Frobenius 平方）是多少？"
+    answer: 2
+    tolerance: 0.01
+    explanation: "每个点残差为 $(-0.5,0.5)$、平方长度 $0.5$，四点共 $2$；这也等于 $n\\lambda_2=4\\times0.5=2$。"
+    source: "09-概率与统计/03-PCA.md#5-例子"
+    tags: [重建误差, 手算, Frobenius]
+
+  - id: q-9.3-003
+    concept: "9.3"
+    section: 2
+    type: single_choice
+    difficulty: 2
+    stem: "对中心化矩阵 $X_c$ 做 SVD 得到奇异值 $\\sigma_i$，则总体协方差 $S=\\frac1nX_c^\\top X_c$ 的特征值 $\\lambda_i$ 等于？"
+    options:
+      - "$\\sigma_i$"
+      - "$\\sigma_i^2$"
+      - "$\\sigma_i^2/n$"
+      - "$\\sigma_i/n$"
+    answer: [2]
+    explanation: "由 $X_c^\\top X_c=V\\Sigma^2V^\\top$ 与 $S=\\frac1nX_c^\\top X_c$ 得 $\\lambda_i=\\sigma_i^2/n$，所以解释方差比也可写成 $\\sigma_i^2/\\sum_j\\sigma_j^2$。"
+    source: "09-概率与统计/03-PCA.md#2-定义"
+    tags: [SVD, 特征值, 总体协方差]
+
+  - id: q-9.3-004
+    concept: "9.3"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: "PCA 可以直接对原始数据矩阵 $X$ 做 SVD，中心化只影响数值稳定性，不影响主成分方向。"
+    answer: false
+    explanation: "不中心化时协方差被二阶矩 $X^\\top X/n$ 替代，第一主成分会偏向均值方向，整体偏移被误当成方差，方向本身就会改变。"
+    source: "09-概率与统计/03-PCA.md#6-常见误区"
+    tags: [误区, 中心化, SVD]
+
+  - id: q-9.3-005
+    concept: "9.3"
+    section: 4
+    type: multiple_choice
+    difficulty: 2
+    stem: "关于 PCA 的解释方差比与重建误差，下列哪些正确？"
+    options:
+      - "累计解释方差比 $\\eta_{\\le k}=\\sum_{i\\le k}\\lambda_i/\\operatorname{tr}(S)$"
+      - "只要 $\\eta_{\\le k}$ 足够高，被丢掉的方向就一定与下游任务无关"
+      - "相对 Frobenius 重建误差是 $\\sqrt{1-\\eta_{\\le k}}$"
+      - "$\\operatorname{tr}(S)=\\frac1n\\|X_c\\|_F^2$ 就是总方差"
+    answer: [0, 2, 3]
+    explanation: "$\\eta$ 只是相对总方差的比例，不代表任务信息；误差平方和为 $n\\sum_{i>k}\\lambda_i$，相对值开方即 $\\sqrt{1-\\eta_{\\le k}}$。"
+    source: "09-概率与统计/03-PCA.md#4-性质与推导"
+    tags: [解释方差比, 重建误差, 选k]
+
+  # ===== 9.4 白化 =====
+  - id: q-9.4-001
+    concept: "9.4"
+    section: 2
+    type: single_choice
+    difficulty: 2
+    stem: "设 $\\Sigma=V\\Lambda V^\\top$，PCA 白化矩阵是？"
+    options:
+      - "$\\Lambda^{-1/2}V^\\top$"
+      - "$V\\Lambda^{-1/2}$"
+      - "$V\\Lambda^{-1/2}V^\\top$"
+      - "$\\Lambda^{1/2}V^\\top$"
+    answer: [0]
+    explanation: "$W_{\\mathrm{PCA}}=\\Lambda^{-1/2}V^\\top$ 先旋转到主成分轴、再按 $1/\\sqrt{\\lambda_i}$ 缩放；$V\\Lambda^{-1/2}V^\\top$ 是 ZCA 白化。"
+    source: "09-概率与统计/04-白化.md#2-定义"
+    tags: [PCA白化, 公式, 特征分解]
+
+  - id: q-9.4-002
+    concept: "9.4"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: "对 $\\Sigma=\\begin{bmatrix}2&1\\\\1&2\\end{bmatrix}$ 做 PCA 白化，$\\mathbf{x}=(1,1)^\\top$ 变换后的第一个坐标是多少？保留三位小数。"
+    answer: 0.816
+    tolerance: 0.005
+    explanation: "$\\mathbf{z}_{\\mathrm{PCA}}=\\Lambda^{-1/2}V^\\top\\mathbf{x}$，第一个坐标为 $2/\\sqrt6\\approx0.816$，第二个为 $0$，因为该点落在长轴上。"
+    source: "09-概率与统计/04-白化.md#5-例子"
+    tags: [PCA白化, 手算, 坐标]
+
+  - id: q-9.4-003
+    concept: "9.4"
+    section: 3
+    type: true_false
+    difficulty: 2
+    stem: "ZCA 白化矩阵 $\\Sigma^{-1/2}$ 是对称的，并且在所有白化矩阵中使 $\\mathbb{E}\\|\\mathbf{x}-\\mathbf{z}\\|_2^2$ 最小。"
+    answer: true
+    explanation: "对称性使它不引入额外旋转，输出仍沿原坐标方向，因此与输入的差异最小；这也是图像预处理偏好 ZCA 的原因。"
+    source: "09-概率与统计/04-白化.md#3-为什么这样定义"
+    tags: [ZCA, 对称, 最小位移]
+
+  - id: q-9.4-004
+    concept: "9.4"
+    section: 2
+    type: multiple_choice
+    difficulty: 2
+    stem: "关于白化与标准化的区别，下列哪些正确？"
+    options:
+      - "标准化后协方差是相关系数矩阵，非对角元仍是 $\\rho_{ij}$"
+      - "$W_{\\mathrm{ZCA}}=V\\Lambda^{-1/2}V^\\top$ 是对称矩阵"
+      - "PCA 白化与 ZCA 白化的输出只差一个旋转 $V$"
+      - "白化后协方差的条件数仍是 $\\lambda_{\\max}/\\lambda_{\\min}$"
+    answer: [0, 1, 2]
+    explanation: "白化后所有特征值为 1，条件数变成 1；标准化只除以各维标准差，得到相关系数矩阵，去不掉非对角的相关性。"
+    source: "09-概率与统计/04-白化.md#2-定义"
+    tags: [标准化, ZCA, 条件数]
+
+  - id: q-9.4-005
+    concept: "9.4"
+    section: 8
+    type: single_choice
+    difficulty: 2
+    stem: "大模型普遍用 LayerNorm 而不是全协方差白化，主要原因是？"
+    options:
+      - "白化会改变参数形状，导致无法反向传播"
+      - "LayerNorm 能把条件数也变成 1，而白化不能"
+      - "白化在数学上无法把协方差变成单位阵"
+      - "白化需要 $[D,D]$ 协方差与每 token $O(D^2)$ 的计算，且依赖 batch 统计"
+    answer: [3]
+    explanation: "LayerNorm 只算两个标量，成本 $O(D)$；$D=4096$ 时全白化每 token 约 $1.68\\times10^7$ 次乘加，还要估计 1677 万个协方差元素。"
+    source: "09-概率与统计/04-白化.md#8-通往大模型为什么是-layernorm-而不是全白化"
+    tags: [LayerNorm, 复杂度, 大模型]
+
+  # ===== 9.5 马尔可夫链 =====
+  - id: q-9.5-001
+    concept: "9.5"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: "转移矩阵 $P=\\begin{bmatrix}0.9&0.1\\\\0.2&0.8\\end{bmatrix}$ 的稳态分布中，状态 1 的概率是多少？保留三位小数。"
+    answer: 0.667
+    tolerance: 0.005
+    explanation: "这里 $a=0.1$、$b=0.2$，故 $\\pi_1=b/(a+b)=0.2/0.3=2/3\\approx0.667$。"
+    source: "09-概率与统计/05-马尔可夫链.md#5-例子"
+    tags: [稳态分布, 二状态, 手算]
+
+  - id: q-9.5-002
+    concept: "9.5"
+    section: 9
+    type: numeric
+    difficulty: 3
+    stem: "对 $P=\\begin{bmatrix}0.8&0.2\\\\0.3&0.7\\end{bmatrix}$，从分布 $(0,1)$ 出发迭代 5 步，状态 1 的概率是多少？保留三位小数。"
+    answer: 0.581
+    tolerance: 0.001
+    explanation: "该链稳态为 $(0.6,0.4)$、第二特征值 $0.5$，故 $\\pi_{t,1}=0.6-0.6(0.5)^t$；$t=5$ 时为 $0.58125$。"
+    source: "09-概率与统计/05-马尔可夫链.md#9-练习"
+    tags: [多步转移, 混合, 手算]
+
+  - id: q-9.5-003
+    concept: "9.5"
+    section: 6
+    type: true_false
+    difficulty: 2
+    stem: "只要一条有限状态马尔可夫链存在稳态分布，从任意初始分布出发的 $\\boldsymbol\\pi_t$ 都会收敛到它。"
+    answer: false
+    explanation: "还需要不可约且非周期。$P=\\begin{bmatrix}0&1\\\\1&0\\end{bmatrix}$ 有稳态 $(1/2,1/2)$，但从 $(1,0)$ 出发永远在两点间振荡。"
+    source: "09-概率与统计/05-马尔可夫链.md#6-常见误区"
+    tags: [误区, 收敛, 周期性]
+
+  - id: q-9.5-004
+    concept: "9.5"
+    section: 2
+    type: single_choice
+    difficulty: 1
+    stem: "在「每行是条件分布」的行随机约定下，稳态方程是？"
+    options:
+      - "$P\\boldsymbol\\pi=\\boldsymbol\\pi$"
+      - "$\\boldsymbol\\pi P=\\boldsymbol\\pi$"
+      - "$\\boldsymbol\\pi P^\\top=\\boldsymbol\\pi$"
+      - "$\\boldsymbol\\pi^\\top$ 是 $P$ 的特征值 $1$ 对应的右特征向量"
+    answer: [1]
+    explanation: "分布是行向量并左乘，演化式为 $\\boldsymbol\\pi_{t+1}=\\boldsymbol\\pi_tP$，稳态即 $\\boldsymbol\\pi P=\\boldsymbol\\pi$；$P\\boldsymbol\\pi=\\boldsymbol\\pi$ 属于列随机约定，两者互为转置。"
+    source: "09-概率与统计/05-马尔可夫链.md#2-定义"
+    tags: [行随机, 稳态方程, 左特征向量]
+
+  - id: q-9.5-005
+    concept: "9.5"
+    section: 2
+    type: multiple_choice
+    difficulty: 2
+    stem: "关于混合速度与 PageRank，下列哪些正确？"
+    options:
+      - "稳态分布 $\\boldsymbol\\pi$ 就是 $P$ 的某一行"
+      - "$|\\lambda_2|$ 越接近 $1$，链的混合越慢"
+      - "加上阻尼项后 $G$ 元素全为正，主特征值 $1$ 唯一"
+      - "行随机矩阵满足 $P\\mathbf{1}=\\mathbf{1}$，故 $\\mathbf{1}$ 是 $P$ 的特征值 $1$ 的右特征向量"
+    answer: [1, 2, 3]
+    explanation: "稳态是左特征向量，一般不等于任何一行；混合速度由 $|\\lambda_2|$ 控制，阻尼项让主特征值唯一，行和为 1 即 $P\\mathbf{1}=\\mathbf{1}$。"
+    source: "09-概率与统计/05-马尔可夫链.md#2-定义"
+    tags: [混合速度, PageRank, 行随机]
+
+  - id: q-9.5-006
+    concept: "9.5"
+    section: 8
+    type: single_choice
+    difficulty: 2
+    stem: "语言模型解码时把温度 $T\\to0$，每一步的转移矩阵会变成什么？"
+    options:
+      - "趋于词表上的均匀分布，混合最快"
+      - "趋于单位阵，所有 token 概率相同"
+      - "退化为 one-hot，链变成确定性映射，容易陷入循环"
+      - "不再满足行和为 $1$，需要重新归一化"
+    answer: [2]
+    explanation: "$P_{i\\to j}\\propto\\exp(z_j/T)$，$T\\to0$ 时概率质量集中到最大 logit 上，近似贪心解码；高概率 token 被反复选中，容易形成高概率闭环。"
+    source: "09-概率与统计/05-马尔可夫链.md#8-通往大模型自回归生成就是一条马尔可夫链"
+    tags: [温度, 解码, 大模型]

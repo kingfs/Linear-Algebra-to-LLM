@@ -1,0 +1,75 @@
+---
+import Base from "../../../layouts/Base.astro";
+import Quiz from "../../../components/Quiz";
+import MarkRead from "../../../components/MarkRead";
+import { getCollection, render, type CollectionEntry } from "astro:content";
+import nav from "../../../data/nav.json";
+import quizbank from "../../../data/quizbank.json";
+import figures from "../../../data/figures.json";
+
+export async function getStaticPaths() {
+  const docs = await getCollection("docs");
+  return docs
+    .filter((entry) => entry.data.kind === "concept")
+    .map((entry) => ({
+      params: { module: entry.data.module.toLowerCase(), slug: entry.data.slug },
+      props: { entry },
+    }));
+}
+
+interface Props { entry: CollectionEntry<"docs">; }
+const { entry } = Astro.props;
+const { Content, headings } = await render(entry);
+const modules = nav as any[];
+const module = modules.find((m: any) => m.id === entry.data.module);
+const idx = module?.concepts.findIndex((c: any) => c.slug === entry.data.slug) ?? -1;
+const prev = idx > 0 ? module.concepts[idx - 1] : null;
+const next = idx >= 0 && idx < module.concepts.length - 1 ? module.concepts[idx + 1] : null;
+const questions = (quizbank as Record<string, any[]>)[entry.data.id] || [];
+const figure = (figures as any[]).find((f) => (f.concepts || []).includes(entry.data.id));
+const toc = headings.filter((h: any) => h.depth === 2);
+---
+
+<Base title={entry.data.title} module={entry.data.module} moduleTitle={entry.data.moduleTitle} toc={toc}>
+  <article class="prose">
+    <div class="meta-row">
+      <a class="badge accent" href={`/modules/${entry.data.module.toLowerCase()}/`}>{entry.data.module} · {entry.data.moduleTitle}</a>
+      <span class="badge">{entry.data.level}</span>
+      <span class="badge">约 {entry.data.minutes} 分钟</span>
+      {entry.data.prereq?.length > 0 && <span>前置：{entry.data.prereq.join("、")}</span>}
+    </div>
+
+    {figure && (
+      <figure class="figure-card">
+        <img src={`/figures/${figure.file}`} alt={figure.alt} loading="lazy" />
+        <figcaption>{figure.caption}</figcaption>
+      </figure>
+    )}
+
+    <Content />
+
+    <div class="doc-actions">
+      <MarkRead client:idle route={entry.data.route} />
+      {module && <a class="btn" href={module.route}>返回 {entry.data.module} 导览</a>}
+      <a class="btn ghost" href="/practice/">去练习场</a>
+    </div>
+
+    {questions.length > 0 ? (
+      <section id="quiz">
+        <h2 style="font-family:var(--font-serif);font-size:24px;margin:52px 0 14px;padding-top:20px;border-top:1px solid var(--line);">随堂测 · {questions.length} 题</h2>
+        <Quiz client:visible questions={questions} concept={entry.data.id} />
+      </section>
+    ) : (
+      <section id="quiz">
+        <h2 style="font-family:var(--font-serif);font-size:24px;margin:52px 0 14px;padding-top:20px;border-top:1px solid var(--line);">随堂测</h2>
+        <div class="empty">本节题库正在补充。你可以先做<a href="/practice/">模块练习</a>，或回到「一页速记」自测。</div>
+      </section>
+    )}
+
+    <nav class="pager">
+      {prev ? <a href={prev.route}><div class="dir">← 上一篇</div><div class="t">{prev.id} {prev.title}</div></a> : <span />}
+      {next ? <a class="next" href={next.route}><div class="dir">下一篇 →</div><div class="t">{next.id} {next.title}</div></a> : <span />}
+    </nav>
+    <p style="margin-top:18px;color:var(--ink-faint);font-size:11.5px;">源文件：{entry.data.source}</p>
+  </article>
+</Base>

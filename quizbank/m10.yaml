@@ -1,0 +1,320 @@
+module: M10
+questions:
+  - id: q-10.1-001
+    concept: "10.1"
+    section: 2
+    type: single_choice
+    difficulty: 1
+    stem: 'fp32（单精度）的机器精度 $\varepsilon$ 约为多少？'
+    options:
+      - '$2^{-52}\approx2.22\times10^{-16}$'
+      - '$2^{-23}\approx1.19\times10^{-7}$'
+      - '$2^{-10}\approx9.77\times10^{-4}$'
+      - '$2^{-7}\approx7.81\times10^{-3}$'
+    answer: [1]
+    explanation: '机器精度由尾数位数决定：fp32 有 23 位尾数，$\varepsilon=2^{-23}\approx1.19\times10^{-7}$；$2^{-10}$ 与 $2^{-7}$ 分别是 fp16 与 bf16 的值。'
+    source: "10-数值线性代数/01-浮点数与误差.md#2-定义"
+    tags: [机器精度, fp32]
+
+  - id: q-10.1-002
+    concept: "10.1"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: 'bf16 的尾数位比 fp16 多，所以它的数值精度更高。'
+    answer: false
+    explanation: 'bf16 只有 7 位尾数，fp16 有 10 位，所以 bf16 的精度更低；bf16 的优势是用 8 位指数换来了与 fp32 相同的动态范围。'
+    source: "10-数值线性代数/01-浮点数与误差.md#6-常见误区"
+    tags: [bf16, 误区]
+
+  - id: q-10.1-003
+    concept: "10.1"
+    section: 2
+    type: multiple_choice
+    difficulty: 2
+    stem: '关于 IEEE 754 浮点格式，下列哪些说法正确？'
+    options:
+      - '机器精度 $\varepsilon=2^{-p}$，其中 $p$ 是尾数位数'
+      - '单位舍入误差 $u=\varepsilon/2$，是一次舍入相对误差的上界'
+      - 'bf16 与 fp32 的指数位数相同，动态范围也相同'
+      - 'fp16 的最小正规数比 bf16 更小，所以更不容易下溢'
+    answer: [0, 1, 2]
+    explanation: 'fp16 的最小正规数约 $6.1\times10^{-5}$，远大于 bf16 的 $1.18\times10^{-38}$，因此 fp16 更容易下溢、需要 loss scaling。前三条分别对应 $\varepsilon$ 的定义、$u$ 的推导和指数位对比。'
+    source: "10-数值线性代数/01-浮点数与误差.md#2-定义"
+    tags: [机器精度, 单位舍入误差, 混合精度]
+
+  - id: q-10.1-004
+    concept: "10.1"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: '在 fp32 中计算 $x-1$，其中 $x=1.0000001$。把结果与真值 $10^{-7}$ 相比，相对误差约为多少？用百分数填写（填 19.2 表示 $19.2\%$）。'
+    answer: 19.2
+    tolerance: 0.5
+    explanation: '$1.0000001$ 被舍入为 $1+2^{-23}$，相减得 $1.192\times10^{-7}$，比真值多出 $1.92\times10^{-8}$，相对误差约 $19.2\%$。减法本身是精确的，丢失的是输入的末位信息。'
+    source: "10-数值线性代数/01-浮点数与误差.md#5-例子"
+    tags: [灾难性抵消, 手算]
+
+  - id: q-10.1-005
+    concept: "10.1"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: 'fp32 中，1024 附近的相邻可表示数间距是 1 附近间距的多少倍？'
+    answer: 1024
+    tolerance: 1
+    explanation: '间距为 $2^{e-p}$：1 在 $[1,2)$ 内取 $e=0$，间距 $2^{-23}$；1024 在 $[1024,2048)$ 内取 $e=10$，间距 $2^{-13}$，比值是 $2^{10}=1024$。'
+    source: "10-数值线性代数/01-浮点数与误差.md#5-例子"
+    tags: [浮点间距, 手算]
+
+  - id: q-10.2-001
+    concept: "10.2"
+    section: 5
+    type: numeric
+    difficulty: 1
+    stem: '对 $A=\begin{bmatrix}1&2\\3&4\end{bmatrix}$，Frobenius 范数 $\|A\|_F$ 约是多少？保留三位小数。'
+    answer: 5.477
+    tolerance: 0.01
+    explanation: '$\|A\|_F=\sqrt{1+4+9+16}=\sqrt{30}\approx5.477$，它也等于 $\sqrt{\sigma_1^2+\sigma_2^2}$。'
+    source: "10-数值线性代数/02-矩阵范数与条件数.md#5-例子"
+    tags: [Frobenius范数, 手算]
+
+  - id: q-10.2-002
+    concept: "10.2"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: '对 $A=\begin{bmatrix}1&2\\3&4\end{bmatrix}$，2-范数条件数 $\kappa_2(A)$ 约是多少？保留两位小数。'
+    answer: 14.93
+    tolerance: 0.05
+    explanation: '$\kappa_2=\sigma_{\max}/\sigma_{\min}$；由 $A^\top A$ 的特征值 $29.866$ 与 $0.134$ 得 $\sigma_{\max}=5.465$、$\sigma_{\min}=0.366$，比值为 $14.93$。'
+    source: "10-数值线性代数/02-矩阵范数与条件数.md#5-例子"
+    tags: [条件数, 奇异值, 手算]
+
+  - id: q-10.2-003
+    concept: "10.2"
+    section: 2
+    type: single_choice
+    difficulty: 1
+    stem: '下列哪一项不是由向量范数诱导出的矩阵范数？'
+    options:
+      - '$1$-范数（最大列绝对值和）'
+      - '$2$-范数（最大奇异值）'
+      - '$\infty$-范数（最大行绝对值和）'
+      - 'Frobenius 范数 $\|A\|_F$'
+    answer: [3]
+    explanation: '诱导范数是 $\max_{\|\mathbf{x}\|=1}\|A\mathbf{x}\|$ 的解，而 Frobenius 范数把矩阵当成长度为 $mn$ 的向量，不对应任何向量范数的诱导结果。'
+    source: "10-数值线性代数/02-矩阵范数与条件数.md#2-定义"
+    tags: [诱导范数, Frobenius范数]
+
+  - id: q-10.2-004
+    concept: "10.2"
+    section: 4
+    type: true_false
+    difficulty: 2
+    stem: '对任意可逆矩阵，$\kappa(A)\ge1$，且 $\kappa(A^{-1})=\kappa(A)$。'
+    answer: true
+    explanation: '$\kappa=\sigma_{\max}/\sigma_{\min}\ge1$；$A^{-1}$ 的奇异值是 $1/\sigma_i$，取倒数后最大与最小互换，所以比值不变。'
+    source: "10-数值线性代数/02-矩阵范数与条件数.md#4-性质与推导"
+    tags: [条件数, 性质]
+
+  - id: q-10.3-001
+    concept: "10.3"
+    section: 4
+    type: numeric
+    difficulty: 1
+    stem: '两个 $1024\times1024$ 的 fp32 矩阵相乘，共需多少次浮点运算？以 $10^9$ FLOP 为单位填写（$2.147\times10^9$ 就填 2.147）。'
+    answer: 2.147
+    tolerance: 0.01
+    explanation: 'GEMM 的运算量是 $2MNK=2\times1024^3=2.147\times10^9$ FLOP。'
+    source: "10-数值线性代数/03-BLAS与GEMM.md#4-性质与推导"
+    tags: [GEMM, FLOPs, 手算]
+
+  - id: q-10.3-002
+    concept: "10.3"
+    section: 4
+    type: numeric
+    difficulty: 2
+    stem: '对 $M=N=K=4096$ 的 fp32 方阵 GEMM，只统计 $A,B,C$ 各读写一遍，算术强度约为多少 FLOP/byte？'
+    answer: 682.67
+    tolerance: 1
+    explanation: '$\text{AI}=2MNK/\big(4(MK+KN+MN)\big)$；方阵时为 $n/6=4096/6\approx682.7$ FLOP/byte，远高于拐点，所以是计算受限。'
+    source: "10-数值线性代数/03-BLAS与GEMM.md#4-性质与推导"
+    tags: [算术强度, Roofline, 手算]
+
+  - id: q-10.3-003
+    concept: "10.3"
+    section: 4
+    type: single_choice
+    difficulty: 2
+    stem: '按分块模型 $\text{AI}=b/4$，tile 取 $b=256$ 时算术强度约为多少 FLOP/byte？'
+    options:
+      - '16'
+      - '32'
+      - '64'
+      - '256'
+    answer: [2]
+    explanation: '分块后算术强度为 $b/4$，$b=256$ 时约 $64$ FLOP/byte；$b=128$ 对应 32。'
+    source: "10-数值线性代数/03-BLAS与GEMM.md#4-性质与推导"
+    tags: [分块, 算术强度]
+
+  - id: q-10.3-004
+    concept: "10.3"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: 'FLOPs 越高的运算一定越慢。'
+    answer: false
+    explanation: 'GEMM 的 FLOPs 按 $O(n^3)$ 增长，但每个字节被复用 $O(n)$ 次，吞吐可以接近峰值；GEMV 的 FLOPs 少，却被带宽卡死。'
+    source: "10-数值线性代数/03-BLAS与GEMM.md#6-常见误区"
+    tags: [FLOPs, 访存受限, 误区]
+
+  - id: q-10.3-005
+    concept: "10.3"
+    section: 8
+    type: multiple_choice
+    difficulty: 2
+    stem: '关于大模型推理中的 prefill 与 decode，下列哪些说法正确？'
+    options:
+      - 'prefill 阶段 $BT$ 很大，通常是计算受限'
+      - 'decode 阶段每步 $M=1$，token/s 上界约为显存带宽除以每步需要读取的字节数'
+      - 'decode 的 batch 无论多大都不可能变成计算受限'
+      - 'bf16/fp16 的张量核 MMA 指令通常以 fp32 累加'
+    answer: [0, 1, 3]
+    explanation: 'decode 的 $M=1$ 使算术强度接近 1，确实受带宽限制；但增大 batch 会让 AI 回升，最终重新进入计算受限区，所以第三条错。'
+    source: "10-数值线性代数/03-BLAS与GEMM.md#8-通往大模型prefill-与-decode-是两种负载"
+    tags: [prefill, decode, 大模型推理]
+
+  - id: q-10.4-001
+    concept: "10.4"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: '对 $A=\begin{bmatrix}4&1\\1&3\end{bmatrix}$，从 $\mathbf{x}^{(0)}=\mathbf{0}$ 做 Jacobi 迭代，迭代矩阵 $G_J=D^{-1}(L+U)$ 的谱半径约是多少？保留三位小数。'
+    answer: 0.2887
+    tolerance: 0.001
+    explanation: '$G_J=\begin{bmatrix}0&-1/4\\-1/3&0\end{bmatrix}$，特征值为 $\pm1/\sqrt{12}\approx\pm0.2887$，所以 $\rho(G_J)=0.2887$。'
+    source: "10-数值线性代数/04-迭代法与共轭梯度.md#5-例子"
+    tags: [Jacobi, 谱半径, 手算]
+
+  - id: q-10.4-002
+    concept: "10.4"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: '对 $A=\begin{bmatrix}4&1\\1&3\end{bmatrix}$、$\mathbf{b}=(1,2)^\top$，从 $\mathbf{x}_0=\mathbf{0}$ 出发，CG 第一步的步长 $\alpha_0=\rho_0/(\mathbf{p}_0^\top A\mathbf{p}_0)$ 是多少？'
+    answer: 0.25
+    tolerance: 0.001
+    explanation: '$\mathbf{r}_0=\mathbf{p}_0=(1,2)^\top$，$\rho_0=5$；$A\mathbf{p}_0=(6,7)^\top$，$\mathbf{p}_0^\top A\mathbf{p}_0=20$，所以 $\alpha_0=5/20=0.25$。'
+    source: "10-数值线性代数/04-迭代法与共轭梯度.md#5-例子"
+    tags: [共轭梯度, 手算]
+
+  - id: q-10.4-003
+    concept: "10.4"
+    section: 2
+    type: single_choice
+    difficulty: 1
+    stem: '共轭梯度法要求系数矩阵满足什么条件？'
+    options:
+      - '严格对角占优'
+      - '非奇异'
+      - '正交'
+      - '对称正定'
+    answer: [3]
+    explanation: '只有对称正定矩阵才能定义 $A$-内积与 $A$-共轭方向，并保证 $\mathbf{p}^\top A\mathbf{p}>0$；非对称系统应改用 GMRES/BiCGStab。'
+    source: "10-数值线性代数/04-迭代法与共轭梯度.md#2-定义"
+    tags: [共轭梯度, 对称正定]
+
+  - id: q-10.4-004
+    concept: "10.4"
+    section: 4
+    type: true_false
+    difficulty: 2
+    stem: 'CG 的迭代次数大致随 $\sqrt{\kappa}$ 增长，而不是随 $\kappa$ 线性增长。'
+    answer: true
+    explanation: '收敛界含因子 $(\sqrt{\kappa}-1)/(\sqrt{\kappa}+1)$，所以步数由 $\sqrt{\kappa}$ 控制；预条件的作用正是把 $\kappa$ 降下来、减少步数。'
+    source: "10-数值线性代数/04-迭代法与共轭梯度.md#4-性质与推导"
+    tags: [收敛, 条件数, 预条件]
+
+  - id: q-10.4-005
+    concept: "10.4"
+    section: 8
+    type: multiple_choice
+    difficulty: 2
+    stem: '关于 Newton-CG 与 Hessian，下列哪些说法正确？'
+    options:
+      - 'CG 只需要 Hessian-向量乘积 $H\mathbf{v}$，不必显式构造 $H$'
+      - '实际实现常用截断 CG，只跑 20–50 步或按残差阈值提前停'
+      - '预条件的作用是把 $\kappa$ 降下来，从而减少所需迭代步数'
+      - '显式存储 70B 模型的 Hessian 只需要与参数量同阶的内存'
+    answer: [0, 1, 2]
+    explanation: '$H\in\mathbb{R}^{P\times P}$ 需要 $O(P^2)$ 内存，70B 参数下不可行，这正是用 Hessian-向量乘积代替显式 Hessian 的原因；其余三条都是 Newton-CG 的典型做法。'
+    source: "10-数值线性代数/04-迭代法与共轭梯度.md#8-通往大模型不形成-hessian-的二阶优化"
+    tags: [Newton-CG, Hessian向量积, 大模型训练]
+
+  - id: q-10.5-001
+    concept: "10.5"
+    section: 5
+    type: numeric
+    difficulty: 1
+    stem: '对 $A=\begin{bmatrix}1&0&0&2\\0&3&0&0\\0&0&0&0\\4&0&5&0\end{bmatrix}$ 与 $\mathbf{x}=(1,2,3,4)^\top$，$A\mathbf{x}$ 的第 4 个分量（从 1 开始计数）等于多少？'
+    answer: 19
+    tolerance: 0.01
+    explanation: '第 4 个分量对应第 3 行（从 0 开始），该行只有 $a_{30}=4$ 与 $a_{32}=5$，所以 $4\times1+5\times3=19$。'
+    source: "10-数值线性代数/05-稀疏矩阵.md#5-例子"
+    tags: [SpMV, 手算]
+
+  - id: q-10.5-002
+    concept: "10.5"
+    section: 2
+    type: numeric
+    difficulty: 2
+    stem: '对 §5.1 的 $4\times4$ 矩阵，其 CSR 表示的 `indptr` 数组长度为 $m+1$。`indptr` 的最后一个元素等于多少？'
+    answer: 5
+    tolerance: 0.01
+    explanation: '`indptr=[0,2,3,3,5]`，最后一个元素等于非零元个数 $\operatorname{nnz}=5$，也就是 `values` 与 `col_idx` 的长度。'
+    source: "10-数值线性代数/05-稀疏矩阵.md#2-定义"
+    tags: [CSR, indptr, 手算]
+
+  - id: q-10.5-003
+    concept: "10.5"
+    section: 2
+    type: single_choice
+    difficulty: 1
+    stem: '需要频繁按行切片并做 SpMV 时，下列哪种存储格式最合适？'
+    options:
+      - 'COO'
+      - 'CSC'
+      - 'CSR'
+      - '稠密行主序'
+    answer: [2]
+    explanation: 'CSR 用 `indptr` 把每行的非零元连续存放，行切片是 $O(1)$ 定位，遍历是 $O(\operatorname{nnz}_i)$，最适合 SpMV；COO 更适合构造阶段。'
+    source: "10-数值线性代数/05-稀疏矩阵.md#2-定义"
+    tags: [CSR, 稀疏格式]
+
+  - id: q-10.5-004
+    concept: "10.5"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: '只要矩阵里 0 足够多，换成稀疏格式就一定会更快。'
+    answer: false
+    explanation: '稀疏格式有索引开销、负载不均、无法使用张量核，小矩阵或密度较高时稠密 BLAS 反而更快；通常密度降到几个百分点才值得换。'
+    source: "10-数值线性代数/05-稀疏矩阵.md#6-常见误区"
+    tags: [稀疏格式, 误区]
+
+  - id: q-10.5-005
+    concept: "10.5"
+    section: 8
+    type: multiple_choice
+    difficulty: 2
+    stem: '关于 MoE 与结构化稀疏，下列哪些说法正确？'
+    options:
+      - '每 token 的计算量由激活的专家数 top-$k$ 决定'
+      - '显存（参数量）由专家总数 $E$ 决定'
+      - '2:4 稀疏每 4 个元素保留 2 个，理论吞吐可达稠密的两倍'
+      - '非结构剪枝掉 90% 权重，在 GPU 上通常就能获得接近 10 倍的加速'
+    answer: [0, 1, 2]
+    explanation: 'MoE 的计算随 top-$k$、参数随 $E$ 增长，这是稀疏激活的核心 trade-off；非结构稀疏的索引与负载不规则，实际加速远低于稀疏率，只有 2:4、块稀疏等结构化模式才有硬件支持。'
+    source: "10-数值线性代数/05-稀疏矩阵.md#8-通往大模型稀疏激活与结构化剪枝"
+    tags: [MoE, 结构稀疏, 大模型推理]

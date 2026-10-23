@@ -18,11 +18,22 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 LINK_RE = re.compile(r"\[[^\]]*\]\(([^)\s]+)\)")
 SKIP_PREFIX = ("http://", "https://", "mailto:", "#", "tel:")
+SKIP_DIRS = {".git", "node_modules", "dist", ".astro"}
+
+
+def ignored(path: Path) -> bool:
+    try:
+        parts = path.relative_to(ROOT).parts
+    except ValueError:
+        return False
+    if any(part in SKIP_DIRS for part in parts):
+        return True
+    return "src" in parts and "content" in parts and "generated" in parts
 
 
 def iter_markdown(paths: list[str]) -> list[Path]:
     if not paths:
-        return sorted(ROOT.rglob("*.md"))
+        return sorted(p for p in ROOT.rglob("*.md") if not ignored(p))
     files: list[Path] = []
     for raw in paths:
         p = (ROOT / raw).resolve()
@@ -32,7 +43,7 @@ def iter_markdown(paths: list[str]) -> list[Path]:
             files.append(p)
         else:
             print(f"找不到路径: {raw}", file=sys.stderr)
-    return sorted(set(files))
+    return sorted(p for p in set(files) if not ignored(p))
 
 
 def main() -> int:
@@ -40,7 +51,7 @@ def main() -> int:
     errors = 0
     skip_files = {ROOT / "docs" / "模板-概念文档.md"}
     for path in files:
-        if ".git" in path.parts or path in skip_files:
+        if path in skip_files:
             continue
         text = path.read_text(encoding="utf-8")
         # 去掉 fenced code，避免把示例里的链接当断链

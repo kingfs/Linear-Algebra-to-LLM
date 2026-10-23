@@ -1,0 +1,29 @@
+---
+import Base from "../../layouts/Base.astro";
+import { getCollection, render, type CollectionEntry } from "astro:content";
+
+export async function getStaticPaths() {
+  const docs = await getCollection("docs");
+  return docs
+    .filter((entry) => (entry.data.kind === "page" || entry.data.kind === "exercise"))
+    .map((entry) => ({
+      params: { slug: entry.data.slug.replaceAll("__", "/") },
+      props: { entry },
+    }));
+}
+
+interface Props { entry: CollectionEntry<"docs">; }
+const { entry } = Astro.props;
+const { Content, headings } = await render(entry);
+const toc = headings.filter((h: any) => h.depth === 2);
+---
+
+<Base title={entry.data.title} toc={toc}>
+  <article class="prose">
+    <div class="meta-row">
+      <span class="badge">附录</span>
+      <span>源文件：{entry.data.source}</span>
+    </div>
+    <Content />
+  </article>
+</Base>

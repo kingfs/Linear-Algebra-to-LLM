@@ -1,0 +1,14 @@
+---
+import Base from "../layouts/Base.astro";
+import ReviewDeck from "../components/ReviewDeck";
+import cards from "../data/cards.json";
+---
+
+<Base title="知识卡" wide={true}>
+  <div class="hero" style="padding-top:10px">
+    <div class="eyebrow">Spaced repetition</div>
+    <h1 style="font-size:clamp(30px,4vw,44px);margin-bottom:10px">知识卡</h1>
+    <p class="lead">从 81 篇「一页速记」自动抽出的填空卡。翻面回忆，按重来 / 困难 / 良好 / 简单排期；每天 10–20 张即可。</p>
+  </div>
+  <ReviewDeck client:load cards={cards as any} />
+</Base>

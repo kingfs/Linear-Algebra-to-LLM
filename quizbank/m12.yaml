@@ -1,0 +1,221 @@
+module: M12
+questions:
+  - id: q-12.1-001
+    concept: "12.1"
+    section: 2
+    type: single_choice
+    difficulty: 1
+    stem: '$Q,K\in\mathbb{R}^{B\times H\times T\times d}$，einsum 表达式 `"bhid,bhjd->bhij"` 的输出形状是？'
+    options:
+      - '[B, H, d, d]'
+      - '[B, H, T, T]'
+      - '[B, H, T, d]'
+      - '[B, T, H, d]'
+    answer: [1]
+    explanation: '输出只保留 $b,h,i,j$ 四个自由索引，因此形状是 `[B,H,T,T]`；$d$ 没有出现在输出中，被求和掉，对应 $S_{bhij}=\sum_d Q_{bhid}K_{bhjd}$。'
+    source: "12-进阶/01-张量与einsum.md#2-定义"
+    tags: [einsum, 形状, attention]
+
+  - id: q-12.1-002
+    concept: "12.1"
+    section: 6
+    type: true_false
+    difficulty: 2
+    stem: 'einsum 中，同一张量内重复的字母（如 `"ii->i"`）与跨张量重复的字母（如 `"i,i->i"`）含义相同，都是把对应元素对齐相乘。'
+    answer: false
+    explanation: '同一张量内重复表示这条轴与自己对位，即取对角线；跨张量重复才是两个数组按同一索引相乘。所以 `"ii->i"` 取矩阵对角线，而 `"i,i->i"` 是两个向量的逐元素积。'
+    source: "12-进阶/01-张量与einsum.md#6-常见误区"
+    tags: [einsum, 对角线, 误区]
+
+  - id: q-12.1-003
+    concept: "12.1"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: '用 einsum `"ik,kj->ij"` 计算 $A=\begin{bmatrix}1&2&3\\4&5&6\end{bmatrix}$ 与 $B=\begin{bmatrix}1&0\\0&1\\1&1\end{bmatrix}$ 的乘积，结果的第 2 行第 2 列是多少？'
+    answer: 11
+    tolerance: 0.001
+    explanation: '第 2 行第 2 列是 $A$ 第 2 行与 $B$ 第 2 列的内积：$4\cdot0+5\cdot1+6\cdot1=11$，与 $AB=\begin{bmatrix}4&5\\10&11\end{bmatrix}$ 一致。'
+    source: "12-进阶/01-张量与einsum.md#5-例子"
+    tags: [einsum, 手算, 矩阵乘]
+
+  - id: q-12.1-004
+    concept: "12.1"
+    section: 4
+    type: multiple_choice
+    difficulty: 2
+    stem: '关于 einsum 的索引规则，下列哪些说法正确？'
+    options:
+      - '输出中出现的字母是自由索引，其对应维度决定输出形状'
+      - '`"bhij,bhjd->bhid"` 中 $j$ 是求和索引，对应「对所有 key 加权求和」'
+      - '同一输入张量内重复的字母 `ii` 表示取对角线，而不是求和'
+      - '输出中字母的排列顺序只影响数值，不影响结果各轴的顺序'
+    answer: [0, 1, 2]
+    explanation: '自由索引保留、求和索引收缩，所以 $j$ 被求和；同张量内重复索引取对角线。输出字母的顺序直接决定结果轴的排列，`"ij->ji"` 与 `"ij->ij"` 结果互为转置，故最后一条错误。'
+    source: "12-进阶/01-张量与einsum.md#4-性质与推导"
+    tags: [einsum, 自由索引, 求和索引]
+
+  - id: q-12.2-001
+    concept: "12.2"
+    section: 2
+    type: single_choice
+    difficulty: 2
+    stem: '$W$ 是 $n\times n$ 高斯随机矩阵，元素独立、方差取 $1/n$，$n$ 很大。它的谱范数 $\|W\|_2$ 大约是多少？'
+    options:
+      - '$\approx1$'
+      - '$\approx\sqrt n$'
+      - '$\approx2$'
+      - '$\approx n$'
+    answer: [2]
+    explanation: '取 $\sigma=1/\sqrt n$（即方差 $1/n$），代入 $\mathbb{E}\|W\|_2\approx\sigma(\sqrt m+\sqrt n)$ 得 $\approx2$；方差 $1/n$ 只让平均奇异值接近 1，最大奇异值仍约 2。'
+    source: "12-进阶/02-随机矩阵理论.md#2-定义"
+    tags: [随机矩阵, 谱范数, 初始化]
+
+  - id: q-12.2-002
+    concept: "12.2"
+    section: 8
+    type: numeric
+    difficulty: 2
+    stem: '$n=10000$ 的高斯随机方阵，元素方差为 1，谱范数大约是多少？'
+    answer: 200
+    tolerance: 10
+    explanation: '方差 1 时 $\mathbb{E}\|W\|_2\approx\sqrt m+\sqrt n$，$m=n=10000$ 时约为 $2\sqrt{10000}=200$；所以直接拿未缩放的高斯矩阵连乘会指数爆炸。'
+    source: "12-进阶/02-随机矩阵理论.md#8-通往大模型初始化与谱"
+    tags: [随机矩阵, 谱范数, 数量级]
+
+  - id: q-12.2-003
+    concept: "12.2"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: '只要把随机方阵的元素方差设为 $1/n$，就能让它的谱范数等于 1。'
+    answer: false
+    explanation: '方差 $1/n$ 只让平均奇异值尺度约为 1，最大奇异值仍约 2（MP 律上界 $(1+\sqrt\gamma)^2$）；要让谱范数为 1 需要正交初始化或谱归一化。'
+    source: "12-进阶/02-随机矩阵理论.md#6-常见误区"
+    tags: [初始化, 谱范数, 误区]
+
+  - id: q-12.2-004
+    concept: "12.2"
+    section: 2
+    type: multiple_choice
+    difficulty: 3
+    stem: '关于随机矩阵的谱与初始化，下列哪些说法正确？'
+    options:
+      - 'Marchenko–Pastur 律描述 $X^\top X/n$ 的特征值区间，$\gamma=p/n$ 越大区间越宽'
+      - '对称随机矩阵（元素方差 $\sigma^2/n$）的特征值按 Wigner 半圆律落在 $[-2\sigma,2\sigma]$'
+      - '随机方阵在 $\gamma\to1$ 时最小奇异值远离 0，条件数趋于 1'
+      - '正交初始化的所有奇异值等于 1，因此每层既不放大也不缩小信号'
+    answer: [0, 1, 3]
+    explanation: 'MP 支撑区间是 $[\sigma^2(1-\sqrt\gamma)^2,\sigma^2(1+\sqrt\gamma)^2]$，随 $\gamma$ 变宽；Wigner 半圆律支撑为 $[-2\sigma,2\sigma]$。$\gamma\to1$ 时下界趋于 0，条件数发散而非趋于 1。'
+    source: "12-进阶/02-随机矩阵理论.md#2-定义"
+    tags: [MP律, Wigner半圆律, 正交初始化]
+
+  - id: q-12.3-001
+    concept: "12.3"
+    section: 5
+    type: single_choice
+    difficulty: 2
+    stem: '对 $A=\begin{bmatrix}2&1\\1&2\end{bmatrix}$，按五条主线中的「计算」视角，它的条件数 $\kappa_2(A)$ 是多少？'
+    options:
+      - '$1$'
+      - '$2$'
+      - '$\sqrt3$'
+      - '$3$'
+    answer: [3]
+    explanation: '$A$ 对称，特征值即奇异值，为 3 和 1，所以 $\kappa_2=\sigma_{\max}/\sigma_{\min}=3/1=3$，数值良态。'
+    source: "12-进阶/03-线性代数全景图.md#5-例子"
+    tags: [条件数, 奇异值, 全景]
+
+  - id: q-12.3-002
+    concept: "12.3"
+    section: 5
+    type: numeric
+    difficulty: 3
+    stem: '对 $A=\begin{bmatrix}2&1\\1&2\end{bmatrix}$ 取秩 1 近似 $A_1=3\mathbf{q}_1\mathbf{q}_1^\top$，比值 $\|A_1\|_F^2/\|A\|_F^2$ 等于多少？'
+    answer: 0.9
+    tolerance: 0.001
+    explanation: '奇异值为 3 和 1，$\|A\|_F^2=3^2+1^2=10$；$A_1$ 只保留 $\sigma_1=3$，故 $\|A_1\|_F^2=9$，比例为 $9/10=0.9$。'
+    source: "12-进阶/03-线性代数全景图.md#5-例子"
+    tags: [SVD, 低秩近似, Frobenius范数]
+
+  - id: q-12.3-003
+    concept: "12.3"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: '特征值比奇异值更基本：特征值对任意矩阵都有定义，而奇异值只对方阵有定义。'
+    answer: false
+    explanation: '说反了：特征值只对方阵有定义，而且不一定够用（可能不可对角化）；奇异值对任意 $m\times n$ 矩阵都存在，且数值上更稳定。'
+    source: "12-进阶/03-线性代数全景图.md#6-常见误区"
+    tags: [特征值, 奇异值, 误区]
+
+  - id: q-12.3-004
+    concept: "12.3"
+    section: 3
+    type: multiple_choice
+    difficulty: 2
+    stem: '「秩」在五条主线里有多个等价刻画，下列哪些与 $\operatorname{rank}(A)$ 相等？'
+    options:
+      - '零空间的维数 $\dim\operatorname{null}(A)$'
+      - '列空间的维数'
+      - '非零奇异值的个数'
+      - '高斯消元后的主元个数'
+    answer: [1, 2, 3]
+    explanation: '秩 = 列空间维数 = 非零奇异值个数 = 消元主元个数；零空间维数由秩-零化度给出，是 $n-r$ 而不是 $r$。'
+    source: "12-进阶/03-线性代数全景图.md#3-为什么这样定义"
+    tags: [秩, 等价刻画, 全景]
+
+  - id: q-12.4-001
+    concept: "12.4"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: '一个 7B 模型 fp16 权重共 14 GB，HBM 带宽 2 TB/s。忽略 KV Cache 与其他开销，decode 阶段每 token 需读一遍权重，理论速度上限约为多少 tokens/s？'
+    answer: 142.9
+    tolerance: 2
+    explanation: '每 token 至少搬运 14 GB，$2000/14\approx142.9$ tokens/s，即约 7 ms/token；这是带宽下限，实测通常更低。'
+    source: "12-进阶/04-研究路线.md#5-例子"
+    tags: [decode, 带宽, 估算]
+
+  - id: q-12.4-002
+    concept: "12.4"
+    section: 3
+    type: single_choice
+    difficulty: 2
+    stem: '为什么 decode 阶段通常是带宽受限，而 prefill 阶段更偏算力受限？'
+    options:
+      - 'decode 的 FLOPs 比 prefill 多，算力不够用'
+      - 'decode 每步只做 $M=1$ 的瘦矩阵乘，FLOPs/bytes 低，瓶颈在读取权重与 KV'
+      - 'decode 不受显存带宽影响，只受显存容量限制'
+      - 'decode 每次都要把整个 KV Cache 写回 HBM，写带宽成为瓶颈'
+    answer: [1]
+    explanation: '算术强度 = FLOPs/bytes。decode 每生成一个 token 只有一次瘦 GEMM，却要把全部权重和 KV 读一遍，强度低，所以跑不满算力；prefill 处理整段 prompt，是大 GEMM，强度高。'
+    source: "12-进阶/04-研究路线.md#3-为什么这样定义"
+    tags: [算术强度, decode, prefill]
+
+  - id: q-12.4-003
+    concept: "12.4"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: '把 KV Cache 从 fp16 量化到 int8、字节数减半之后，端到端吞吐一定会翻倍。'
+    answer: false
+    explanation: '量化只减少 bytes，不减少 FLOPs；只有当瓶颈确实是带宽或显存时收益才明显，还要扣除反量化开销与质量损失，因此必须端到端测量。'
+    source: "12-进阶/04-研究路线.md#6-常见误区"
+    tags: [量化, KV-Cache, 误区]
+
+  - id: q-12.4-004
+    concept: "12.4"
+    section: 4
+    type: multiple_choice
+    difficulty: 3
+    stem: '关于推理优化的收益边界，下列哪些说法正确？'
+    options:
+      - '量化减少的是 bytes 而不是 FLOPs，所以在算力受限的 prefill 阶段收益有限'
+      - '量化到 int8 后字节数减半，端到端吞吐必然翻倍'
+      - '低秩减少参数与计算，但分解/训练有成本，秩不足会掉质量'
+      - '判断一个优化是否值得做，要看理论收益、实现收益、端到端收益三层'
+    answer: [0, 2, 3]
+    explanation: '量化只改变字节数，算力受限时甚至可能因反量化变慢；低秩有训练成本与质量风险；评估必须走「理论 bytes/FLOPs → kernel 效率 → 端到端吞吐/延迟/质量」三层。'
+    source: "12-进阶/04-研究路线.md#4-性质与推导"
+    tags: [量化, 低秩, 收益边界]

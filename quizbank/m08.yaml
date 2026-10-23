@@ -1,0 +1,481 @@
+module: M08
+questions:
+  # ---------------- 8.1 多元函数、偏导与梯度 ----------------
+  - id: q-8.1-001
+    concept: "8.1"
+    section: 2
+    type: single_choice
+    difficulty: 1
+    stem: '设 $f:\mathbb{R}^{5}\to\mathbb{R}$ 可微，按本文约定，梯度 $\nabla f(\mathbf{x})$ 的形状是？'
+    options:
+      - '$[1,5]$ 的行向量'
+      - '$[5]$ 的列向量，与 $\mathbf{x}$ 同形'
+      - '一个标量'
+      - '$[5,5]$ 的对称矩阵'
+    answer: [1]
+    explanation: '梯度把 $n$ 个偏导排成一列，与变量同形；只有当变量是一维时它才退化成一个数。'
+    source: "08-微积分与优化/01-多元函数与梯度.md#2-定义"
+    tags: [梯度, 形状约定, 定义]
+
+  - id: q-8.1-002
+    concept: "8.1"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: '$f(x,y)=x^2y+3y^2$，在 $(1,2)$ 处用一阶近似估计 $f(1.1,\,2.05)$。'
+    answer: 15.05
+    tolerance: 0.01
+    explanation: '$f(1,2)=14$，$\nabla f=(2xy,\;x^2+6y)=(4,13)$，所以估计值为 $14+4\times0.1+13\times0.05=15.05$（精确值 $15.088$，差来自二阶项）。'
+    source: "08-微积分与优化/01-多元函数与梯度.md#5-例子"
+    tags: [线性近似, 手算, 梯度]
+
+  - id: q-8.1-003
+    concept: "8.1"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: '只要 $f$ 在一点处对每个变量的偏导都存在，$f$ 就在该点可微。'
+    answer: false
+    explanation: '反例 $f(x,y)=\dfrac{xy}{x^2+y^2}$（原点补 0）：两个偏导在原点都是 0，但沿 $y=x$ 趋近极限为 $1/2$，函数不连续，更不可微。'
+    source: "08-微积分与优化/01-多元函数与梯度.md#6-常见误区"
+    tags: [可微, 偏导, 误区]
+
+  - id: q-8.1-004
+    concept: "8.1"
+    section: 8
+    type: multiple_choice
+    difficulty: 2
+    stem: '设线性层权重 $W\in\mathbb{R}^{d_{\text{out}}\times d_{\text{in}}}$，$L=\frac12\|\mathbf{y}-W\mathbf{x}\|^2$。关于 $\partial L/\partial W$，下列哪些说法正确？'
+    options:
+      - '形状取决于上游梯度，一般是 $[d_{\text{in}},d_{\text{out}}]$'
+      - '形状是 $[d_{\text{out}},d_{\text{in}}]$，与 $W$ 同形'
+      - '它等于 $-(\mathbf{y}-W\mathbf{x})\mathbf{x}^\top$，是一个外积'
+      - '必须先把整个 batch 的 Jacobian 存下来，才能算出它'
+    answer: [1, 2]
+    explanation: '梯度与参数同形；误差向量与输入向量的外积一次就填满整个权重矩阵，反向传播并不显式构造 Jacobian。'
+    source: "08-微积分与优化/01-多元函数与梯度.md#8-通往大模型梯度是与参数同形的张量"
+    tags: [反向传播, 外积, 参数形状]
+
+  # ---------------- 8.2 方向导数与梯度下降 ----------------
+  - id: q-8.2-001
+    concept: "8.2"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: '$f(x,y)=x^2+2y^2$，在点 $(1,1)$ 处沿单位方向 $\mathbf{u}=(3/5,\,4/5)$ 的方向导数是多少？'
+    answer: 4.4
+    tolerance: 0.01
+    explanation: '$\nabla f=(2x,4y)=(2,4)^\top$，方向导数为 $\nabla f^\top\mathbf{u}=(2\times3+4\times4)/5=22/5=4.4$。'
+    source: "08-微积分与优化/02-方向导数与梯度下降.md#5-例子"
+    tags: [方向导数, 手算, 单位向量]
+
+  - id: q-8.2-002
+    concept: "8.2"
+    section: 5
+    type: single_choice
+    difficulty: 2
+    stem: '对 $f(x,y)=x^2+2y^2$，从 $\mathbf{x}_0=(1,1)^\top$ 出发、取学习率 $\eta=0.1$ 做两步梯度下降，$\mathbf{x}_2$ 是？'
+    options:
+      - '$(0.8,\,0.6)$'
+      - '$(0.72,\,0.48)$'
+      - '$(0.64,\,0.36)$'
+      - '$(0.36,\,0.64)$'
+    answer: [2]
+    explanation: '$\mathbf{x}_1=(1,1)-0.1(2,4)=(0.8,0.6)$，梯度变为 $(1.6,2.4)$，故 $\mathbf{x}_2=(0.8,0.6)-0.1(1.6,2.4)=(0.64,0.36)$。'
+    source: "08-微积分与优化/02-方向导数与梯度下降.md#5-例子"
+    tags: [梯度下降, 手算, 学习率]
+
+  - id: q-8.2-003
+    concept: "8.2"
+    section: 4
+    type: true_false
+    difficulty: 2
+    stem: '对 $f(\mathbf{x})=\frac12\mathbf{x}^\top A\mathbf{x}$（$A$ 对称正定、$\lambda_{\max}=8$），学习率取 $\eta=0.2$ 时，梯度下降在每个特征方向上都会收敛。'
+    answer: true
+    explanation: '每个特征方向的误差每步乘 $1-\eta\lambda_i$；$\eta=0.2<2/\lambda_{\max}=0.25$，故所有 $|1-0.2\lambda_i|<1$，全部收敛。'
+    source: "08-微积分与优化/02-方向导数与梯度下降.md#4-性质与推导"
+    tags: [收敛条件, 学习率, 特征值]
+
+  - id: q-8.2-004
+    concept: "8.2"
+    section: 5
+    type: single_choice
+    difficulty: 2
+    stem: '对 $f(x)=x^2$，从 $x_0=1$ 出发做梯度下降 $x_{k+1}=x_k-2\eta x_k$。下列学习率中会使迭代发散的是？'
+    options:
+      - '$0.1$'
+      - '$0.5$'
+      - '$0.6$'
+      - '$1.1$'
+    answer: [3]
+    explanation: '迭代乘子为 $1-2\eta$：$\eta=0.1,0.5,0.6$ 时乘子分别是 $0.8,0,-0.2$，绝对值都小于 1；$\eta=1.1$ 时乘子为 $-1.2$，误差每步放大，发散。'
+    source: "08-微积分与优化/02-方向导数与梯度下降.md#5-例子"
+    tags: [发散, 学习率, 一维例子]
+
+  # ---------------- 8.3 Jacobian ----------------
+  - id: q-8.3-001
+    concept: "8.3"
+    section: 2
+    type: single_choice
+    difficulty: 1
+    stem: '设 $F:\mathbb{R}^4\to\mathbb{R}^2$，按本文约定（行是输出、列是输入），$J_F$ 的形状是？'
+    options:
+      - '$[2,4]$'
+      - '$[4,2]$'
+      - '$[4,4]$'
+      - '$[2,2]$'
+    answer: [0]
+    explanation: '$(J_F)_{ij}=\partial F_i/\partial x_j$，$m=2$ 个输出排成行、$n=4$ 个输入排成列，所以是 $[2,4]$。'
+    source: "08-微积分与优化/03-Jacobian.md#2-定义"
+    tags: [Jacobian, 形状, 定义]
+
+  - id: q-8.3-002
+    concept: "8.3"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: '$F(x,y)=(x^2y,\;x+3y)$，求 $\det J_F(1,2)$。'
+    answer: 11
+    tolerance: 0.001
+    explanation: '$J_F=\begin{bmatrix}2xy&x^2\\1&3\end{bmatrix}$，在 $(1,2)$ 处为 $\begin{bmatrix}4&1\\1&3\end{bmatrix}$，行列式 $12-1=11$。'
+    source: "08-微积分与优化/03-Jacobian.md#5-例子"
+    tags: [Jacobian, 行列式, 手算]
+
+  - id: q-8.3-003
+    concept: "8.3"
+    section: 6
+    type: true_false
+    difficulty: 2
+    stem: '一个映射的 Jacobian 一旦求出就是常数矩阵，与在哪个点求值无关。'
+    answer: false
+    explanation: '只有线性或仿射映射的 Jacobian 处处相同；一般映射的 Jacobian 随 $\mathbf{x}$ 变化，例如 $F=(x^2y,\;x+3y)$ 的 $J$ 依赖 $x,y$。'
+    source: "08-微积分与优化/03-Jacobian.md#6-常见误区"
+    tags: [Jacobian, 常见误区, 仿射映射]
+
+  - id: q-8.3-004
+    concept: "8.3"
+    section: 4
+    type: multiple_choice
+    difficulty: 2
+    stem: '关于链式法则 $J_{G\circ F}(\mathbf{x})=J_G(F(\mathbf{x}))\,J_F(\mathbf{x})$，下列哪些说法正确？'
+    options:
+      - '若 $F:\mathbb{R}^3\to\mathbb{R}^5$、$G:\mathbb{R}^5\to\mathbb{R}^2$，则 $J_{G\circ F}\in\mathbb{R}^{2\times3}$'
+      - '两个 Jacobian 的相乘顺序可以交换，结果相同'
+      - '中间的维数 $5$ 在矩阵相乘时被消掉'
+      - '只要 $F,G$ 可微，这个式子就成立'
+    answer: [0, 2, 3]
+    explanation: '形状链是 $[2,5]\times[5,3]=[2,3]$，中间维数被消掉；矩阵乘法不可交换，顺序由「先作用谁」决定，写反就是另一个函数。'
+    source: "08-微积分与优化/03-Jacobian.md#4-性质与推导"
+    tags: [链式法则, 形状检查, 矩阵乘法]
+
+  # ---------------- 8.4 Hessian 与二阶近似 ----------------
+  - id: q-8.4-001
+    concept: "8.4"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: '设 $f(x,y)=x^2+3xy+y^2$。它在原点的 Hessian 的最大特征值是多少？'
+    answer: 5
+    tolerance: 0.001
+    explanation: '$H=\begin{bmatrix}2&3\\3&2\end{bmatrix}$，迹为 4、行列式为 $-5$，由 $\lambda^2-4\lambda-5=0$ 得特征值 $5$ 与 $-1$。'
+    source: "08-微积分与优化/04-Hessian与二阶近似.md#5-例子"
+    tags: [Hessian, 特征值, 手算]
+
+  - id: q-8.4-002
+    concept: "8.4"
+    section: 4
+    type: single_choice
+    difficulty: 2
+    stem: '某驻点处的 Hessian 特征值为 $5$ 和 $-1$。该点的性质是？'
+    options:
+      - '严格局部极小'
+      - '严格局部极大'
+      - '二阶判据失效，需看高阶项'
+      - '鞍点'
+    answer: [3]
+    explanation: '特征值一正一负，Hessian 不定；沿正特征值方向向上弯、沿负特征值方向向下弯，所以是鞍点。'
+    source: "08-微积分与优化/04-Hessian与二阶近似.md#4-性质与推导"
+    tags: [二阶判据, 鞍点, 特征值]
+
+  - id: q-8.4-003
+    concept: "8.4"
+    section: 6
+    type: true_false
+    difficulty: 2
+    stem: 'Hessian 在某个驻点处正定，就足以保证该点是全局极小。'
+    answer: false
+    explanation: '正定只保证该点是严格局部极小；要得到全局结论，需要 Hessian 在整个定义域上半正定，即函数凸。'
+    source: "08-微积分与优化/04-Hessian与二阶近似.md#6-常见误区"
+    tags: [正定, 全局极小, 误区]
+
+  - id: q-8.4-004
+    concept: "8.4"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: '设 $f(x,y)=x^2+xy+y^2$。它的 Hessian 的条件数 $\lambda_{\max}/\lambda_{\min}$ 是多少？'
+    answer: 3
+    tolerance: 0.001
+    explanation: '$H=\begin{bmatrix}2&1\\1&2\end{bmatrix}$，特征值为 $1$ 与 $3$，条件数 $3/1=3$，等高线长短轴比为 $\sqrt3$。'
+    source: "08-微积分与优化/04-Hessian与二阶近似.md#5-例子"
+    tags: [条件数, 二次型, Hessian]
+
+  # ---------------- 8.5 矩阵求导与链式法则 ----------------
+  - id: q-8.5-001
+    concept: "8.5"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: '取 $A=\begin{bmatrix}1&2\\3&4\end{bmatrix}$、$\mathbf{x}=(1,-1)^\top$，用公式 $\nabla_{\mathbf{x}}(\mathbf{x}^\top A\mathbf{x})=(A+A^\top)\mathbf{x}$ 计算，结果的第一个分量是多少？'
+    answer: -3
+    tolerance: 0.001
+    explanation: '$A+A^\top=\begin{bmatrix}2&5\\5&8\end{bmatrix}$，乘 $\mathbf{x}$ 得 $(-3,-3)^\top$；直接展开 $f=x_1^2+5x_1x_2+4x_2^2$ 也得到 $\partial_{x_1}f=2x_1+5x_2=-3$。'
+    source: "08-微积分与优化/05-矩阵求导与链式法则.md#5-例子"
+    tags: [二次型, 矩阵求导, 手算]
+
+  - id: q-8.5-002
+    concept: "8.5"
+    section: 4
+    type: single_choice
+    difficulty: 1
+    stem: '按本文约定（梯度与变量同形，Jacobian 行是输出、列是输入），$\partial(A\mathbf{x})/\partial\mathbf{x}$ 等于？'
+    options:
+      - '$A$'
+      - '$A^\top$'
+      - '$A^{-1}$'
+      - '$\mathbf{x}^\top A$'
+    answer: [0]
+    explanation: '$y_i=\sum_j A_{ij}x_j$，所以 $\partial y_i/\partial x_j=A_{ij}$，Jacobian 就是 $A$；严格分母布局才会写成 $A^\top$。'
+    source: "08-微积分与优化/05-矩阵求导与链式法则.md#4-性质与推导"
+    tags: [布局约定, 线性映射, Jacobian]
+
+  - id: q-8.5-003
+    concept: "8.5"
+    section: 6
+    type: true_false
+    difficulty: 2
+    stem: '$\partial(\mathbf{x}^\top A\mathbf{x})/\partial\mathbf{x}=2A\mathbf{x}$ 对任意方阵 $A$ 都成立。'
+    answer: false
+    explanation: '一般情形是 $(A+A^\top)\mathbf{x}$，只有 $A$ 对称时才退化为 $2A\mathbf{x}$；不对称时会漏掉 $A^\top$ 的那部分。'
+    source: "08-微积分与优化/05-矩阵求导与链式法则.md#6-常见误区"
+    tags: [二次型, 对称性, 误区]
+
+  - id: q-8.5-004
+    concept: "8.5"
+    section: 5
+    type: numeric
+    difficulty: 3
+    stem: '两层 ReLU 网络：$\mathbf{x}=(1,-1)^\top$，$W_1=\begin{bmatrix}2&1\\1&1\end{bmatrix}$，$\mathbf{b}_1=(0.5,-0.5)^\top$，$\mathbf{w}_2=(1,1)^\top$，目标 $y=1$，$L=\frac12(o-y)^2$。$\partial L/\partial W_1$ 的第 1 行第 2 列是多少？'
+    answer: -0.5
+    tolerance: 0.001
+    explanation: '前向得 $\mathbf{z}_1=(1.5,-0.5)^\top$、$\mathbf{h}=(1.5,0)^\top$、$o=1.5$；$\partial L/\partial o=0.5$，穿过 ReLU 得 $\boldsymbol\delta_1=(0.5,0)^\top$，外积 $\boldsymbol\delta_1\mathbf{x}^\top=\begin{bmatrix}0.5&-0.5\\0&0\end{bmatrix}$。'
+    source: "08-微积分与优化/05-矩阵求导与链式法则.md#5-例子"
+    tags: [反向传播, 链式法则, 手算]
+
+  - id: q-8.5-005
+    concept: "8.5"
+    section: 4
+    type: multiple_choice
+    difficulty: 2
+    stem: '按本文约定，下列导数公式中哪些是正确的？'
+    options:
+      - '$\partial\operatorname{tr}(AX)/\partial X=A$'
+      - '$\partial(A\mathbf{x})/\partial\mathbf{x}=A$'
+      - '$\partial(\mathbf{x}^\top A\mathbf{x})/\partial\mathbf{x}=(A+A^\top)\mathbf{x}$'
+      - '$\partial(\mathbf{x}^\top\mathbf{x})/\partial\mathbf{x}=2\mathbf{x}$'
+    answer: [1, 2, 3]
+    explanation: '$\operatorname{tr}(AX)=\sum_{ij}A_{ij}X_{ji}$，对 $X_{ij}$ 求导得 $A_{ji}$，所以梯度是 $A^\top$ 而不是 $A$；其余三条与必背公式一致。'
+    source: "08-微积分与优化/05-矩阵求导与链式法则.md#4-性质与推导"
+    tags: [矩阵求导, 迹, 公式]
+
+  # ---------------- 8.6 凸性 ----------------
+  - id: q-8.6-001
+    concept: "8.6"
+    section: 5
+    type: true_false
+    difficulty: 2
+    stem: '$f(x,y)=xy$ 在 $\mathbb{R}^2$ 上是凸函数。'
+    answer: false
+    explanation: '取 $\mathbf{x}=(1,0)$、$\mathbf{y}=(0,1)$、$\theta=0.5$：$f(0.5,0.5)=0.25>0.5f(1,0)+0.5f(0,1)=0$，违反凸性定义；其 Hessian 特征值为 $1,-1$，不定。'
+    source: "08-微积分与优化/06-凸性.md#5-例子"
+    tags: [凸性, 反例, Hessian]
+
+  - id: q-8.6-002
+    concept: "8.6"
+    section: 2
+    type: single_choice
+    difficulty: 1
+    stem: '设 $f$ 在凸定义域上二阶连续可微。下列哪个条件与 $f$ 是凸函数等价？'
+    options:
+      - '$H_f(\mathbf{x})$ 在每个点正定'
+      - '$H_f(\mathbf{x})$ 在每个点半正定'
+      - '$H_f(\mathbf{x})$ 在每个点负定'
+      - '$H_f(\mathbf{x})$ 的特征值全为 $1$'
+    answer: [1]
+    explanation: '凸性的二阶判据是 $H_f(\mathbf{x})\succeq0$ 处处成立；正定是更强的条件，对应严格凸，例如 $f(x)=x^4$ 在 $0$ 处 Hessian 为 $0$ 仍凸。'
+    source: "08-微积分与优化/06-凸性.md#2-定义"
+    tags: [二阶判据, 半正定, 凸函数]
+
+  - id: q-8.6-003
+    concept: "8.6"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: 'logistic 损失 $\ell(z)=\log(1+e^{-z})$，求 $\ell''(0)$。'
+    answer: 0.25
+    tolerance: 0.001
+    explanation: '$\ell''(z)=\sigma(z)(1-\sigma(z))$，$z=0$ 时 $\sigma=0.5$，故 $\ell''(0)=0.25$，这也是 $\sigma(1-\sigma)$ 的最大值。'
+    source: "08-微积分与优化/06-凸性.md#5-例子"
+    tags: [logistic损失, 二阶导, 手算]
+
+  - id: q-8.6-004
+    concept: "8.6"
+    section: 8
+    type: single_choice
+    difficulty: 2
+    stem: '下列哪个优化子问题最有把握说「局部最优就是全局最优」？'
+    options:
+      - '端到端训练语言模型的损失'
+      - '含 ReLU 的两层网络整体损失'
+      - '冻结隐藏状态后、只训练最后一层分类头的交叉熵'
+      - '含 LayerNorm 的多层网络损失'
+    answer: [2]
+    explanation: '固定 $\mathbf{h}$ 后，交叉熵 $\log\sum_v e^{\mathbf{z}_v}-z_y$ 关于 $\mathbf{z}=W\mathbf{h}$ 是凸的（log-sum-exp 凸加线性项），所以这个子问题有全局最优保证。'
+    source: "08-微积分与优化/06-凸性.md#8-通往大模型llm-损失不是凸的但局部是"
+    tags: [凸性, 分类头, 大模型]
+
+  # ---------------- 8.7 梯度下降与牛顿法 ----------------
+  - id: q-8.7-001
+    concept: "8.7"
+    section: 4
+    type: numeric
+    difficulty: 2
+    stem: '对 $f(\mathbf{x})=\frac12(3x_1^2+x_2^2)$ 做梯度下降，学习率的收敛上界 $2/\lambda_{\max}$ 是多少？'
+    answer: 0.6667
+    tolerance: 0.001
+    explanation: '$\lambda_{\max}=3$，所以要求 $\eta<2/3\approx0.6667$；超过它，$x_1$ 方向的乘子 $1-3\eta$ 绝对值大于 1，迭代发散。'
+    source: "08-微积分与优化/07-梯度下降与牛顿法.md#4-性质与推导"
+    tags: [学习率上界, 条件数, Hessian]
+
+  - id: q-8.7-002
+    concept: "8.7"
+    section: 5
+    type: single_choice
+    difficulty: 3
+    stem: '对 $f(\mathbf{x})=\frac12(3x_1^2+x_2^2)$，从 $\mathbf{x}_0=(1,1)^\top$ 出发、取 $\eta=0.4$ 做两步梯度下降，$\mathbf{x}_2$ 是？'
+    options:
+      - '$(-0.2,\,0.6)$'
+      - '$(0.4,\,0.2)$'
+      - '$(0.04,\,0.36)$'
+      - '$(0.01,\,0.09)$'
+    answer: [2]
+    explanation: '$\nabla f=(3x_1,x_2)$，$\mathbf{x}_1=(1,1)-0.4(3,1)=(-0.2,0.6)$；再算 $\nabla f=(-0.6,0.6)$，得 $\mathbf{x}_2=(0.04,0.36)$。'
+    source: "08-微积分与优化/07-梯度下降与牛顿法.md#5-例子"
+    tags: [梯度下降, 手算, 震荡]
+
+  - id: q-8.7-003
+    concept: "8.7"
+    section: 6
+    type: true_false
+    difficulty: 2
+    stem: '梯度下降的学习率必须小于 $1$，否则迭代一定发散。'
+    answer: false
+    explanation: '上界是 $2/\lambda_{\max}$，与问题尺度有关：$f(x)=x^2$ 上 $\eta=1.1$ 才发散（上界为 1），而把函数整体乘 $0.01$ 后学习率可以放大 100 倍。'
+    source: "08-微积分与优化/07-梯度下降与牛顿法.md#6-常见误区"
+    tags: [学习率, 尺度, 误区]
+
+  - id: q-8.7-004
+    concept: "8.7"
+    section: 4
+    type: numeric
+    difficulty: 3
+    stem: '设 $A=\operatorname{diag}(9,1)$，$f(\mathbf{x})=\frac12\mathbf{x}^\top A\mathbf{x}$。取最优学习率 $\eta^\star=2/(\lambda_{\max}+\lambda_{\min})$ 时，每步误差的收缩因子 $(\kappa-1)/(\kappa+1)$ 是多少？'
+    answer: 0.8
+    tolerance: 0.001
+    explanation: '$A=\operatorname{diag}(9,1)$，$\kappa=9/1=9$，收缩因子 $(9-1)/(9+1)=0.8$；等价地 $\eta^\star=2/10=0.2$，慢方向乘子 $1-\eta^\star\lambda_{\min}=0.8$。'
+    source: "08-微积分与优化/07-梯度下降与牛顿法.md#4-性质与推导"
+    tags: [条件数, 收敛速率, 手算]
+
+  - id: q-8.7-005
+    concept: "8.7"
+    section: 8
+    type: multiple_choice
+    difficulty: 2
+    stem: '为什么大模型训练通常不直接使用完整牛顿法？'
+    options:
+      - 'Hessian 是 $P\times P$ 矩阵，$P=10^9$ 时要存约 $10^{18}$ 个数'
+      - '解 $H\mathbf{d}=\mathbf{g}$ 需要 $O(P^3)$ 次运算'
+      - '牛顿法对二次函数不能一步到最优'
+      - 'Hessian 不定时，牛顿方向可能指向鞍点甚至上升方向'
+    answer: [0, 1, 3]
+    explanation: '存储 $O(P^2)$、求解 $O(P^3)$ 在十亿参数规模上物理不可行；而牛顿法对二次函数恰恰是一步到位，所以第三条是错的。'
+    source: "08-微积分与优化/07-梯度下降与牛顿法.md#8-通往大模型为什么大模型不用牛顿法"
+    tags: [牛顿法, 计算成本, 大模型]
+
+  # ---------------- 8.8 拉格朗日乘子 ----------------
+  - id: q-8.8-001
+    concept: "8.8"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: '用拉格朗日乘子求 $\min_{x,y} x^2+y^2$，约束 $x+y=1$。最优值是多少？'
+    answer: 0.5
+    tolerance: 0.001
+    explanation: '条件给出 $2x=\lambda$、$2y=\lambda$，所以 $x=y$；代入 $x+y=1$ 得 $(1/2,1/2)$，最优值 $1/4+1/4=1/2$，乘子 $\lambda=1$。'
+    source: "08-微积分与优化/08-拉格朗日乘子.md#5-例子"
+    tags: [拉格朗日乘子, 等式约束, 手算]
+
+  - id: q-8.8-002
+    concept: "8.8"
+    section: 4
+    type: single_choice
+    difficulty: 2
+    stem: '在等式约束 $g(\mathbf{x})=0$ 的最优点处（$\nabla g\neq\mathbf{0}$），$\nabla f$ 与 $\nabla g$ 的关系是？'
+    options:
+      - '$\nabla f=\mathbf{0}$'
+      - '$\nabla f$ 与 $\nabla g$ 正交'
+      - '$\nabla f$ 与 $\nabla g$ 平行，即 $\nabla f=-\lambda\nabla g$'
+      - '$\|\nabla f\|=\|\nabla g\|$'
+    answer: [2]
+    explanation: '若 $\nabla f$ 有切向分量，沿该方向或其反方向走一小步仍可行且 $f$ 下降，矛盾；所以 $\nabla f$ 只能沿约束的法向，与 $\nabla g$ 平行。'
+    source: "08-微积分与优化/08-拉格朗日乘子.md#4-性质与推导"
+    tags: [几何条件, 梯度平行, 约束优化]
+
+  - id: q-8.8-003
+    concept: "8.8"
+    section: 4
+    type: true_false
+    difficulty: 2
+    stem: '当原问题是凸问题且满足 Slater 等约束品性时，KKT 条件不仅必要，而且充分。'
+    answer: true
+    explanation: '此时强对偶成立，$\max_{\boldsymbol\lambda}d(\boldsymbol\lambda)=p^\star$，满足 KKT 的点就是全局最优；一般非凸问题里 KKT 只是必要条件。'
+    source: "08-微积分与优化/08-拉格朗日乘子.md#4-性质与推导"
+    tags: [KKT, 强对偶, 凸优化]
+
+  - id: q-8.8-004
+    concept: "8.8"
+    section: 5
+    type: numeric
+    difficulty: 3
+    stem: '两个动作，奖励 $r=(1,0)$，参考策略 $\pi_{\text{ref}}=(0.5,0.5)$，$\beta=1$。由闭式解 $\pi\propto\pi_{\text{ref}}\exp(r/\beta)$，最优策略第一个分量的概率是多少？保留到小数点后四位。'
+    answer: 0.7311
+    tolerance: 0.001
+    explanation: '$\pi\propto(0.5e^{1},\,0.5e^{0})=(1.3591,\,0.5)$，归一化得 $(0.7311,\,0.2689)$，此时 KL 约为 $0.111$、目标值约为 $0.6201$。'
+    source: "08-微积分与优化/08-拉格朗日乘子.md#5-例子"
+    tags: [KL正则, 闭式解, 手算]
+
+  - id: q-8.8-005
+    concept: "8.8"
+    section: 8
+    type: single_choice
+    difficulty: 2
+    stem: '在 RLHF 目标 $\max_\pi\;\mathbb{E}_{a\sim\pi}[r(a)]-\beta\operatorname{KL}(\pi\|\pi_{\text{ref}})$ 中，$\beta$ 的作用是？'
+    options:
+      - '它是 KL 约束的乘子（影子价格）：$\beta$ 越大，最优策略越接近 $\pi_{\text{ref}}$'
+      - '它是奖励的放大系数：$\beta$ 越大策略越激进'
+      - '它就是优化器的学习率'
+      - '它就是 KL 阈值 $\epsilon$ 本身'
+    answer: [0]
+    explanation: '闭式解 $\pi^\star\propto\pi_{\text{ref}}e^{r/\beta}$ 表明 $\beta$ 越大指数越平、策略越靠近参考模型；$\beta$ 是「每多花一单位 KL 能换多少奖励」的价格。'
+    source: "08-微积分与优化/08-拉格朗日乘子.md#8-通往大模型rlhf-里的-β-就是乘子"
+    tags: [RLHF, KL约束, 乘子]

@@ -1,0 +1,41 @@
+---
+import Base from "../../layouts/Base.astro";
+import Quiz from "../../components/Quiz";
+import nav from "../../data/nav.json";
+import quizbank from "../../data/quizbank.json";
+
+export function getStaticPaths() {
+  const bank = quizbank as Record<string, any[]>;
+  const modules = nav as any[];
+  return modules
+    .map((m: any) => ({ m, questions: m.concepts.flatMap((c: any) => bank[c.id] || []) }))
+    .map(({ m, questions }: any) => ({
+      params: { module: m.id.toLowerCase() },
+      props: { module: m, questions },
+    }));
+}
+
+interface Props { module: any; questions: any[]; }
+const bank = quizbank as Record<string, any[]>;
+const { module, questions } = Astro.props;
+const conceptsWithQuiz = module.concepts.filter((c: any) => (bank[c.id]?.length || 0) > 0);
+---
+
+<Base title={`${module.id} 练习`} module={module.id} moduleTitle={module.title} wide={true}>
+  <div class="meta-row">
+    <a class="badge accent" href={module.route}>{module.id} 导览</a>
+    <span class="badge">{questions.length} 题</span>
+    <span class="badge">即时判分</span>
+  </div>
+  <h1 style="font-family:var(--font-serif);font-size:clamp(28px,4vw,40px);margin:4px 0 8px">{module.id} 练习</h1>
+  <p style="color:var(--ink-soft);margin:0 0 14px">覆盖 {conceptsWithQuiz.length} 个概念。做错的题会自动记录，可在<a href="/progress/">学习进度</a>查看。</p>
+  <div class="badges" style="margin-bottom:18px">
+    {conceptsWithQuiz.map((c: any) => <a class="badge" href={c.route}>{c.id}</a>)}
+  </div>
+  {questions.length > 0 ? <Quiz client:load questions={questions} /> : (
+    <div class="empty" style="padding:28px">
+      <strong>{module.id} 的题库正在补充。</strong>
+      <p style="margin:8px 0 0">可以先读 <a href={module.route}>{module.id} 模块导览</a>，或去 <a href="/practice/">其他模块练习</a>。</p>
+    </div>
+  )}
+</Base>

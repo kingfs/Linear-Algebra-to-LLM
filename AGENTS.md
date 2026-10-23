@@ -50,6 +50,9 @@
 ├── exercises/                # 每模块习题与答案（mNN-习题.md / mNN-答案.md）
 ├── labs/                     # 可运行的 NumPy 实验，验证直觉
 ├── cheatsheets/              # 公式速查、符号表、术语中英对照
+├── quizbank/                 # Web 题库（mNN.yaml，按概念组织）
+├── figures/                  # Matplotlib 图脚本、SVG 产物与 manifest
+├── web/                      # Astro + React islands 学习平台
 └── scripts/                  # check.py 等质量门禁
 ```
 
@@ -236,3 +239,55 @@ python3 scripts/check_links.py   # 全仓 README/习题/速查表链接
 - 遇到数学不确定：用具体 $2\times2$ 例子验证，或标注「此处需要复核」并登记到 `PROGRESS.md`，**不要猜**。
 - 大模型技术演进快，涉及具体模型参数时写「以某类实现为例」，并给出可自行验证的形状推导。
 - 保持 `PROGRESS.md` 诚实：没写完就是草稿，不要标完成。
+
+---
+
+## 14. Web 学习平台（`web/`）
+
+Web 端是课程的第二消费层，**不是第二内容源**。根目录 Markdown 仍是唯一正文来源；`web/src/content/generated/`、`web/src/data/`、`web/public/figures/`、`web/public/search.json` 都是构建产物，已在 `.gitignore` 中，**不要手改**。
+
+### 14.1 常用命令
+
+```bash
+cd web
+pnpm install
+pnpm dev --port 4321     # http://127.0.0.1:4321/
+pnpm build               # 静态构建到 web/dist
+pnpm check               # astro check（TypeScript）
+node scripts/e2e.mjs     # 12 项浏览器端到端检查
+node scripts/check-quiz.mjs ../quizbank/m01.yaml
+node scripts/check-site-links.mjs   # 构建后全站链接/锚点检查
+```
+
+### 14.2 改内容后的顺序
+
+1. 改根目录 Markdown（概念、模块 README、习题等）。
+2. `cd web && pnpm sync`：重新生成内容集合、导航、搜索、题库、卡片、图。
+3. `pnpm build` 或 `pnpm dev` 验证。
+4. 根目录仍要跑 `python3 scripts/check.py` 与 `python3 scripts/check_links.py`。
+
+### 14.3 题库
+
+- 文件：`quizbank/mNN.yaml`，规范见 [`quizbank/README.md`](quizbank/README.md)。
+- 每题必须有 `concept`、`section`、`type`、`stem`、`explanation`、`source`；`source` 指向真实 Markdown 并带 `#小节锚点`。
+- 数值题答案必须复算，带 `tolerance`；判断题 `answer` 用布尔值；选择题 `answer` 是下标数组。
+- 写完必须跑 `node scripts/check-quiz.mjs ../quizbank/mNN.yaml`，0 error 0 warning 才提交。
+- 不要运行 `pnpm sync` 或 `pnpm build` 来“验证”单文件题库；并行写题时它们会写生成目录，改用上面的独立校验脚本。
+
+### 14.4 图
+
+- 脚本：`figures/scripts/fig_*.py`；产物：`figures/out/*.svg`；映射：`figures/manifest.yaml`。
+- 重新生成：`uv run --with matplotlib --with numpy python figures/scripts/fig_projection.py`。
+- 概念页按 `concepts` 匹配第一张图；新增图后在 manifest 里登记 `caption` 与 `alt`。
+
+### 14.5 提交门禁
+
+Web 相关改动至少满足：
+
+```bash
+cd web && pnpm build && node scripts/check-site-links.mjs && node scripts/e2e.mjs
+python3 scripts/check.py
+python3 scripts/check_links.py
+```
+
+提交时只加源文件：`web/package.json`、`web/pnpm-lock.yaml`、`web/src/**`、`web/scripts/**`、`web/public/favicon.svg`、`web/README.md`、`quizbank/**`、`figures/scripts/**`、`figures/out/**`、`figures/manifest.yaml`。不要提交 `web/node_modules/`、`web/dist/`、`web/src/data/` 等生成物。

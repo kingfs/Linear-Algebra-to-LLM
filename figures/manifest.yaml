@@ -1,0 +1,41 @@
+figures:
+  - id: projection
+    file: projection.svg
+    concepts: ["1.6"]
+    caption: "把 x 投影到 u 的方向：橙色是投影 p，灰色虚线是垂直残差 x−p。"
+    alt: "向量 x 在 u 方向上的投影示意，投影向量与残差垂直"
+  - id: determinant
+    file: determinant.svg
+    concepts: ["5.1"]
+    caption: "单位正方形经过 A 变成平行四边形；面积从 1 变为 |det A|=3。"
+    alt: "单位正方形被矩阵映射为面积 3 的平行四边形"
+  - id: eigenvectors
+    file: eigenvectors.svg
+    concepts: ["6.1"]
+    caption: "网格被 A 拉伸后，特征方向上的向量只改变长度，不改变方向。"
+    alt: "网格变形与两条特征方向，特征值 3 和 1"
+  - id: svd
+    file: svd.svg
+    concepts: ["7.1"]
+    caption: "SVD 把单位圆映射成椭圆；半轴长度就是奇异值 σ₁、σ₂。"
+    alt: "单位圆经过矩阵 A 变成椭圆，标出两个奇异值"
+  - id: pca
+    file: pca.svg
+    concepts: ["9.3"]
+    caption: "PCA 找到方差最大的方向；把点投影到第一主轴上，残差最小。"
+    alt: "二维点云与两条主成分轴，一个点投影到第一主轴"
+  - id: softmax-temperature
+    file: softmax-temperature.svg
+    concepts: ["11.11"]
+    caption: "同一个 logits 向量在不同温度下的 softmax：T 越小越尖锐，T 越大越平坦。"
+    alt: "三组柱状图展示 softmax 随温度变化的分布"
+  - id: rope
+    file: rope.svg
+    concepts: ["11.5"]
+    caption: "RoPE 用位置乘以角度旋转 Q/K；相对位置体现为旋转角之差。"
+    alt: "四个位置对应的旋转向量与角度弧"
+  - id: kv-cache
+    file: kv-cache.svg
+    concepts: ["11.7"]
+    caption: "KV Cache 显存随序列长度线性增长；T=4096 时约 2 GB（示例配置）。"
+    alt: "KV cache 显存随序列长度线性增长的折线图"

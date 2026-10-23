@@ -1,0 +1,268 @@
+---
+import "../styles/global.css";
+import "katex/dist/katex.min.css";
+import nav from "../data/nav.json";
+
+interface Props {
+  title: string;
+  description?: string;
+  module?: string;
+  moduleTitle?: string;
+  toc?: { depth: number; slug: string; text: string }[];
+  source?: string;
+  wide?: boolean;
+}
+
+const { title, description = "面向大模型学习者的线性代数课程", module, toc = [], source, wide = false } = Astro.props;
+const path = Astro.url.pathname;
+const h2s = toc.filter((h) => h.depth === 2);
+const currentModule = module || (path.match(/^\/(?:learn|modules)\/(m\d\d)/)?.[1]?.toUpperCase() ?? "");
+const modules = nav as any[];
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="description" content={description} />
+    <title>{title} · 线性代数 · 大模型基础</title>
+    <script is:inline>
+      try {
+        const saved = localStorage.getItem("la-theme");
+        if (saved) document.documentElement.dataset.theme = saved;
+        else if (matchMedia("(prefers-color-scheme: dark)").matches) document.documentElement.dataset.theme = "dark";
+      } catch {}
+    </script>
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="sidebar" id="sidebar">
+        <a class="brand" href="/">
+          <span class="brand-mark">线</span>
+          <span>
+            <span class="brand-title">线性代数 · 大模型基础</span>
+            <span class="brand-sub">Linear Algebra for LLMs</span>
+          </span>
+        </a>
+
+        <nav class="side-links">
+          <a class:list={["side-link", { active: path === "/" }]} href="/">⌂ 首页</a>
+          <a class:list={["side-link", { active: path.startsWith("/practice") }]} href="/practice/">✎ 练习场</a>
+          <a class:list={["side-link", { active: path.startsWith("/review") }]} href="/review/">◈ 知识卡</a>
+          <a class:list={["side-link", { active: path.startsWith("/wrong") }]} href="/wrong/">✗ 错题本</a>
+          <a class:list={["side-link", { active: path.startsWith("/progress") }]} href="/progress/">▤ 学习进度</a>
+        </nav>
+
+        <div class="side-label">课程模块</div>
+        {modules.map((m: any) => (
+          <details class="module-group" open={m.id === currentModule}>
+            <summary>
+              <span>{m.id}</span>
+              <span>{m.title.replace(/^M\d\d\s*/, "")}</span>
+              <span class="caret">▶</span>
+            </summary>
+            <div class="concept-links">
+              <a class:list={["concept-link", { active: path === m.route }]} href={m.route}>模块导览</a>
+              {m.concepts.map((c: any) => (
+                <a class:list={["concept-link", { active: path === c.route }]} href={c.route}>
+                  {c.id} {c.title.split("：")[0]}
+                </a>
+              ))}
+            </div>
+          </details>
+        ))}
+
+        <div class="side-label">附录</div>
+        <div class="side-links">
+          <a class="side-link" href="/pages/cheatsheets/公式速查/">公式速查</a>
+          <a class="side-link" href="/pages/cheatsheets/术语中英对照/">术语中英对照</a>
+          <a class="side-link" href="/pages/docs/学习地图/">学习地图</a>
+          <a class="side-link" href="/pages/AGENTS/">协作规范</a>
+        </div>
+      </aside>
+
+      <div class="main">
+        <header class="topbar">
+          <button class="icon-btn menu-btn" id="menu-btn" aria-label="打开目录">☰</button>
+          <div class="crumb">
+            <a href="/">课程</a>
+            {module && <><span class="sep">/</span><a href={`/modules/${module.toLowerCase()}/`}>{module}</a></>}
+            {module && <><span class="sep">/</span><span class="now">{title}</span></>}
+            {!module && <><span class="sep">/</span><span class="now">{title}</span></>}
+          </div>
+          <div class="top-actions">
+            <button class="search-trigger" id="search-open" aria-label="搜索">
+              <span>搜索</span><kbd>⌘K</kbd>
+            </button>
+            <button class="icon-btn" id="theme-btn" aria-label="切换主题">◐</button>
+          </div>
+        </header>
+
+        <main class="content">
+          {wide ? (
+            <slot />
+          ) : (
+            <div class={h2s.length ? "with-toc" : ""}>
+              <div>
+                <slot />
+                {source && (
+                  <div class="doc-actions">
+                    <span class="badge">源文件：{source}</span>
+                  </div>
+                )}
+              </div>
+              {h2s.length > 0 && (
+                <nav class="toc" aria-label="本页目录">
+                  <div class="toc-title">本页目录</div>
+                  {h2s.map((h) => <a href={`#${h.slug}`}>{h.text}</a>)}
+                </nav>
+              )}
+            </div>
+          )}
+        </main>
+
+        <footer style="border-top:1px solid var(--line); padding:20px 34px; color:var(--ink-faint); font-size:12px; display:flex; gap:12px; flex-wrap:wrap;">
+          <span>线性代数 · 大模型基础</span>
+          <span>·</span>
+          <a href="/pages/PROGRESS/">课程进度</a>
+          <span>·</span>
+          <a href="/pages/AGENTS/">AGENTS.md</a>
+          <span style="margin-left:auto">本地优先 · 无需登录</span>
+        </footer>
+      </div>
+    </div>
+
+    <dialog class="search-dialog" id="search-dialog">
+      <div class="search-box">
+        <span aria-hidden="true">⌕</span>
+        <input id="search-input" type="search" placeholder="搜索概念、公式、标签…" autocomplete="off" />
+        <kbd>Esc</kbd>
+      </div>
+      <div class="search-results" id="search-results">
+        <div class="search-empty">输入关键词开始搜索</div>
+      </div>
+    </dialog>
+
+    <script>
+      import mermaid from "mermaid";
+
+      const menuBtn = document.getElementById("menu-btn");
+      menuBtn?.addEventListener("click", () => document.body.classList.toggle("sidebar-open"));
+      document.addEventListener("click", (e) => {
+        if (document.body.classList.contains("sidebar-open") && e.target === document.body) {
+          document.body.classList.remove("sidebar-open");
+        }
+      });
+
+      const themeBtn = document.getElementById("theme-btn");
+      themeBtn?.addEventListener("click", () => {
+        const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+        document.documentElement.dataset.theme = next;
+        try { localStorage.setItem("la-theme", next); } catch {}
+        location.reload();
+      });
+
+      const dialog = document.getElementById("search-dialog") as HTMLDialogElement | null;
+      const input = document.getElementById("search-input") as HTMLInputElement | null;
+      const results = document.getElementById("search-results");
+      let index: any[] = [];
+      let cursor = 0;
+      let filtered: any[] = [];
+
+      async function openSearch() {
+        if (!dialog) return;
+        if (!index.length) {
+          try { index = await fetch("/search.json").then((r) => r.json()); } catch { index = []; }
+        }
+        dialog.showModal();
+        input?.focus();
+        render("");
+      }
+      document.getElementById("search-open")?.addEventListener("click", openSearch);
+      window.addEventListener("keydown", (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+          e.preventDefault();
+          openSearch();
+        }
+      });
+      dialog?.addEventListener("click", (e) => {
+        if (e.target === dialog) dialog.close();
+      });
+
+      function render(q: string) {
+        if (!results) return;
+        const s = q.trim().toLowerCase();
+        if (!s) {
+          results.innerHTML = '<div class="search-empty">输入关键词开始搜索</div>';
+          filtered = [];
+          return;
+        }
+        filtered = index
+          .map((d) => {
+            const hay = `${d.title} ${d.id} ${d.module} ${(d.tags || []).join(" ")} ${d.text}`.toLowerCase();
+            const pos = hay.indexOf(s);
+            return pos >= 0 ? { ...d, pos } : null;
+          })
+          .filter(Boolean)
+          .slice(0, 12);
+        cursor = 0;
+        if (!filtered.length) {
+          results.innerHTML = '<div class="search-empty">没有找到，试试英文术语或更短的关键词</div>';
+          return;
+        }
+        results.innerHTML = filtered
+          .map((d, i) => `<a class="search-item${i === 0 ? " active" : ""}" href="${d.route}">
+            <div class="t">${escapeHtml(d.title)}</div>
+            <div class="m">${d.module} · ${escapeHtml((d.tags || []).slice(0, 3).join(" / "))}</div>
+          </a>`)
+          .join("");
+      }
+      input?.addEventListener("input", (e) => render((e.target as HTMLInputElement).value));
+      input?.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") dialog?.close();
+        if (!filtered.length) return;
+        if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+          e.preventDefault();
+          cursor = (cursor + (e.key === "ArrowDown" ? 1 : -1) + filtered.length) % filtered.length;
+          [...results!.querySelectorAll(".search-item")].forEach((el, i) => el.classList.toggle("active", i === cursor));
+        }
+        if (e.key === "Enter") {
+          e.preventDefault();
+          location.href = filtered[cursor].route;
+        }
+      });
+
+      function escapeHtml(s: string) {
+        return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] as string));
+      }
+
+      const tocLinks = [...document.querySelectorAll(".toc a")] as HTMLAnchorElement[];
+      if (tocLinks.length) {
+        const heads = tocLinks.map((a) => document.getElementById(a.hash.slice(1))).filter(Boolean) as HTMLElement[];
+        const obs = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (!entry.isIntersecting) continue;
+              tocLinks.forEach((a) => a.classList.toggle("active", a.hash.slice(1) === entry.target.id));
+            }
+          },
+          { rootMargin: "-20% 0px -70% 0px" },
+        );
+        heads.forEach((h) => obs.observe(h));
+      }
+
+      const mermaidNodes = [...document.querySelectorAll(".mermaid")];
+      if (mermaidNodes.length) {
+        const dark = document.documentElement.dataset.theme === "dark";
+        mermaid.initialize({ startOnLoad: false, securityLevel: "loose", theme: dark ? "dark" : "neutral", fontFamily: "var(--font-sans)" });
+        try {
+          await mermaid.run({ nodes: mermaidNodes as HTMLElement[] });
+        } catch (e) {
+          console.warn("mermaid render failed", e);
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,57 @@
+---
+import Base from "../../layouts/Base.astro";
+import { getCollection, render, type CollectionEntry } from "astro:content";
+import nav from "../../data/nav.json";
+import quizbank from "../../data/quizbank.json";
+
+export async function getStaticPaths() {
+  const docs = await getCollection("docs");
+  return docs
+    .filter((entry) => entry.data.kind === "module")
+    .map((entry) => ({
+      params: { module: entry.data.module.toLowerCase() },
+      props: { entry },
+    }));
+}
+
+interface Props { entry: CollectionEntry<"docs">; }
+const { entry } = Astro.props;
+const { Content, headings } = await render(entry);
+const modules = nav as any[];
+const module = modules.find((m: any) => m.id === entry.data.module);
+const idx = modules.findIndex((m: any) => m.id === entry.data.module);
+const prev = idx > 0 ? modules[idx - 1] : null;
+const next = idx < modules.length - 1 ? modules[idx + 1] : null;
+const qcount = (module?.concepts || []).reduce((s: number, c: any) => s + ((quizbank as any)[c.id]?.length || 0), 0);
+const toc = headings.filter((h: any) => h.depth === 2);
+---
+
+<Base title={`${entry.data.module} ${entry.data.moduleTitle}`} module={entry.data.module} moduleTitle={entry.data.moduleTitle} toc={toc}>
+  <article class="prose">
+    <div class="meta-row">
+      <span class="badge accent">{entry.data.module}</span>
+      <span class="badge">{module?.concepts.length || 0} 篇概念</span>
+      <span class="badge">{qcount} 道题</span>
+    </div>
+    <Content />
+
+    <div class="section-head" style="margin-top:42px;">
+      <h2>本模块概念</h2>
+      <a href={`/practice/${entry.data.module.toLowerCase()}/`}>做本模块练习 →</a>
+    </div>
+    <div class="grid" style="grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));">
+      {module?.concepts.map((c: any) => (
+        <a class="module-card" href={c.route}>
+          <div class="m-id">{c.id} · {c.level}</div>
+          <h3>{c.title}</h3>
+          <div class="m-meta"><span>{c.minutes} 分钟</span><span>·</span><span>{(quizbank as any)[c.id]?.length || 0} 题</span></div>
+        </a>
+      ))}
+    </div>
+
+    <nav class="pager">
+      {prev ? <a href={prev.route}><div class="dir">← 上一模块</div><div class="t">{prev.id} {prev.title}</div></a> : <span />}
+      {next ? <a class="next" href={next.route}><div class="dir">下一模块 →</div><div class="t">{next.id} {next.title}</div></a> : <span />}
+    </nav>
+  </article>
+</Base>

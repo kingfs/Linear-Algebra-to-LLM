@@ -1,0 +1,320 @@
+module: M07
+questions:
+  - id: q-7.1-001
+    concept: "7.1"
+    section: 2
+    type: single_choice
+    difficulty: 1
+    stem: "对 $A\\in\\mathbb{R}^{m\\times n}$ 的完整 SVD $A=U\\Sigma V^\\top$，$U$、$\\Sigma$、$V$ 的形状依次是？"
+    options:
+      - "$m\\times m$、$m\\times n$、$n\\times n$"
+      - "$m\\times n$、$m\\times n$、$n\\times n$"
+      - "$m\\times m$、$n\\times n$、$m\\times n$"
+      - "$n\\times n$、$m\\times n$、$m\\times m$"
+    answer: [0]
+    explanation: "$U$ 是输出空间的正交基、$V$ 是输入空间的正交基，而 $\\Sigma$ 必须与 $A$ 同形，才能让 $U\\Sigma V^\\top$ 乘回 $m\\times n$。"
+    source: "07-SVD/01-SVD的几何.md#2-定义"
+    tags: [SVD, 形状]
+
+  - id: q-7.1-002
+    concept: "7.1"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: "矩阵 $A=\\begin{bmatrix}3&0\\\\4&5\\end{bmatrix}$ 的最大奇异值是多少？保留三位小数。"
+    answer: 6.708
+    tolerance: 0.01
+    explanation: "$A^\\top A=\\begin{bmatrix}25&20\\\\20&25\\end{bmatrix}$ 的特征值为 $45$ 与 $5$，故 $\\sigma_1=\\sqrt{45}=3\\sqrt5\\approx6.708$。"
+    source: "07-SVD/01-SVD的几何.md#5-例子"
+    tags: [奇异值, 手算]
+
+  - id: q-7.1-003
+    concept: "7.1"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: "对任意实矩阵 $A$，$U$ 的列都是 $A$ 的特征向量。"
+    answer: false
+    explanation: "一般不对：$U$ 的列由 $A\\mathbf{v}_i/\\sigma_i$ 得到，并不是 $A$ 的特征向量。$A=\\begin{bmatrix}0&1\\\\0&0\\end{bmatrix}$ 的特征值全为 0，奇异值却是 $1,0$。"
+    source: "07-SVD/01-SVD的几何.md#6-常见误区"
+    tags: [误区, 奇异向量]
+
+  - id: q-7.1-004
+    concept: "7.1"
+    section: 4
+    type: multiple_choice
+    difficulty: 2
+    stem: "关于任意实矩阵 $A$ 的 SVD，下列哪些结论恒成立？"
+    options:
+      - "$\\operatorname{rank}(A)$ 等于非零奇异值的个数"
+      - "$\\sigma_i=\\lvert\\lambda_i(A)\\rvert$ 对方阵总成立"
+      - "$A$ 与 $A^\\top$ 的奇异值相同"
+      - "对任意 $\\mathbf{x}$ 有 $\\|A\\mathbf{x}\\|_2\\le\\sigma_1\\|\\mathbf{x}\\|_2$"
+    answer: [0, 2, 3]
+    explanation: "秩等于非零奇异值个数，转置共享奇异值，$\\sigma_1$ 是最大拉伸倍数。$\\sigma_i=\\lvert\\lambda_i\\rvert$ 只对正规矩阵成立，例如 $\\begin{bmatrix}1&1\\\\0&0\\end{bmatrix}$ 的奇异值是 $\\sqrt2,0$。"
+    source: "07-SVD/01-SVD的几何.md#4-性质与推导"
+    tags: [性质, 秩, 谱范数]
+
+  - id: q-7.2-001
+    concept: "7.2"
+    section: 5
+    type: numeric
+    difficulty: 1
+    stem: "对 $A=\\begin{bmatrix}1&1\\\\1&0\\\\0&1\\end{bmatrix}$，$\\|A\\|_F^2$ 等于多少？"
+    answer: 4
+    tolerance: 0.001
+    explanation: "逐元素平方和为 $1+1+1+0+0+1=4$，也等于 $\\sigma_1^2+\\sigma_2^2=3+1$。"
+    source: "07-SVD/02-SVD的计算与性质.md#5-例子"
+    tags: [Frobenius范数, 手算]
+
+  - id: q-7.2-002
+    concept: "7.2"
+    section: 2
+    type: single_choice
+    difficulty: 1
+    stem: "奇异值与 $A^\\top A$ 特征值的关系是？"
+    options:
+      - "$\\sigma_i=\\lvert\\lambda_i(A)\\rvert$"
+      - "$\\sigma_i=\\lambda_i(A^\\top A)$"
+      - "$\\sigma_i$ 是 $A$ 的特征值开平方"
+      - "$\\sigma_i=\\sqrt{\\lambda_i(A^\\top A)}$"
+    answer: [3]
+    explanation: "$G=A^\\top A$ 对称半正定，$\\sigma_i=\\sqrt{\\lambda_i(G)}$，且 $G$ 的特征向量就是右奇异向量。$A$ 本身可能没有实特征值，不能直接对它的特征值开方。"
+    source: "07-SVD/02-SVD的计算与性质.md#2-定义"
+    tags: [奇异值, A转置A]
+
+  - id: q-7.2-003
+    concept: "7.2"
+    section: 6
+    type: true_false
+    difficulty: 2
+    stem: "只要算出一个很小的奇异值，就足以断定矩阵秩亏。"
+    answer: false
+    explanation: "要先看阈值：NumPy 的 `matrix_rank` 用 $\\sigma_i>\\max(m,n)\\cdot\\varepsilon\\cdot\\sigma_1$ 判定，低于阈值的才算 0。很小的非零奇异值只说明矩阵接近秩亏，不是秩亏。"
+    source: "07-SVD/02-SVD的计算与性质.md#6-常见误区"
+    tags: [数值秩, 误区]
+
+  - id: q-7.2-004
+    concept: "7.2"
+    section: 2
+    type: single_choice
+    difficulty: 2
+    stem: "为什么数值计算 SVD 时不显式构造 $A^\\top A$ 再对它做特征分解？"
+    options:
+      - "因为 $A^\\top A$ 不是对称矩阵"
+      - "因为显式构造会把条件数平方，小奇异值会被舍入误差淹没"
+      - "因为 $A^\\top A$ 的特征值可能为负，无法开方"
+      - "因为 LAPACK 不提供对称矩阵的特征分解"
+    answer: [1]
+    explanation: "$\\kappa(A^\\top A)=\\kappa(A)^2$，$10^8$ 会变成 $10^{16}$，直接吃光双精度的有效位。LAPACK 用双对角化加隐式 QR，全程不形成 $A^\\top A$。"
+    source: "07-SVD/02-SVD的计算与性质.md#3-为什么这样定义"
+    tags: [条件数, 数值稳定性]
+
+  - id: q-7.3-001
+    concept: "7.3"
+    section: 5
+    type: numeric
+    difficulty: 1
+    stem: "$A=\\begin{bmatrix}3&0\\\\4&5\\end{bmatrix}$ 的奇异值为 $3\\sqrt5$ 与 $\\sqrt5$。只保留 $\\sigma_1$ 时，能量比 $\\eta_1$ 是多少？"
+    answer: 0.9
+    tolerance: 0.001
+    explanation: "$\\eta_1=\\sigma_1^2/(\\sigma_1^2+\\sigma_2^2)=45/50=0.9$，即保留 90% 的 Frobenius 能量。"
+    source: "07-SVD/03-低秩近似.md#5-例子"
+    tags: [截断SVD, 能量比, 手算]
+
+  - id: q-7.3-002
+    concept: "7.3"
+    section: 2
+    type: single_choice
+    difficulty: 1
+    stem: "截断 SVD 的谱误差 $\\|A-A_k\\|_2$ 等于？"
+    options:
+      - "$\\sigma_k$"
+      - "$\\sqrt{\\sum_{i>k}\\sigma_i^2}$"
+      - "$\\sigma_{k+1}$"
+      - "$\\sum_{i>k}\\sigma_i$"
+    answer: [2]
+    explanation: "$A-A_k=\\sum_{i>k}\\sigma_i\\mathbf{u}_i\\mathbf{v}_i^\\top$ 的最大奇异值就是 $\\sigma_{k+1}$。第二个选项是 Frobenius 误差，不是谱误差。"
+    source: "07-SVD/03-低秩近似.md#2-定义"
+    tags: [谱范数, 截断SVD]
+
+  - id: q-7.3-003
+    concept: "7.3"
+    section: 4
+    type: multiple_choice
+    difficulty: 2
+    stem: "关于 Eckart–Young 与截断 SVD，下列哪些说法正确？"
+    options:
+      - "在所有秩不超过 $k$ 的矩阵中，$A_k$ 同时最小化 Frobenius 误差与谱误差"
+      - "$\\|A-A_k\\|_F^2=\\sum_{i>k}\\sigma_i^2$ 是精确等式"
+      - "秩不超过 $k$ 的矩阵集合对加法封闭，是一个子空间"
+      - "奇异值小的方向在语义上一定不重要"
+    answer: [0, 1]
+    explanation: "Eckart–Young 给出两种误差的同时最优性，误差公式是精确等式。秩不超过 $k$ 的集合不是子空间（$\\operatorname{diag}(1,0)+\\operatorname{diag}(0,1)=I_2$），小奇异值也可能承载关键细节。"
+    source: "07-SVD/03-低秩近似.md#4-性质与推导"
+    tags: [Eckart-Young, 误差]
+
+  - id: q-7.3-004
+    concept: "7.3"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: "截断 SVD 等价于把 $A$ 中绝对值较小的元素置零。"
+    answer: false
+    explanation: "它丢的是小奇异方向，$A_k=U_k\\Sigma_kV_k^\\top$ 的每个元素通常都会改变。元素级稀疏化与低秩是两种完全不同的结构。"
+    source: "07-SVD/03-低秩近似.md#6-常见误区"
+    tags: [截断SVD, 误区]
+
+  - id: q-7.3-005
+    concept: "7.3"
+    section: 8
+    type: numeric
+    difficulty: 1
+    stem: "LoRA 的增量 $\\Delta W=BA$，$B\\in\\mathbb{R}^{D\\times r}$、$A\\in\\mathbb{R}^{r\\times D}$。$D=4096$、$r=16$ 时参数量 $2Dr$ 是多少？"
+    answer: 131072
+    tolerance: 0.5
+    explanation: "$2\\times4096\\times16=131072$，约为全参数 $4096^2=16{,}777{,}216$ 的 $0.78\\%$。"
+    source: "07-SVD/03-低秩近似.md#8-通往大模型低秩是一种预算"
+    tags: [LoRA, 参数量, 大模型]
+
+  - id: q-7.4-001
+    concept: "7.4"
+    section: 2
+    type: single_choice
+    difficulty: 1
+    stem: "若 $A\\in\\mathbb{R}^{m\\times n}$，伪逆 $A^{+}=V\\Sigma^{+}U^\\top$ 的形状是？"
+    options:
+      - "$m\\times n$"
+      - "$n\\times m$"
+      - "$m\\times m$"
+      - "$n\\times n$"
+    answer: [1]
+    explanation: "$V$ 是 $n\\times n$、$\\Sigma^{+}$ 是 $n\\times m$、$U^\\top$ 是 $m\\times m$，乘起来是 $n\\times m$，正好把输出空间映回输入空间。"
+    source: "07-SVD/04-伪逆与数值秩.md#2-定义"
+    tags: [伪逆, 形状]
+
+  - id: q-7.4-002
+    concept: "7.4"
+    section: 6
+    type: true_false
+    difficulty: 2
+    stem: "$A^{+}A$ 对任意矩阵都等于单位阵 $I$。"
+    answer: false
+    explanation: "$A^{+}A$ 是到行空间的精确投影，只有满列秩（$r=n$）时才等于 $I_n$。秩亏时它离 $I$ 很远，例如 $A=\\begin{bmatrix}1&1\\\\2&2\\end{bmatrix}$ 时 $A^{+}A=\\frac12\\begin{bmatrix}1&1\\\\1&1\\end{bmatrix}$。"
+    source: "07-SVD/04-伪逆与数值秩.md#6-常见误区"
+    tags: [伪逆, 投影, 误区]
+
+  - id: q-7.4-003
+    concept: "7.4"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: "$A=\\begin{bmatrix}1&0\\\\0&1\\\\1&1\\end{bmatrix}$、$\\mathbf{b}=(1,1,1)^\\top$，最小二乘解 $A^{+}\\mathbf{b}$ 的第一个分量是多少？保留三位小数。"
+    answer: 0.667
+    tolerance: 0.01
+    explanation: "正规方程 $A^\\top A=\\begin{bmatrix}2&1\\\\1&2\\end{bmatrix}$、$A^\\top\\mathbf{b}=(2,2)^\\top$，解得 $x_1=x_2=2/3\\approx0.667$。"
+    source: "07-SVD/04-伪逆与数值秩.md#5-例子"
+    tags: [伪逆, 最小二乘, 手算]
+
+  - id: q-7.4-004
+    concept: "7.4"
+    section: 2
+    type: single_choice
+    difficulty: 2
+    stem: "NumPy `matrix_rank` 判定数值秩时使用的默认阈值是？"
+    options:
+      - "$\\tau=10^{-3}$，与矩阵无关"
+      - "$\\tau=\\sigma_1/2$"
+      - "$\\tau=\\max(m,n)\\cdot\\varepsilon_{\\text{mach}}\\cdot\\sigma_1$"
+      - "$\\tau=\\sigma_r$"
+    answer: [2]
+    explanation: "阈值随矩阵规模与机器精度缩放，再乘以最大奇异值；低于它的奇异值按 0 处理。也可以自己指定，如 $10^{-6}\\sigma_1$。"
+    source: "07-SVD/04-伪逆与数值秩.md#2-定义"
+    tags: [数值秩, 阈值]
+
+  - id: q-7.4-005
+    concept: "7.4"
+    section: 4
+    type: multiple_choice
+    difficulty: 3
+    stem: "关于伪逆，下列哪些说法正确？"
+    options:
+      - "$A^{+}=(A^\\top A)^{-1}A^\\top$ 对任意矩阵都成立"
+      - "$AA^{+}$ 是到列空间 $\\operatorname{col}(A)$ 的正交投影"
+      - "$A^{+}A$ 是到行空间 $\\operatorname{row}(A)$ 的正交投影"
+      - "满列秩时 $A^{+}A=I_n$"
+    answer: [1, 2, 3]
+    explanation: "两个投影式对任意矩阵成立；$(A^\\top A)^{-1}A^\\top$ 只在满列秩时可作为公式使用。满列秩时 $A^{+}A=I_n$，但秩亏时只是投影。"
+    source: "07-SVD/04-伪逆与数值秩.md#4-性质与推导"
+    tags: [伪逆, 投影, 满秩]
+
+  - id: q-7.5-001
+    concept: "7.5"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: "PCA 可以直接对未中心化的原始数据矩阵 $X$ 做 SVD，得到的主成分与中心化后相同。"
+    answer: false
+    explanation: "不中心化时第一主成分会指向均值方向，解释的是「位置」而不是「变化」。必须先减均值；特征尺度差异大时通常还要标准化。"
+    source: "07-SVD/05-SVD应用.md#6-常见误区"
+    tags: [PCA, 中心化, 误区]
+
+  - id: q-7.5-002
+    concept: "7.5"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: "四个点 $(1,0.5),(-1,-0.5),(0.5,1),(-0.5,-1)$ 均值为零，$\\tilde X^\\top\\tilde X$ 的特征值为 $4.5$ 与 $0.5$。第一主成分方向上的样本方差是多少（除以 $n-1=3$）？"
+    answer: 1.5
+    tolerance: 0.01
+    explanation: "方差为 $\\sigma_1^2/(n-1)=4.5/3=1.5$，第二主成分为 $0.5/3\\approx0.167$。"
+    source: "07-SVD/05-SVD应用.md#5-例子"
+    tags: [PCA, 方差, 手算]
+
+  - id: q-7.5-003
+    concept: "7.5"
+    section: 4
+    type: single_choice
+    difficulty: 2
+    stem: "对中心化数据 $\\tilde X=U\\Sigma V^\\top$（$n$ 个样本），第 $i$ 个主成分方向上的样本方差是？"
+    options:
+      - "$\\sigma_i$"
+      - "$\\sigma_i^2$"
+      - "$\\sigma_i^2/(n-1)$"
+      - "$\\sigma_i/(n-1)$"
+    answer: [2]
+    explanation: "$\\operatorname{Var}(\\tilde X\\mathbf{v}_i)=\\mathbf{v}_i^\\top C\\mathbf{v}_i=\\sigma_i^2/(n-1)$，其中 $C=\\tilde X^\\top\\tilde X/(n-1)$。"
+    source: "07-SVD/05-SVD应用.md#4-性质与推导"
+    tags: [PCA, 方差, 奇异值]
+
+  - id: q-7.5-004
+    concept: "7.5"
+    section: 8
+    type: multiple_choice
+    difficulty: 3
+    stem: "关于 PCA、推荐与 LoRA 的低秩结构，下列哪些说法正确？"
+    options:
+      - "PCA 的主成分是原始特征的线性组合"
+      - "LoRA 训练出的 $A,B$ 就是 $\\Delta W$ 的 SVD 因子"
+      - "带缺失项的评分矩阵可以直接用精确 SVD 补全"
+      - "推荐中潜在因子的维度是模型结构，LoRA 的秩是优化约束"
+    answer: [0, 3]
+    explanation: "主成分是 $V$ 的列，即原始特征的线性组合。$BA$ 只是秩 $\\le r$ 的参数化，$A,B$ 一般既不正交也不按奇异值排序；带缺失时要做加权分解或 ALS，不能直接精确 SVD。"
+    source: "07-SVD/05-SVD应用.md#8-通往大模型三种低秩不要混"
+    tags: [PCA, 推荐, LoRA, 大模型]
+
+  - id: q-7.5-005
+    concept: "7.5"
+    section: 4
+    type: single_choice
+    difficulty: 1
+    stem: "$\\Delta W=BA$，$B\\in\\mathbb{R}^{D\\times r}$、$A\\in\\mathbb{R}^{r\\times D}$，则 $\\operatorname{rank}(\\Delta W)$ 最大可能是？"
+    options:
+      - "$D$"
+      - "至多 $r$"
+      - "$2r$"
+      - "$D-r$"
+    answer: [1]
+    explanation: "$\\operatorname{rank}(BA)\\le\\min(\\operatorname{rank}B,\\operatorname{rank}A)\\le r$，这正是 LoRA「低秩更新」的含义。"
+    source: "07-SVD/05-SVD应用.md#4-性质与推导"
+    tags: [LoRA, 秩]

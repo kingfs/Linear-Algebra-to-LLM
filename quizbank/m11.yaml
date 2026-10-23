@@ -1,0 +1,558 @@
+# M11 题库。
+module: M11
+questions:
+  - id: q-11.1-001
+    concept: "11.1"
+    section: 2
+    type: single_choice
+    difficulty: 1
+    stem: '词表大小 $V$、隐藏维度 $D$，输入 ID 矩阵形状为 $[B,T]$，查表后 $X$ 的形状是？'
+    options:
+      - '$[B,T,V]$'
+      - '$[B,T,D]$'
+      - '$[T,D]$'
+      - '$[V,D]$'
+    answer: [1]
+    explanation: '查表是对每个 ID 取 $E$ 的一行，$E\in\mathbb{R}^{V\times D}$，所以每个 token 变成 $D$ 维向量，batch 化后是 $[B,T,D]$；$V$ 只决定表有多少行。'
+    source: '11-大模型专题/01-Token与Embedding.md#2-定义'
+    tags: [embedding, 形状]
+
+  - id: q-11.1-002
+    concept: "11.1"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: '一个 batch 有 $B=4$、$T=512$、$D=768$，隐藏状态张量在 fp16（2 字节/元素）下占多少 MiB？'
+    answer: 3
+    tolerance: 0.01
+    explanation: '元素数 $4\times512\times768=1{,}572{,}864$，乘 2 字节得 $3{,}145{,}728$ 字节，恰好 $3$ MiB。'
+    source: '11-大模型专题/01-Token与Embedding.md#5-例子'
+    tags: [隐藏状态, 显存, 手算]
+
+  - id: q-11.1-003
+    concept: "11.1"
+    section: 6
+    type: true_false
+    difficulty: 2
+    stem: '同一个词的初始 embedding 与语境无关，而它最后的隐藏状态会随上下文改变。'
+    answer: true
+    explanation: '查表按 ID 取固定的一行，所以初始向量相同；attention/FFN 逐层混合上下文之后，最终的隐藏状态才不同。'
+    source: '11-大模型专题/01-Token与Embedding.md#6-常见误区'
+    tags: [误区, 上下文]
+
+  - id: q-11.1-004
+    concept: "11.1"
+    section: 8
+    type: single_choice
+    difficulty: 1
+    stem: '关于形状链 $[B,T]\xrightarrow{E}[B,T,D]$，下列哪项正确？'
+    options:
+      - '最后一维是词表大小 $V$'
+      - '第一维 $D$ 是序列长度'
+      - '中间维 $T$ 是隐藏维度'
+      - '最后一维是隐藏维度 $D$，与词表大小 $V$ 无关'
+    answer: [3]
+    explanation: '$V$ 只出现在表的行数和输出 logits 的最后一维；隐藏状态始终是 $[B,T,D]$，$D$ 是每层保持不变的宽度。'
+    source: '11-大模型专题/01-Token与Embedding.md#8-通往大模型形状与参数'
+    tags: [形状链, 端到端]
+
+  - id: q-11.2-001
+    concept: "11.2"
+    section: 2
+    type: single_choice
+    difficulty: 1
+    stem: '批量线性层 $Y=XW^\top+\mathbf{b}$，其中 $X\in\mathbb{R}^{B\times T\times D_{\text{in}}}$、$W\in\mathbb{R}^{D_{\text{out}}\times D_{\text{in}}}$，$Y$ 的形状是？'
+    options:
+      - '$[B,T,D_{\text{in}}]$'
+      - '$[D_{\text{out}},T,B]$'
+      - '$[B,T,D_{\text{out}}]$'
+      - '$[B,D_{\text{in}},D_{\text{out}}]$'
+    answer: [2]
+    explanation: '框架把 $B\times T$ 展平成 $BT$ 行，做 $(BT\times D_{\text{in}})(D_{\text{in}}\times D_{\text{out}})$，再还原成 $[B,T,D_{\text{out}}]$。'
+    source: '11-大模型专题/02-线性层.md#2-定义'
+    tags: [线性层, 形状]
+
+  - id: q-11.2-002
+    concept: "11.2"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: '一个 $D=8$ 的 FFN 结构为 $8\to32\to8$，两层都带偏置，参数量是多少？'
+    answer: 552
+    tolerance: 0.5
+    explanation: '$8\times32+32=288$，$32\times8+8=264$，合计 $552$；其中偏置共 $32+8=40$ 个。'
+    source: '11-大模型专题/02-线性层.md#5-例子'
+    tags: [FFN, 参数量, 手算]
+
+  - id: q-11.2-003
+    concept: "11.2"
+    section: 6
+    type: true_false
+    difficulty: 2
+    stem: '推理时单个 token 通过一个线性层的 FLOPs 约为其参数量的 2 倍。'
+    answer: true
+    explanation: '每个权重参与一次乘加，按「乘加算 2 次浮点运算」的约定，FLOPs 约 $2D_{\text{in}}D_{\text{out}}$，而参数量是 $D_{\text{in}}D_{\text{out}}$。'
+    source: '11-大模型专题/02-线性层.md#6-常见误区'
+    tags: [误区, FLOPs]
+
+  - id: q-11.2-004
+    concept: "11.2"
+    section: 4
+    type: numeric
+    difficulty: 2
+    stem: '用 $12D^2L$ 粗估 $D=4096$、$L=32$ 的 Transformer 主体参数量，结果约多少亿（$10^8$）？'
+    answer: 64.4
+    tolerance: 0.5
+    explanation: '$12\times4096^2\times32=6{,}442{,}450{,}944\approx6.44\times10^9$，即约 $64.4$ 亿，不含 embedding。'
+    source: '11-大模型专题/02-线性层.md#4-性质与推导'
+    tags: [参数量, 量级]
+
+  - id: q-11.3-001
+    concept: "11.3"
+    section: 2
+    type: single_choice
+    difficulty: 1
+    stem: '单头 attention 中 $X\in\mathbb{R}^{T\times D}$、$Q=XW_Q$ 且 $W_Q\in\mathbb{R}^{D\times d_k}$，则 $QK^\top$ 的形状是？'
+    options:
+      - '$[T,d_k]$'
+      - '$[D,D]$'
+      - '$[T,T]$'
+      - '$[d_k,d_k]$'
+    answer: [2]
+    explanation: '$Q,K$ 都是 $[T,d_k]$，所以 $QK^\top$ 是 $[T,T]$：第 $(i,j)$ 项是第 $i$ 个 query 与第 $j$ 个 key 的点积。'
+    source: '11-大模型专题/03-Attention-上-QKV.md#2-定义'
+    tags: [attention, 形状]
+
+  - id: q-11.3-002
+    concept: "11.3"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: '取 $X=I_2$、$W_Q=W_K=W_V=I$、$d_k=2$，softmax 后注意力矩阵 $A$ 的第一行第一列元素约为多少？'
+    answer: 0.67
+    tolerance: 0.002
+    explanation: '缩放后对角分数为 $1/\sqrt2\approx0.707$，另一项为 $0$；$e^{0.707}\approx2.028$，故 $A_{11}=2.028/(2.028+1)\approx0.670$。'
+    source: '11-大模型专题/03-Attention-上-QKV.md#5-例子'
+    tags: [attention, softmax, 手算]
+
+  - id: q-11.3-003
+    concept: "11.3"
+    section: 6
+    type: true_false
+    difficulty: 2
+    stem: '因果掩码可以先做 softmax，再把上三角的权重置零，结果与 softmax 之前加 $-\infty$ 相同。'
+    answer: false
+    explanation: 'softmax 后置零会让该行权重和小于 1，输出不再是 value 的凸组合；正确做法是在 softmax 前把非法位置设为 $-\infty$。'
+    source: '11-大模型专题/03-Attention-上-QKV.md#6-常见误区'
+    tags: [误区, 因果掩码]
+
+  - id: q-11.3-004
+    concept: "11.3"
+    section: 4
+    type: multiple_choice
+    difficulty: 2
+    stem: '关于单头缩放点积注意力，下列哪些结论成立？'
+    options:
+      - 'softmax 后每一行的权重之和为 1'
+      - '$QK^\top$ 的秩至多 $\min(T,d_k)$'
+      - '因果 mask 下，所有 $j>i$ 的位置权重严格为 0'
+      - '把头数从 1 增到 $H$（保持 $d_k=D/H$）会让参数量变成 $H$ 倍'
+    answer: [0, 1, 2]
+    explanation: '前三项分别来自 softmax 按行归一化、$QK^\top$ 是两个瘦矩阵之积、以及 mask 在 softmax 前置 $-\infty$；多头只是把 $D^2$ 拆成 $H$ 份，参数仍是 $4D^2$。'
+    source: '11-大模型专题/03-Attention-上-QKV.md#4-性质与推导'
+    tags: [性质, 秩, 多头]
+
+  - id: q-11.3-005
+    concept: "11.3"
+    section: 8
+    type: single_choice
+    difficulty: 2
+    stem: '取 $D=4096$，$W_Q,W_K,W_V,W_O$ 各为 $D\times D$，单层 attention 的四个投影共约多少参数？'
+    options:
+      - '约 1680 万'
+      - '约 3360 万'
+      - '约 1.34 亿'
+      - '约 6710 万'
+    answer: [3]
+    explanation: '$4D^2=4\times4096^2=67{,}108{,}864$，约 6710 万，也就是每层 $4D^2$ 的来源。'
+    source: '11-大模型专题/03-Attention-上-QKV.md#8-通往大模型参数量复杂度与实现'
+    tags: [参数量, 量级]
+
+  - id: q-11.4-001
+    concept: "11.4"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: 'logits $\mathbf{z}=(2,1,0)$，温度 $T=0.5$ 时 softmax 的第一个分量约为多少？（三位小数）'
+    answer: 0.867
+    tolerance: 0.002
+    explanation: '先除以温度得 $(4,2,0)$，$e^4=54.598$、$e^2=7.389$、$e^0=1$，和 $62.987$，故 $p_1=54.598/62.987\approx0.867$。'
+    source: '11-大模型专题/04-Attention-下-softmax与多头.md#5-例子'
+    tags: [softmax, 温度, 手算]
+
+  - id: q-11.4-002
+    concept: "11.4"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: '在 $d_k=D/H$ 的设定下，多头注意力的总参数量与单头（$d_k=D$）相同。'
+    answer: true
+    explanation: '每个头 $3Dd_k$，$H$ 个头合计 $3D^2$，加 $W_O$ 的 $D^2$ 仍为 $4D^2$；多头只是把同样的维度拆成 $H$ 份。'
+    source: '11-大模型专题/04-Attention-下-softmax与多头.md#6-常见误区'
+    tags: [误区, 多头, 参数量]
+
+  - id: q-11.4-003
+    concept: "11.4"
+    section: 5
+    type: single_choice
+    difficulty: 2
+    stem: 'GQA 中 $H=32$ 个 query 头、$H_{kv}=8$ 组 KV，KV Cache 约为 MHA 的几分之几？'
+    options:
+      - '$1/4$'
+      - '$1/2$'
+      - '$1/8$'
+      - '$1/32$'
+    answer: [0]
+    explanation: '缓存大小与 $H_{kv}$ 成正比，$8/32=1/4$；代价是每组 KV 要服务 4 个 query 头，表达力略降。'
+    source: '11-大模型专题/04-Attention-下-softmax与多头.md#5-例子'
+    tags: [GQA, KV Cache, 显存]
+
+  - id: q-11.5-001
+    concept: "11.5"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: '$d_k=4$、$\text{base}=10000$ 时，第 $i=1$ 对维度的旋转频率 $\theta_1$ 是多少？'
+    answer: 0.01
+    tolerance: 1e-7
+    explanation: '$\theta_i=\text{base}^{-2i/d_k}$，代入 $i=1,d_k=4$ 得 $10000^{-1/2}=10^{-2}=0.01$。'
+    source: '11-大模型专题/05-位置编码与RoPE.md#5-例子'
+    tags: [RoPE, 频率, 手算]
+
+  - id: q-11.5-002
+    concept: "11.5"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: 'RoPE 通常只旋转 $Q$ 和 $K$，不旋转 $V$。'
+    answer: true
+    explanation: '位置影响的是「谁该关注谁」，即匹配分数；$V$ 负责传递内容，旋转它会让输出被位置污染。'
+    source: '11-大模型专题/05-位置编码与RoPE.md#6-常见误区'
+    tags: [误区, RoPE]
+
+  - id: q-11.5-003
+    concept: "11.5"
+    section: 4
+    type: multiple_choice
+    difficulty: 2
+    stem: '关于二维旋转矩阵 $R(\theta)$ 与 RoPE，下列哪些说法正确？'
+    options:
+      - '$R(\theta)^\top R(\phi)=R(\phi-\theta)$'
+      - '旋转后 $Q$、$K$ 的 L2 范数保持不变'
+      - 'RoPE 需要一张 $T_{\max}\times D$ 的可学习位置表'
+      - '只旋转 $Q$、不旋转 $K$，内积仍只依赖 $n-m$'
+    answer: [0, 1]
+    explanation: '$R$ 是正交矩阵，$R^\top=R(-\theta)$，相乘即角度相减；正交变换保范数。RoPE 无参数，且必须同时旋转 Q、K 才能让内积只剩 $n-m$。'
+    source: '11-大模型专题/05-位置编码与RoPE.md#4-性质与推导'
+    tags: [旋转矩阵, 性质]
+
+  - id: q-11.6-001
+    concept: "11.6"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: '$\mathbf{x}=(1,2,3)$，忽略 $\epsilon,\gamma,\beta$，LayerNorm 输出的第一个分量约为多少？（三位小数）'
+    answer: -1.225
+    tolerance: 0.005
+    explanation: '$\mu=2$，$\sigma^2=2/3$，中心化后第一个分量为 $-1$，除以 $\sqrt{2/3}\approx0.816$ 得 $-1.225$。'
+    source: '11-大模型专题/06-LayerNorm与RMSNorm.md#5-例子'
+    tags: [LayerNorm, 手算]
+
+  - id: q-11.6-002
+    concept: "11.6"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: 'LayerNorm 在 batch 维度上统计均值与方差，因此 batch 越大结果越稳定。'
+    answer: false
+    explanation: '在 batch 维统计的是 BatchNorm；LayerNorm 对每个样本、每个 token 的特征维独立计算，与 batch 大小无关。'
+    source: '11-大模型专题/06-LayerNorm与RMSNorm.md#6-常见误区'
+    tags: [误区, LayerNorm, BatchNorm]
+
+  - id: q-11.6-003
+    concept: "11.6"
+    section: 4
+    type: single_choice
+    difficulty: 2
+    stem: '取 $\gamma=1$、忽略 $\epsilon$，RMSNorm 输出的 L2 范数是多少？'
+    options:
+      - '$1$'
+      - '$D$'
+      - '随输入的尺度变化'
+      - '$\sqrt{D}$'
+    answer: [3]
+    explanation: '输出为 $\mathbf{x}/(\|\mathbf{x}\|/\sqrt D)$，范数恒为 $\sqrt D$，与输入尺度无关，所以输出落在半径 $\sqrt D$ 的球面上。'
+    source: '11-大模型专题/06-LayerNorm与RMSNorm.md#4-性质与推导'
+    tags: [RMSNorm, 范数]
+
+  - id: q-11.7-001
+    concept: "11.7"
+    section: 4
+    type: numeric
+    difficulty: 2
+    stem: '$B=1,H=32,T=4096,d_k=128$，fp16 存储，单层 KV Cache 占多少 MiB？'
+    answer: 64
+    tolerance: 0.5
+    explanation: '$2\times32\times4096\times128\times2=67{,}108{,}864$ 字节，除以 $2^{20}$ 得 $64$ MiB；32 层约 2 GiB。'
+    source: '11-大模型专题/07-KVCache.md#4-性质与推导'
+    tags: [KV Cache, 显存, 手算]
+
+  - id: q-11.7-002
+    concept: "11.7"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: 'KV Cache 用显存换计算，因此显存占用反而增加。'
+    answer: true
+    explanation: '它省下重复计算历史 K/V 的算力，但每层、每个头都要存 K 和 V，缓存大小随 $T$ 线性增长。'
+    source: '11-大模型专题/07-KVCache.md#6-常见误区'
+    tags: [误区, KV Cache]
+
+  - id: q-11.7-003
+    concept: "11.7"
+    section: 4
+    type: single_choice
+    difficulty: 2
+    stem: '为什么 decode 阶段通常受显存带宽限制，而不是算力限制？'
+    options:
+      - '每步的矩阵乘很「瘦」，时间主要花在读权重和整个 KV Cache 上'
+      - 'decode 阶段不涉及任何矩阵乘法'
+      - 'KV Cache 让每步的 FLOPs 变大'
+      - 'decode 阶段只做逐元素加法'
+    answer: [0]
+    explanation: 'decode 每步只处理 1 个 token，$M=1$ 的瘦矩阵乘算力利用率低，却要读完整权重与缓存，所以瓶颈在 HBM 带宽。'
+    source: '11-大模型专题/07-KVCache.md#4-性质与推导'
+    tags: [带宽, decode, prefill]
+
+  - id: q-11.8-001
+    concept: "11.8"
+    section: 5
+    type: numeric
+    difficulty: 1
+    stem: '$D=4096$、$r=8$，LoRA 在单个 $D\times D$ 线性层上新增多少参数？'
+    answer: 65536
+    tolerance: 1
+    explanation: '参数量为 $r(D+D)=2Dr=2\times4096\times8=65{,}536$，只有全参数 $4096^2$ 的 $1/256$。'
+    source: '11-大模型专题/08-LoRA.md#5-例子'
+    tags: [LoRA, 参数量, 手算]
+
+  - id: q-11.8-002
+    concept: "11.8"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: 'LoRA 让被冻结的原权重 $W_0$ 本身变成一个低秩矩阵。'
+    answer: false
+    explanation: '低秩的是更新量 $\Delta W=BA$（秩至多 $r$），$W_0$ 保持原样且不参与训练；$W_0+\Delta W$ 一般并不低秩。'
+    source: '11-大模型专题/08-LoRA.md#6-常见误区'
+    tags: [误区, LoRA, 低秩]
+
+  - id: q-11.8-003
+    concept: "11.8"
+    section: 2
+    type: single_choice
+    difficulty: 2
+    stem: '要使 $\Delta W=BA$ 与 $W_0\in\mathbb{R}^{D_{\text{out}}\times D_{\text{in}}}$ 同形，$A$、$B$ 的形状应是？'
+    options:
+      - '$B:[D_{\text{out}},r]$，$A:[r,D_{\text{in}}]$'
+      - '$B:[r,D_{\text{out}}]$，$A:[D_{\text{in}},r]$'
+      - '$B:[D_{\text{in}},r]$，$A:[r,D_{\text{out}}]$'
+      - '$B:[r,r]$，$A:[D_{\text{in}},D_{\text{out}}]$'
+    answer: [0]
+    explanation: '$(D_{\text{out}}\times r)(r\times D_{\text{in}})\to D_{\text{out}}\times D_{\text{in}}$；中间的 $r$ 正是瓶颈维度，也给出秩上界。'
+    source: '11-大模型专题/08-LoRA.md#2-定义'
+    tags: [LoRA, 形状, 秩]
+
+  - id: q-11.9-001
+    concept: "11.9"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: '权重范围为 $[-2,2]$，做 int8 对称量化，缩放因子 $s$ 约为多少？（四位小数）'
+    answer: 0.0157
+    tolerance: 0.0001
+    explanation: '对称 int8 取 $s=\max|x|/127=2/127\approx0.01575$，此时最大绝对误差为 $s/2\approx0.0079$。'
+    source: '11-大模型专题/09-量化.md#5-例子'
+    tags: [量化, 缩放因子, 手算]
+
+  - id: q-11.9-002
+    concept: "11.9"
+    section: 2
+    type: single_choice
+    difficulty: 1
+    stem: '对称量化中，未被截断的值反量化后的最大绝对误差是多少？'
+    options:
+      - '$s$'
+      - '$2s$'
+      - '$s/127$'
+      - '$s/2$'
+    answer: [3]
+    explanation: '舍入到最近的整数格点，误差不超过半个步长，即 $|\hat{x}-x|\le s/2$；相对误差则是 $s/(2|x|)$，小值更大。'
+    source: '11-大模型专题/09-量化.md#2-定义'
+    tags: [量化, 误差]
+
+  - id: q-11.9-003
+    concept: "11.9"
+    section: 6
+    type: true_false
+    difficulty: 2
+    stem: '由于整数网格的步长 $s$ 固定，量化对大值和小值的相对误差相同。'
+    answer: false
+    explanation: '绝对误差上界同为 $s/2$，但相对误差约 $s/(2|x|)$，小值的相对误差大得多，$x=0.001$ 时甚至可能被量化为 0。'
+    source: '11-大模型专题/09-量化.md#6-常见误区'
+    tags: [误区, 相对误差, outlier]
+
+  - id: q-11.10-001
+    concept: "11.10"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: '路由器输出 $\mathbf{r}=(2.0,0.5,1.0,-1.0)$、$k=2$，被选中专家的门控权重 $g_1$ 约为多少？（三位小数）'
+    answer: 0.731
+    tolerance: 0.002
+    explanation: 'top-2 选中专家 1 与专家 3，只在两者上做 softmax：$e^2/(e^2+e^1)=7.389/10.107\approx0.731$，另一个是 $0.269$。'
+    source: '11-大模型专题/10-MoE路由.md#5-例子'
+    tags: [MoE, 路由, 手算]
+
+  - id: q-11.10-002
+    concept: "11.10"
+    section: 6
+    type: true_false
+    difficulty: 2
+    stem: 'MoE 推理时显存只需装下被 top-k 选中的那几个专家。'
+    answer: false
+    explanation: '计算按激活参数算，显存却要按总参数算：所有专家都可能被不同 token 选中，必须全部驻留或被换入。'
+    source: '11-大模型专题/10-MoE路由.md#6-常见误区'
+    tags: [误区, MoE, 显存]
+
+  - id: q-11.10-003
+    concept: "11.10"
+    section: 4
+    type: multiple_choice
+    difficulty: 2
+    stem: '关于 MoE 的参数、计算与梯度，下列哪些说法正确？'
+    options:
+      - '总参数约 $E\cdot P_e$，单 token 激活参数约 $k\cdot P_e$'
+      - 'top-k 的选择不可微，但被选中专家的门控权重可微'
+      - '显存占用应按激活参数计算'
+      - '路由坍缩会让有效容量退化到少数专家'
+    answer: [0, 1, 3]
+    explanation: 'MoE 解耦总参数与单 token 计算，梯度经门控权重回传到路由器；显存仍按总参数算，所以第三项错误。'
+    source: '11-大模型专题/10-MoE路由.md#4-性质与推导'
+    tags: [MoE, 参数, 梯度]
+
+  - id: q-11.11-001
+    concept: "11.11"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: 'logits $\mathbf{z}=(2,1,0)$，温度 $T=0.7$ 时第一个词的概率约为多少？（三位小数）'
+    answer: 0.771
+    tolerance: 0.002
+    explanation: '$\mathbf{z}/T\approx(2.857,1.429,0)$，$e^{2.857}\approx17.41$、$e^{1.429}\approx4.18$、$e^0=1$，和为 $22.59$，故 $p_1\approx0.771$。'
+    source: '11-大模型专题/11-logits与采样.md#5-例子'
+    tags: [温度, softmax, 手算]
+
+  - id: q-11.11-002
+    concept: "11.11"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: 'top-p=0.9 表示固定保留概率最高的 90% 个候选词。'
+    answer: false
+    explanation: 'top-p 保留的是「累计概率首次达到 0.9 的最小集合」，候选个数随分布形状变化：分布尖锐时可能只剩一个词。'
+    source: '11-大模型专题/11-logits与采样.md#6-常见误区'
+    tags: [误区, top-p]
+
+  - id: q-11.11-003
+    concept: "11.11"
+    section: 2
+    type: single_choice
+    difficulty: 1
+    stem: '带温度的 softmax 中，$T\to0^+$ 时输出分布趋向什么？'
+    options:
+      - '均匀分布'
+      - '与 $T=1$ 完全相同'
+      - 'one-hot，即 argmax 的结果'
+      - '出现负概率'
+    answer: [2]
+    explanation: '除以很小的 $T$ 会放大 logits 差异，最大项指数占优，极限是 one-hot；$T\to\infty$ 才趋向均匀。'
+    source: '11-大模型专题/11-logits与采样.md#2-定义'
+    tags: [温度, 极限]
+
+  - id: q-11.11-004
+    concept: "11.11"
+    section: 2
+    type: numeric
+    difficulty: 2
+    stem: '$\mathbf{p}=(0.6,0.3,0.1)$，top-p=0.8 截断后重新归一化，第一个词的概率变为多少？（三位小数）'
+    answer: 0.667
+    tolerance: 0.002
+    explanation: '累计 $0.6<0.8$，加入 $0.3$ 后 $0.9\ge0.8$，故保留前两个；重归一化得 $0.6/0.9=2/3\approx0.667$。'
+    source: '11-大模型专题/11-logits与采样.md#2-定义'
+    tags: [top-p, 归一化, 手算]
+
+  - id: q-11.12-001
+    concept: "11.12"
+    section: 2
+    type: single_choice
+    difficulty: 2
+    stem: '对 $Y=XW^\top$，记 $\Delta=\partial L/\partial Y$，则 $\partial L/\partial X$ 等于？'
+    options:
+      - '$W\Delta^\top$'
+      - '$\Delta W$'
+      - '$\Delta W^\top$'
+      - '$W^\top\Delta$'
+    answer: [1]
+    explanation: '形状检查：$\Delta$ 为 $BT\times D_{\text{out}}$，$W$ 为 $D_{\text{out}}\times D_{\text{in}}$，只有 $\Delta W$ 得到 $BT\times D_{\text{in}}$，与 $X$ 同形。'
+    source: '11-大模型专题/12-反向传播与稳定性.md#2-定义'
+    tags: [反向传播, 梯度形状]
+
+  - id: q-11.12-002
+    concept: "11.12"
+    section: 1
+    type: numeric
+    difficulty: 2
+    stem: '若每层 Jacobian 把梯度平均放大 1.1 倍，经过 100 层后放大约多少倍？（取整数）'
+    answer: 13781
+    tolerance: 50
+    explanation: '$1.1^{100}\approx13780.6$；这就是「每层略微放大」在深层网络里变成爆炸的原因。'
+    source: '11-大模型专题/12-反向传播与稳定性.md#1-直觉'
+    tags: [梯度, 连乘, 量级]
+
+  - id: q-11.12-003
+    concept: "11.12"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: '梯度裁剪会改变梯度的方向，因此能帮助模型跳出局部极小。'
+    answer: false
+    explanation: '按范数整体缩放只改变长度、不改变方向；它限制的是单步幅度，防止一步迈太大导致 loss spike。'
+    source: '11-大模型专题/12-反向传播与稳定性.md#6-常见误区'
+    tags: [误区, 梯度裁剪]
+
+  - id: q-11.12-004
+    concept: "11.12"
+    section: 4
+    type: multiple_choice
+    difficulty: 3
+    stem: '关于反向传播中的稳定性，下列哪些说法正确？'
+    options:
+      - '残差的 Jacobian 是 $I+J_f$，提供了一条恒等通道'
+      - 'softmax 饱和时 Jacobian 接近零矩阵，梯度消失'
+      - '谱范数 $\|A\|_2$ 等于 $A$ 的最大奇异值'
+      - '加入 LayerNorm 后就不可能再出现梯度爆炸'
+    answer: [0, 1, 2]
+    explanation: '前三项都是标准结论；归一化只控制激活尺度，权重谱范数、残差累积与 softmax 饱和仍可能带来不稳定。'
+    source: '11-大模型专题/12-反向传播与稳定性.md#4-性质与推导'
+    tags: [残差, softmax, 谱范数]

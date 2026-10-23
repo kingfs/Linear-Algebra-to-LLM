@@ -1,0 +1,42 @@
+---
+import Base from "../../layouts/Base.astro";
+import nav from "../../data/nav.json";
+import quizbank from "../../data/quizbank.json";
+import stats from "../../data/stats.json";
+
+const modules = nav as any[];
+const bank = quizbank as Record<string, any[]>;
+const rows = modules.map((m: any) => ({
+  ...m,
+  count: m.concepts.reduce((s: number, c: any) => s + (bank[c.id]?.length || 0), 0),
+}));
+const total = rows.reduce((s: number, m: any) => s + m.count, 0);
+---
+
+<Base title="练习场" wide={true}>
+  <div class="hero" style="padding-top:10px">
+    <div class="eyebrow">Practice</div>
+    <h1 style="font-size:clamp(30px,4vw,44px);margin-bottom:10px">练习场</h1>
+    <p class="lead">按模块刷题，或从错题开始。每道题都带解析与原文回链；做错的题会记在本地。</p>
+    <div class="stats">
+      <div class="stat"><b>{total}</b><span>可判分题</span></div>
+      <div class="stat"><b>{rows.filter((m: any) => m.count > 0).length}</b><span>已有题库的模块</span></div>
+      <div class="stat"><b>{stats.cards}</b><span>知识卡</span></div>
+      <div class="stat"><b>4</b><span>题型</span></div>
+    </div>
+  </div>
+
+  <div class="section-head"><h2>按模块练习</h2><a href="/review/">去复习知识卡 →</a></div>
+  <div class="grid modules-grid">
+    {rows.map((m: any) => (
+      <div class="module-card">
+        <div class="m-id">{m.id} · {m.count} 题</div>
+        <h3>{m.title.replace(/^M\d\d\s*/, "")}</h3>
+        <p>{m.concepts.length} 篇概念，{m.count > 0 ? "可以做整模块练习" : "题库补充中，可先读概念页"}</p>
+        <div class="m-meta">
+          {m.count > 0 ? <a class="btn primary" href={`/practice/${m.id.toLowerCase()}/`}>开始练习</a> : <a class="btn" href={m.route}>先读模块</a>}
+        </div>
+      </div>
+    ))}
+  </div>
+</Base>

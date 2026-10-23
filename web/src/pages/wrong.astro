@@ -1,0 +1,15 @@
+---
+import Base from "../layouts/Base.astro";
+import WrongBook from "../components/WrongBook";
+import quizbank from "../data/quizbank.json";
+const all = Object.values(quizbank as Record<string, any[]>).flat();
+---
+
+<Base title="错题本" wide={true}>
+  <div class="hero" style="padding-top:10px">
+    <div class="eyebrow">Review mistakes</div>
+    <h1 style="font-size:clamp(30px,4vw,44px);margin-bottom:10px">错题本</h1>
+    <p class="lead">按最近一次作答统计：答错的题会留在这里，可以整组重做，也可以回看对应小节。记录只在本地。</p>
+  </div>
+  <WrongBook client:load questions={all as any} />
+</Base>

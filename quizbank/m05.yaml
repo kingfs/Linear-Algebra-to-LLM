@@ -1,0 +1,243 @@
+module: M05
+questions:
+  - id: q-5.1-001
+    concept: "5.1"
+    section: 5
+    type: numeric
+    difficulty: 1
+    stem: "$A=\\begin{bmatrix}3&1\\\\1&2\\end{bmatrix}$，求 $\\det A$。"
+    answer: 5
+    tolerance: 0.001
+    explanation: "$3\\times2-1\\times1=5$；这也是单位正方形经 $A$ 变换后的面积，因为 $\\det A>0$，定向没有翻转。"
+    source: "05-行列式/01-行列式几何.md#5-例子"
+    tags: [行列式, 手算, 二维]
+
+  - id: q-5.1-002
+    concept: "5.1"
+    section: 1
+    type: single_choice
+    difficulty: 1
+    stem: "关于行列式的几何意义，下列哪一句正确？"
+    options:
+      - "$\\det A$ 就是 $A$ 变换后图形的面积"
+      - "$|\\det A|$ 越大，$A$ 一定越病态"
+      - "$\\det A=0$ 说明 $A$ 的所有元素都为 0"
+      - "$\\det A$ 是单位体积的缩放倍率，符号表示定向是否翻转"
+    answer: [3]
+    explanation: "体积乘 $|\\det|$，符号管定向；$\\det$ 依赖尺度，病态要看条件数，$\\det=0$ 只说明降维。"
+    source: "05-行列式/01-行列式几何.md#1-直觉"
+    tags: [几何意义, 定向, 体积]
+
+  - id: q-5.1-003
+    concept: "5.1"
+    section: 6
+    type: true_false
+    difficulty: 2
+    stem: "$\\operatorname{diag}(100,0.01)$ 的行列式为 1，条件数却是 $10^4$，这说明不能用 $\\det$ 的大小判断矩阵是否病态。"
+    answer: true
+    explanation: "$\\det=100\\times0.01=1$，而条件数是 $100/0.01=10^4$；$0.1I_{100}$ 的 $\\det=10^{-100}$，条件数仍为 1。"
+    source: "05-行列式/01-行列式几何.md#6-常见误区"
+    tags: [条件数, 误区, 尺度]
+
+  - id: q-5.1-004
+    concept: "5.1"
+    section: 4
+    type: multiple_choice
+    difficulty: 2
+    stem: "设 $A$ 是 $n\\times n$ 矩阵，下列哪些说法与 $\\det A=0$ 等价？"
+    options:
+      - "$A$ 的列向量线性相关"
+      - "存在非零向量 $\\mathbf{z}$ 使 $A\\mathbf{z}=\\mathbf{0}$"
+      - "$A$ 可逆"
+      - "$\\operatorname{rank}(A)<n$"
+      - "$A$ 把 $n$ 维单位立方体压成低维图形"
+    answer: [0, 1, 3, 4]
+    explanation: "$\\det A=0\\iff$ 列线性相关 $\\iff$ 零空间非平凡 $\\iff$ 降维 $\\iff$ 不可逆，所以「$A$ 可逆」正好相反。"
+    source: "05-行列式/01-行列式几何.md#4-性质与推导"
+    tags: [奇异, 秩, 降维]
+
+  - id: q-5.2-001
+    concept: "5.2"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: "$A=\\begin{bmatrix}1&2&3\\\\0&4&5\\\\1&0&6\\end{bmatrix}$，按第一行展开求 $\\det A$。"
+    answer: 22
+    tolerance: 0.001
+    explanation: "$1(4\\cdot6-5\\cdot0)-2(0\\cdot6-5\\cdot1)+3(0\\cdot0-4\\cdot1)=24+10-12=22$。"
+    source: "05-行列式/02-行列式的性质与计算.md#5-例子"
+    tags: [按行展开, 手算, 三阶]
+
+  - id: q-5.2-002
+    concept: "5.2"
+    section: 4
+    type: single_choice
+    difficulty: 1
+    stem: "下列哪种行变换不改变行列式的值？"
+    options:
+      - "交换两行"
+      - "把某一行乘以 2"
+      - "把某一行加上另一行的 3 倍"
+      - "把某一行除以 2"
+    answer: [2]
+    explanation: "倍加是剪切，平行多面体的底和高都不变；交换会变号，某行乘或除 $c$ 会让 $\\det$ 乘 $c$ 或 $1/c$。"
+    source: "05-行列式/02-行列式的性质与计算.md#4-性质与推导"
+    tags: [行变换, 剪切, 性质]
+
+  - id: q-5.2-003
+    concept: "5.2"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: "$\\det(2I_3)=2\\det I_3=2$。"
+    answer: false
+    explanation: "每一行都被乘了 2，共 3 行，所以 $\\det(2I_3)=2^3\\det I_3=8$；一般地 $\\det(cA)=c^n\\det A$。"
+    source: "05-行列式/02-行列式的性质与计算.md#6-常见误区"
+    tags: [数乘, 误区, 维度]
+
+  - id: q-5.2-004
+    concept: "5.2"
+    section: 8
+    type: numeric
+    difficulty: 3
+    stem: "一个 $1000\\times1000$ 的对角矩阵对角元全为 $0.1$。用 $\\log|\\det A|=\\sum_i\\log|u_{ii}|$ 计算，$\\log|\\det A|$ 约是多少？（保留三位小数）"
+    answer: -2302.585
+    tolerance: 0.1
+    explanation: "$1000\\times\\log 0.1=1000\\times(-2.302585)\\approx-2302.585$；直接算 $\\det$ 会下溢为 0，再取 $\\log$ 得到 $-\\infty$。"
+    source: "05-行列式/02-行列式的性质与计算.md#8-通往大模型logdet-而不是-det"
+    tags: [logdet, 下溢, 数值稳定]
+
+  - id: q-5.2-005
+    concept: "5.2"
+    section: 4
+    type: multiple_choice
+    difficulty: 2
+    stem: "下列哪些行列式恒等式对 $n\\times n$ 矩阵成立？"
+    options:
+      - "$\\det(AB)=\\det A\\det B$"
+      - "$\\det(A+B)=\\det A+\\det B$"
+      - "$\\det(cA)=c^n\\det A$"
+      - "$\\det(A^\\top)=\\det A$"
+      - "$\\det(A^{-1})=1/\\det A$（$A$ 可逆时）"
+    answer: [0, 2, 3, 4]
+    explanation: "$\\det$ 对每一行多线性，但不整体可加：$A=I_2$、$B=-I_2$ 时左边为 0、右边为 2。其余四条都成立。"
+    source: "05-行列式/02-行列式的性质与计算.md#10-一页速记"
+    tags: [恒等式, 多线性, 乘法定理]
+
+  - id: q-5.3-001
+    concept: "5.3"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: "$A=\\begin{bmatrix}3&1\\\\1&2\\end{bmatrix}$，$\\mathbf{b}=(5,5)^\\top$。用 Cramer 法则解 $A\\mathbf{x}=\\mathbf{b}$，求第二个分量 $x_2$。"
+    answer: 2
+    tolerance: 0.001
+    explanation: "$\\det A=5$；把第 2 列换成 $\\mathbf{b}$ 得 $\\det A_2=\\begin{vmatrix}3&5\\\\1&5\\end{vmatrix}=10$，所以 $x_2=10/5=2$。"
+    source: "05-行列式/03-逆与Cramer法则.md#5-例子"
+    tags: [Cramer法则, 手算, 逆]
+
+  - id: q-5.3-002
+    concept: "5.3"
+    section: 2
+    type: single_choice
+    difficulty: 2
+    stem: "关于伴随矩阵，下列哪一句正确？"
+    options:
+      - "$\\operatorname{adj}(A)$ 就是代数余子式矩阵 $C$，不需要转置"
+      - "$\\operatorname{adj}(A)=C^\\top$，且 $A\\operatorname{adj}(A)=\\det(A)I$"
+      - "$\\det(\\operatorname{adj}A)=\\det A$ 对任意 $n\\times n$ 矩阵成立"
+      - "$\\operatorname{adj}(A)=\\det(A)A^{-1}$ 对任意方阵成立"
+    answer: [1]
+    explanation: "伴随矩阵是代数余子式矩阵的转置；恒等式为 $A\\operatorname{adj}(A)=\\det(A)I$，且 $\\det(\\operatorname{adj}A)=(\\det A)^{n-1}$，最后一条只在可逆时成立。"
+    source: "05-行列式/03-逆与Cramer法则.md#2-定义"
+    tags: [伴随矩阵, 代数余子式, 转置]
+
+  - id: q-5.3-003
+    concept: "5.3"
+    section: 6
+    type: true_false
+    difficulty: 2
+    stem: "Cramer 法则对任意线性方程组都适用，包括超定和欠定系统。"
+    answer: false
+    explanation: "Cramer 只适用于方阵且 $\\det A\\neq0$ 的情形；超定、欠定或奇异系统要用最小二乘、伪逆或消元。"
+    source: "05-行列式/03-逆与Cramer法则.md#6-常见误区"
+    tags: [Cramer法则, 适用范围, 误区]
+
+  - id: q-5.3-004
+    concept: "5.3"
+    section: 8
+    type: numeric
+    difficulty: 2
+    stem: "协方差矩阵 $\\Sigma=\\operatorname{diag}(4,9)$。用 Cholesky 的 $\\log\\det\\Sigma=2\\sum_i\\log L_{ii}$ 计算 $\\log\\det\\Sigma$，结果约是多少？（保留三位小数）"
+    answer: 3.584
+    tolerance: 0.01
+    explanation: "$\\log\\det\\Sigma=\\log(4\\times9)=\\log 36\\approx3.584$；Cholesky 因子的对角元是 2 和 3，$2(\\log2+\\log3)$ 与之一致。"
+    source: "05-行列式/03-逆与Cramer法则.md#8-通往大模型高斯密度与流模型里的逆"
+    tags: [多元高斯, logdet, Cholesky]
+
+  - id: q-5.4-001
+    concept: "5.4"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: "$f(u,v)=(u^2,\\,v)$ 的 Jacobian 矩阵记为 $J$。在 $u=2$ 处，局部面积放大倍率 $|\\det J|$ 是多少？"
+    answer: 4
+    tolerance: 0.001
+    explanation: "$J=\\begin{bmatrix}2u&0\\\\0&1\\end{bmatrix}$，$\\det J=2u$，在 $u=2$ 处为 4；这个因子逐点变化，不能提到积分号外。"
+    source: "05-行列式/04-行列式与Jacobian.md#5-例子"
+    tags: [Jacobian, 局部缩放, 手算]
+
+  - id: q-5.4-002
+    concept: "5.4"
+    section: 6
+    type: single_choice
+    difficulty: 1
+    stem: "在极坐标换元 $x=r\\cos\\theta$、$y=r\\sin\\theta$ 下，$dx\\,dy$ 等于？"
+    options:
+      - "$dr\\,d\\theta$"
+      - "$r^2\\,dr\\,d\\theta$"
+      - "$r\\,dr\\,d\\theta$"
+      - "$\\frac{1}{r}\\,dr\\,d\\theta$"
+    answer: [2]
+    explanation: "$\\det J=r(\\cos^2\\theta+\\sin^2\\theta)=r$，所以面积元多一个因子 $r$；漏掉它是最经典的错误。"
+    source: "05-行列式/04-行列式与Jacobian.md#6-常见误区"
+    tags: [极坐标, 面积元, 误区]
+
+  - id: q-5.4-003
+    concept: "5.4"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: "非线性变换的 Jacobian 行列式逐点变化，因此不能把它当成常数提到积分号外。"
+    answer: true
+    explanation: "只有线性变换的 $J$ 才是常数；例如 $f(u,v)=(u^2,v)$ 的 $\\det J=2u$，必须留在积分号内逐点计算。"
+    source: "05-行列式/04-行列式与Jacobian.md#6-常见误区"
+    tags: [换元, 逐点缩放, 积分]
+
+  - id: q-5.4-004
+    concept: "5.4"
+    section: 8
+    type: single_choice
+    difficulty: 2
+    stem: "归一化流的 coupling 层把 Jacobian 设计成块三角阵，主要好处是？"
+    options:
+      - "coupling 的 Jacobian 是块三角阵，$\\det J=\\prod_i s_i$，$\\log|\\det J|$ 只需 $O(D)$ 求和"
+      - "三角阵一定是正交矩阵，所以数值稳定"
+      - "三角阵不可逆，因此可以跳过逆映射的计算"
+      - "三角阵让 $\\det J$ 恒等于 1，训练时可以直接省略这一项"
+    answer: [0]
+    explanation: "coupling 层 $x_2=z_2\\odot s(z_1)+t(z_1)$ 的 Jacobian 是块三角阵，$\\log|\\det J|=\\sum_i\\log|s_i(z_1)|$；代价是每层只变换一半维度。"
+    source: "05-行列式/04-行列式与Jacobian.md#8-通往大模型归一化流的-logdet-j"
+    tags: [归一化流, coupling, 三角Jacobian]
+
+  - id: q-5.4-005
+    concept: "5.4"
+    section: 5
+    type: numeric
+    difficulty: 3
+    stem: "$X\\sim\\mathcal{N}(\\mathbf{0},I_2)$，$Y=AX$，$A=\\operatorname{diag}(2,3)$。$p_Y(\\mathbf{0})$ 是多少？（保留四位小数）"
+    answer: 0.0265
+    tolerance: 0.001
+    explanation: "$p_Y(\\mathbf{0})=p_X(\\mathbf{0})/|\\det A|=\\frac{1}{2\\pi\\cdot6}=\\frac{1}{12\\pi}\\approx0.0265$。"
+    source: "05-行列式/04-行列式与Jacobian.md#5-例子"
+    tags: [概率密度, 换元, 多元高斯]

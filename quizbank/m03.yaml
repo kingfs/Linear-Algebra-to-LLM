@@ -1,0 +1,438 @@
+module: M03
+questions:
+  - id: q-3.1-001
+    concept: "3.1"
+    section: 2
+    type: single_choice
+    difficulty: 1
+    stem: '把 $A\in\mathbb{R}^{2\times3}$ 当数据表读，正确的解释是？'
+    options:
+      - '3 个样本、2 个特征，每行是一个特征'
+      - '2 个特征、3 个样本，每列是一个样本'
+      - '2 个样本、3 个特征，每行是一个样本'
+      - '2 个输入、3 个输出，每列是一次映射'
+    answer: [2]
+    explanation: '数据表身份下，行是样本、列是特征，所以是 2 个样本各 3 个特征；「2 个输入、3 个输出」把行列含义说反了，输入维数看列数、输出维数看行数。'
+    source: "03-矩阵与线性映射/01-矩阵的四种身份.md#2-定义"
+    tags: [矩阵, 数据表, 形状]
+
+  - id: q-3.1-002
+    concept: "3.1"
+    section: 5
+    type: numeric
+    difficulty: 1
+    stem: '设 $A=\begin{bmatrix}1&2&0\\0&1&3\end{bmatrix}$，$\mathbf{x}=(2,3,1)^\top$，则 $A\mathbf{x}$ 的第一个分量是多少？'
+    answer: 8
+    tolerance: 0.001
+    explanation: '按行点积：$1\cdot2+2\cdot3+0\cdot1=8$；按列组合 $2(1,0)^\top+3(2,1)^\top+1(0,3)^\top=(8,6)^\top$，第一分量同样是 8。'
+    source: "03-矩阵与线性映射/01-矩阵的四种身份.md#5-例子"
+    tags: [矩阵乘向量, 手算]
+
+  - id: q-3.1-003
+    concept: "3.1"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: '一个 $m\times n$ 矩阵有 $m$ 个列向量，每个列向量的长度是 $n$。'
+    answer: false
+    explanation: '行列数说反了：它有 $n$ 个列向量、每个长 $m$；有 $m$ 个行向量、每个长 $n$。'
+    source: "03-矩阵与线性映射/01-矩阵的四种身份.md#6-常见误区"
+    tags: [形状, 误区]
+
+  - id: q-3.1-004
+    concept: "3.1"
+    section: 8
+    type: numeric
+    difficulty: 2
+    stem: '一个不含偏置的线性层输入 768 维、输出 3072 维，权重按 $[\text{out},\text{in}]$ 存，参数量是多少？'
+    answer: 2359296
+    tolerance: 0.5
+    explanation: '参数量只由形状决定：$3072\times768=2{,}359{,}296$。'
+    source: "03-矩阵与线性映射/01-矩阵的四种身份.md#8-通往大模型权重矩阵到底存了什么"
+    tags: [线性层, 参数量]
+
+  - id: q-3.2-001
+    concept: "3.2"
+    section: 5
+    type: numeric
+    difficulty: 1
+    stem: '设 $A=\begin{bmatrix}2&1\\1&3\end{bmatrix}$、$\mathbf{x}=(1,2)^\top$，$A\mathbf{x}$ 的第二个分量是多少？'
+    answer: 7
+    tolerance: 0.001
+    explanation: '第二行与 $\mathbf{x}$ 的点积：$1\cdot1+3\cdot2=7$；列组合 $1(2,1)^\top+2(1,3)^\top=(4,7)^\top$ 也给出 7。'
+    source: "03-矩阵与线性映射/02-矩阵乘向量.md#5-例子"
+    tags: [矩阵乘向量, 行点积]
+
+  - id: q-3.2-002
+    concept: "3.2"
+    section: 3
+    type: single_choice
+    difficulty: 1
+    stem: '下列映射中，哪一个不是线性映射？'
+    options:
+      - '$\mathbf{x}\mapsto A\mathbf{x}$'
+      - '$\mathbf{x}\mapsto \mathbf{x}+\mathbf{c}$，其中 $\mathbf{c}\neq\mathbf{0}$'
+      - '$\mathbf{x}\mapsto 3\mathbf{x}$'
+      - '$\mathbf{x}\mapsto O\mathbf{x}$，其中 $O$ 是零矩阵'
+    answer: [1]
+    explanation: '线性映射必须把原点送到原点；加一个非零常向量是仿射映射，$\mathbf{x}=\mathbf{0}$ 时输出为 $\mathbf{c}\neq\mathbf{0}$。'
+    source: "03-矩阵与线性映射/02-矩阵乘向量.md#3-为什么这样定义"
+    tags: [线性映射, 仿射]
+
+  - id: q-3.2-003
+    concept: "3.2"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: '$A\mathbf{x}$ 的计算方法就是把 $A$ 与 $\mathbf{x}$ 的对应元素逐项相乘。'
+    answer: false
+    explanation: '$A\mathbf{x}$ 是行点积（等价于列组合），内维会被求和掉；逐元素相乘是 Hadamard 积 $A\odot X$，还要求两者形状相同。'
+    source: "03-矩阵与线性映射/02-矩阵乘向量.md#6-常见误区"
+    tags: [误区, 逐元素积]
+
+  - id: q-3.2-004
+    concept: "3.2"
+    section: 8
+    type: numeric
+    difficulty: 3
+    stem: '取 $B=8$、$T=512$、$D=4096$，QKV 投影把 $D$ 一次映到 $3D$。按 FLOPs $=2mnp$ 估算，这次投影约是多少 GFLOP（即 $10^9$ 次浮点运算）？'
+    answer: 412
+    tolerance: 1
+    explanation: '$2\cdot(8\cdot512)\cdot4096\cdot12288=2\cdot4096\cdot4096\cdot12288\approx4.12\times10^{11}$ FLOPs，即约 412 GFLOP。'
+    source: "03-矩阵与线性映射/02-矩阵乘向量.md#8-通往大模型线性层就是一次矩阵乘向量"
+    tags: [FLOPs, QKV, 手算]
+
+  - id: q-3.3-001
+    concept: "3.3"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: '设 $A=\begin{bmatrix}1&2&3\\4&5&6\end{bmatrix}$、$B=\begin{bmatrix}1&0\\0&1\\1&1\end{bmatrix}$，$AB$ 的第 $(2,2)$ 个元素是多少？'
+    answer: 11
+    tolerance: 0.001
+    explanation: '$c_{22}$ 是 $A$ 第二行与 $B$ 第二列的点积：$4\cdot0+5\cdot1+6\cdot1=11$。'
+    source: "03-矩阵与线性映射/03-矩阵乘法.md#5-例子"
+    tags: [矩阵乘法, 手算]
+
+  - id: q-3.3-002
+    concept: "3.3"
+    section: 4
+    type: multiple_choice
+    difficulty: 2
+    stem: '关于矩阵乘法，下列哪些说法正确？'
+    options:
+      - '$(AB)C=A(BC)$，只要各次相乘的形状都接得上'
+      - '$(AB)^\top=B^\top A^\top$'
+      - '对任意可乘的 $A,B$ 都有 $AB=BA$'
+      - '$AB=O$ 必然推出 $A=O$ 或 $B=O$'
+    answer: [0, 1]
+    explanation: '结合律来自复合映射的结合；转置要反转顺序。乘法一般不交换，且存在非零的零因子，例如 $\begin{bmatrix}0&1\\0&0\end{bmatrix}^2=O$。'
+    source: "03-矩阵与线性映射/03-矩阵乘法.md#4-性质与推导"
+    tags: [矩阵乘法, 性质]
+
+  - id: q-3.3-003
+    concept: "3.3"
+    section: 6
+    type: true_false
+    difficulty: 2
+    stem: '对任意可乘的 $A,B$，都有 $(AB)^\top=A^\top B^\top$。'
+    answer: false
+    explanation: '必须反序：$(AB)^\top=B^\top A^\top$；按原顺序写常常连形状都接不上。'
+    source: "03-矩阵与线性映射/03-矩阵乘法.md#6-常见误区"
+    tags: [转置, 误区]
+
+  - id: q-3.3-004
+    concept: "3.3"
+    section: 4
+    type: single_choice
+    difficulty: 2
+    stem: '设 $A\in\mathbb{R}^{4\times6}$、$B\in\mathbb{R}^{6\times3}$、$C\in\mathbb{R}^{3\times5}$。按 $2mnp$ 计算，哪种括号化更省，代价是多少？'
+    options:
+      - '$A(BC)$，共 264 FLOPs'
+      - '$(AB)C$，共 420 FLOPs'
+      - '两种顺序都等于 342 FLOPs'
+      - '$(AB)C$，共 264 FLOPs'
+    answer: [3]
+    explanation: '先算 $AB$（$4\times3$）要 $2\cdot4\cdot6\cdot3=144$，再乘 $C$ 要 $2\cdot4\cdot3\cdot5=120$，共 264；先算 $BC$ 则是 $180+240=420$。结合律保证结果相同，不保证代价相同。'
+    source: "03-矩阵与线性映射/03-矩阵乘法.md#4-性质与推导"
+    tags: [FLOPs, 结合律]
+
+  - id: q-3.4-001
+    concept: "3.4"
+    section: 5
+    type: numeric
+    difficulty: 1
+    stem: '设 $A=\begin{bmatrix}4&7\\2&6\end{bmatrix}$，解 $A\mathbf{x}=(1,0)^\top$，$\mathbf{x}$ 的第二个分量是多少？'
+    answer: -0.2
+    tolerance: 0.001
+    explanation: '$\det(A)=24-14=10$，$A^{-1}=\frac{1}{10}\begin{bmatrix}6&-7\\-2&4\end{bmatrix}$，故 $\mathbf{x}=(0.6,-0.2)^\top$。'
+    source: "03-矩阵与线性映射/04-逆矩阵与可逆性.md#5-例子"
+    tags: [逆矩阵, 手算]
+
+  - id: q-3.4-002
+    concept: "3.4"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: '设 $H=\begin{bmatrix}1&1\\1&1.0001\end{bmatrix}$，$\det(H)$ 是多少？'
+    answer: 0.0001
+    tolerance: 0.0000001
+    explanation: '$\det(H)=1\cdot1.0001-1\cdot1=10^{-4}$。它非零，所以 $H$ 可逆，但条件数约 $4\times10^4$，数值上很不稳。'
+    source: "03-矩阵与线性映射/04-逆矩阵与可逆性.md#5-例子"
+    tags: [行列式, 条件数]
+
+  - id: q-3.4-003
+    concept: "3.4"
+    section: 6
+    type: true_false
+    difficulty: 2
+    stem: '若 $A,B$ 都可逆，则 $(AB)^{-1}=A^{-1}B^{-1}$。'
+    answer: false
+    explanation: '撤销复合要反序：$(AB)^{-1}=B^{-1}A^{-1}$；写成 $A^{-1}B^{-1}$ 往往连形状都匹配不上。'
+    source: "03-矩阵与线性映射/04-逆矩阵与可逆性.md#6-常见误区"
+    tags: [逆矩阵, 误区]
+
+  - id: q-3.4-004
+    concept: "3.4"
+    section: 2
+    type: multiple_choice
+    difficulty: 2
+    stem: '对 $n\times n$ 矩阵 $A$，下列哪些条件与「$A$ 可逆」等价？'
+    options:
+      - '$\det(A)\neq0$'
+      - '$\operatorname{rank}(A)=n$'
+      - '$A\mathbf{x}=\mathbf{0}$ 只有零解'
+      - '$A$ 有两行成比例'
+    answer: [0, 1, 2]
+    explanation: '可逆 ⇔ 行列式非零 ⇔ 满秩 ⇔ 零空间只有零 ⇔ 列线性无关；有两行成比例意味着秩小于 $n$，正是奇异的情形。'
+    source: "03-矩阵与线性映射/04-逆矩阵与可逆性.md#2-定义"
+    tags: [可逆性, 等价条件]
+
+  - id: q-3.4-005
+    concept: "3.4"
+    section: 4
+    type: single_choice
+    difficulty: 2
+    stem: '关于条件数 $\kappa(A)=\|A\|\,\|A^{-1}\|$，下列说法正确的是？'
+    options:
+      - '$\kappa(A)$ 越小，反解对扰动越敏感'
+      - '正交矩阵的 $\kappa$ 为 1，是最稳定的情形'
+      - '只要 $A$ 可逆，$\kappa(A)$ 就必然等于 1'
+      - '$\kappa(A)$ 只由矩阵的阶数 $n$ 决定'
+    answer: [1]
+    explanation: '$\kappa\ge1$，正交矩阵达到下界 1；$\kappa$ 越大，输入的微小扰动被放大得越厉害，所以「可逆」不等于数值可靠。'
+    source: "03-矩阵与线性映射/04-逆矩阵与可逆性.md#4-性质与推导"
+    tags: [条件数, 数值稳定性]
+
+  - id: q-3.5-001
+    concept: "3.5"
+    section: 5
+    type: numeric
+    difficulty: 1
+    stem: '设 $A=\begin{bmatrix}1&2&3\\2&5&7\\3&7&9\end{bmatrix}$，$\det(A)$ 是多少？'
+    answer: -1
+    tolerance: 0.001
+    explanation: '消元得 $U=\begin{bmatrix}1&2&3\\0&1&1\\0&0&-1\end{bmatrix}$，$\det(A)=\prod_i u_{ii}=1\cdot1\cdot(-1)=-1$。'
+    source: "03-矩阵与线性映射/05-高斯消元与LU.md#5-例子"
+    tags: [LU, 行列式, 手算]
+
+  - id: q-3.5-002
+    concept: "3.5"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: '设 $A=\begin{bmatrix}0&2&1\\1&1&1\\2&1&0\end{bmatrix}$，先用置换矩阵 $P$ 交换第 1、2 行再消元。$\det(A)$ 是多少？'
+    answer: 3
+    tolerance: 0.001
+    explanation: '$PA=LU$ 中 $\det(PA)=1\cdot2\cdot(-\frac32)=-3$，而 $\det(P)=-1$，所以 $\det(A)=\det(PA)/\det(P)=3$。'
+    source: "03-矩阵与线性映射/05-高斯消元与LU.md#5-例子"
+    tags: [PA=LU, 行列式]
+
+  - id: q-3.5-003
+    concept: "3.5"
+    section: 3
+    type: single_choice
+    difficulty: 2
+    stem: '实际实现 LU 分解时通常写成 $PA=LU$，主要原因是？'
+    options:
+      - '交换行能把消元的复杂度降到 $O(n^2)$'
+      - '置换矩阵会让 $L$ 不再是单位下三角'
+      - '主元为 0 或很小时，交换行既让消元能进行又能控制舍入误差'
+      - '不换行就无法保证 $A=LU$ 中 $L$ 的唯一性'
+    answer: [2]
+    explanation: '主元为 0 会直接除零，主元很小则会放大误差；部分主元法每次把当前列绝对值最大的行换上来，这就是 $PA=LU$ 的来历。'
+    source: "03-矩阵与线性映射/05-高斯消元与LU.md#3-为什么这样定义"
+    tags: [部分主元, 数值稳定性]
+
+  - id: q-3.5-004
+    concept: "3.5"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: '任何方阵都能直接写成 $A=LU$，消元时不需要交换行。'
+    answer: false
+    explanation: '主元为 0 时必须换行，例如 $\begin{bmatrix}0&2&1\\1&1&1\\2&1&0\end{bmatrix}$ 的首个主元就是 0；实际实现为了稳定几乎总用 $PA=LU$。'
+    source: "03-矩阵与线性映射/05-高斯消元与LU.md#6-常见误区"
+    tags: [LU, 误区]
+
+  - id: q-3.5-005
+    concept: "3.5"
+    section: 4
+    type: single_choice
+    difficulty: 2
+    stem: '关于一次 LU 分解与后续求解的代价，下列哪项正确？'
+    options:
+      - '消元 $O(n^3)$，每个新右端项的前代加回代是 $O(n^2)$'
+      - '消元 $O(n^2)$，每个新右端项是 $O(n^3)$'
+      - '消元与每个右端项都是 $O(n^3)$'
+      - '消元与每个右端项都是 $O(n^2)$'
+    answer: [0]
+    explanation: '消元约 $\frac{2}{3}n^3$ FLOPs，前代与回代各约 $n^2$ 量级；所以同一个 $A$ 换很多个 $\mathbf{b}$ 时，复用 $L,U$ 才划算。'
+    source: "03-矩阵与线性映射/05-高斯消元与LU.md#4-性质与推导"
+    tags: [复杂度, LU]
+
+  - id: q-3.6-001
+    concept: "3.6"
+    section: 5
+    type: numeric
+    difficulty: 1
+    stem: '设 $A=\begin{bmatrix}1&2\\3&4\end{bmatrix}$，$A^\top A$ 的第 $(2,2)$ 个元素是多少？'
+    answer: 20
+    tolerance: 0.001
+    explanation: '$(A^\top A)_{22}$ 是 $A$ 第二列与自己的点积：$2^2+4^2=20$；整个矩阵为 $\begin{bmatrix}10&14\\14&20\end{bmatrix}$。'
+    source: "03-矩阵与线性映射/06-转置对称与分块.md#5-例子"
+    tags: [转置, Gram 矩阵, 手算]
+
+  - id: q-3.6-002
+    concept: "3.6"
+    section: 5
+    type: numeric
+    difficulty: 3
+    stem: '设 $M=\begin{bmatrix}1&0&1\\0&2&1\\0&0&3\end{bmatrix}=\begin{bmatrix}A&B\\0&D\end{bmatrix}$，用上三角块求逆公式，$M^{-1}$ 的第 $(1,3)$ 个元素是多少？'
+    answer: -0.3333333
+    tolerance: 0.001
+    explanation: '$A^{-1}=\begin{bmatrix}1&0\\0&0.5\end{bmatrix}$、$D^{-1}=[1/3]$，故右上块 $-A^{-1}BD^{-1}=-\frac13(1,0.5)^\top=(-1/3,-1/6)^\top$。'
+    source: "03-矩阵与线性映射/06-转置对称与分块.md#5-例子"
+    tags: [分块矩阵, 求逆, 手算]
+
+  - id: q-3.6-003
+    concept: "3.6"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: '转置就是求逆：对任意方阵 $A$，都有 $A^\top=A^{-1}$。'
+    answer: false
+    explanation: '转置对任意矩阵都存在，逆只对满秩方阵存在；只有正交矩阵才同时满足 $A^\top=A^{-1}$。'
+    source: "03-矩阵与线性映射/06-转置对称与分块.md#6-常见误区"
+    tags: [转置, 误区]
+
+  - id: q-3.6-004
+    concept: "3.6"
+    section: 4
+    type: multiple_choice
+    difficulty: 2
+    stem: '关于转置，下列哪些等式恒成立？'
+    options:
+      - '$(A^\top)^\top=A$'
+      - '$(AB)^\top=B^\top A^\top$'
+      - '$(A+B)^\top=A^\top+B^\top$'
+      - '$(AB)^\top=A^\top B^\top$'
+    answer: [0, 1, 2]
+    explanation: '转置对合、对加法分配；乘积的转置必须反序。$(AB)^\top=A^\top B^\top$ 通常连形状都不对。'
+    source: "03-矩阵与线性映射/06-转置对称与分块.md#4-性质与推导"
+    tags: [转置, 性质]
+
+  - id: q-3.6-005
+    concept: "3.6"
+    section: 8
+    type: single_choice
+    difficulty: 2
+    stem: '注意力打分写成 $S=QK^\top$，其中 $Q,K\in\mathbb{R}^{T\times d_k}$。这样写的关键理由是？'
+    options:
+      - '转置把 $K$ 变成 $d_k\times T$，所以 $S$ 是 $[d_k,d_k]$'
+      - '不转置就无法对分数做 softmax'
+      - '转置让 $Q$ 的每一行与 $K$ 的每一行两两点积，得到 $[T,T]$ 的分数矩阵'
+      - '转置等价于对 $K$ 求逆，从而完成归一化'
+    answer: [2]
+    explanation: '$QK^\top$ 的形状是 $(T\times d_k)(d_k\times T)=T\times T$，第 $(i,j)$ 项是第 $i$ 个 query 与第 $j$ 个 key 的点积；写成 $QK$ 则内维不匹配。'
+    source: "03-矩阵与线性映射/06-转置对称与分块.md#8-通往大模型qktop多头拼接与-lora"
+    tags: [Attention, 转置, 形状]
+
+  - id: q-3.7-001
+    concept: "3.7"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: '设 $A=\begin{bmatrix}1&2&0&1\\0&1&1&0\\1&3&1&1\end{bmatrix}$，$\operatorname{rank}(A)$ 是多少？'
+    answer: 2
+    tolerance: 0.001
+    explanation: '第三行等于第一行加第二行，而前两行不成比例，所以秩为 2。'
+    source: "03-矩阵与线性映射/07-四个基本子空间.md#5-例子"
+    tags: [秩, 手算]
+
+  - id: q-3.7-002
+    concept: "3.7"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: '接上题，$A$ 是 $3\times4$ 且秩为 2，左零空间 $\operatorname{Null}(A^\top)$ 的维数是多少？'
+    answer: 1
+    tolerance: 0.001
+    explanation: '左零空间在 $\mathbb{R}^m=\mathbb{R}^3$ 中，维数为 $m-r=3-2=1$，基可取 $(1,1,-1)^\top$。'
+    source: "03-矩阵与线性映射/07-四个基本子空间.md#5-例子"
+    tags: [左零空间, 维数]
+
+  - id: q-3.7-003
+    concept: "3.7"
+    section: 2
+    type: single_choice
+    difficulty: 1
+    stem: '设 $A\in\mathbb{R}^{m\times n}$、$\operatorname{rank}(A)=r$，下列哪个等式成立？'
+    options:
+      - '$\dim\operatorname{Col}(A)+\dim\operatorname{Null}(A)=m$'
+      - '$\dim\operatorname{Null}(A)=m-r$'
+      - '$\dim\operatorname{Null}(A)+r=n$'
+      - '$\dim\operatorname{Col}(A)=n-r$'
+    answer: [2]
+    explanation: '秩-零化度定理说的是输入侧维数相加等于 $n$：零空间维数 $n-r$ 加列空间维数 $r$ 等于 $n$。列空间在 $\mathbb{R}^m$，不能与 $\mathbb{R}^n$ 中的零空间直接凑 $m$。'
+    source: "03-矩阵与线性映射/07-四个基本子空间.md#2-定义"
+    tags: [秩-零化度, 维数]
+
+  - id: q-3.7-004
+    concept: "3.7"
+    section: 6
+    type: true_false
+    difficulty: 2
+    stem: '对 $A\in\mathbb{R}^{m\times n}$，总有 $\dim\operatorname{Col}(A)+\dim\operatorname{Null}(A)=m$。'
+    answer: false
+    explanation: '两者分别住在 $\mathbb{R}^m$ 与 $\mathbb{R}^n$，相加没有意义；正确的关系是 $\dim\operatorname{Col}(A)+\dim\operatorname{Null}(A)=n$。'
+    source: "03-矩阵与线性映射/07-四个基本子空间.md#6-常见误区"
+    tags: [误区, 秩-零化度]
+
+  - id: q-3.7-005
+    concept: "3.7"
+    section: 4
+    type: multiple_choice
+    difficulty: 2
+    stem: '设 $A\in\mathbb{R}^{m\times n}$、秩为 $r$，下列哪些说法正确？'
+    options:
+      - '行空间与零空间都在 $\mathbb{R}^n$ 中，且互相正交'
+      - '列空间与左零空间都在 $\mathbb{R}^m$ 中，且互相正交'
+      - '$\dim\operatorname{Null}(A^\top)=m-r$'
+      - '行变换保持列空间不变'
+    answer: [0, 1, 2]
+    explanation: '两个正交直和分解是 $\mathbb{R}^n=\operatorname{Row}(A)\oplus\operatorname{Null}(A)$ 与 $\mathbb{R}^m=\operatorname{Col}(A)\oplus\operatorname{Null}(A^\top)$；行变换只保持列空间的维数，不保持列空间本身，列空间的基要取原矩阵的主元列。'
+    source: "03-矩阵与线性映射/07-四个基本子空间.md#4-性质与推导"
+    tags: [子空间, 正交, 维数]
+
+  - id: q-3.7-006
+    concept: "3.7"
+    section: 8
+    type: numeric
+    difficulty: 2
+    stem: '设 $Q,K\in\mathbb{R}^{1024\times64}$，$S=QK^\top$。$\operatorname{rank}(S)$ 最大是多少？'
+    answer: 64
+    tolerance: 0.001
+    explanation: '$\operatorname{rank}(QK^\top)\le\min(\operatorname{rank}Q,\operatorname{rank}K)\le d_k=64$，所以 $1024\times1024$ 的分数矩阵秩最多 64。'
+    source: "03-矩阵与线性映射/07-四个基本子空间.md#8-通往大模型秩就是信息瓶颈"
+    tags: [秩, Attention, 信息瓶颈]

@@ -1,0 +1,158 @@
+module: M00
+questions:
+  - id: q-0.1-001
+    concept: "0.1"
+    section: 4
+    type: numeric
+    difficulty: 2
+    stem: "设隐藏维度 $D=512$、层数 $L=6$，用 $12D^2L$ 粗估主体参数量，再加词表大小 $V=32000$ 的 embedding 参数 $V\\times D$，总参数量是多少？"
+    answer: 35258368
+    tolerance: 1000
+    explanation: "$12\\times512^2\\times6=18{,}874{,}368$，embedding 为 $32000\\times512=16{,}384{,}000$，合计 $35{,}258{,}368$。"
+    source: "00-准备/01-为什么大模型的母语是线性代数.md#4-性质与推导"
+    tags: [参数量, 手算, 12D2L]
+
+  - id: q-0.1-002
+    concept: "0.1"
+    section: 5
+    type: single_choice
+    difficulty: 1
+    stem: "矩阵 $R=\\begin{bmatrix}0&-1\\\\1&0\\end{bmatrix}$ 作用在 $\\mathbf{x}=(1,1)^\\top$ 上，得到哪个向量？"
+    options:
+      - "$(1,-1)^\\top$"
+      - "$(-1,1)^\\top$"
+      - "$(1,1)^\\top$"
+      - "$(0,1)^\\top$"
+    answer: [1]
+    explanation: "$R\\mathbf{x}=(0\\cdot1+(-1)\\cdot1,\\;1\\cdot1+0\\cdot1)^\\top=(-1,1)^\\top$，即把向量逆时针旋转 90°。"
+    source: "00-准备/01-为什么大模型的母语是线性代数.md#5-例子"
+    tags: [线性映射, 旋转, 手算]
+
+  - id: q-0.1-003
+    concept: "0.1"
+    section: 6
+    type: true_false
+    difficulty: 2
+    stem: "只要网络里插入了 ReLU、softmax 等非线性函数，线性代数在模型中的参数与计算占比就变得很小。"
+    answer: false
+    explanation: "非线性是逐元素、点状的；绝大部分参数（约 $12D^2L$）与浮点运算仍在矩阵乘法里，分析非线性网络时也仍然依赖每一点的局部线性化（Jacobian）。"
+    source: "00-准备/01-为什么大模型的母语是线性代数.md#6-常见误区"
+    tags: [非线性, 误区]
+
+  - id: q-0.1-004
+    concept: "0.1"
+    section: 2
+    type: single_choice
+    difficulty: 1
+    stem: "下列一元函数中，哪一个满足线性映射的定义 $T(a\\mathbf{x}+b\\mathbf{y})=aT(\\mathbf{x})+bT(\\mathbf{y})$？"
+    options:
+      - "$f(x)=x^2$"
+      - "$f(x)=x+2$"
+      - "$f(x)=3x$"
+      - "$f(x)=\\sin x$"
+    answer: [2]
+    explanation: "$f(x)=3x$ 同时满足可加性与齐次性；$x+2$ 是仿射（不过原点），$x^2$ 与 $\\sin x$ 都会破坏可加性。"
+    source: "00-准备/01-为什么大模型的母语是线性代数.md#2-定义"
+    tags: [线性映射, 定义]
+
+  - id: q-0.2-001
+    concept: "0.2"
+    section: 5
+    type: numeric
+    difficulty: 1
+    stem: "展开并计算 $\\sum_{i=1}^{2}\\sum_{j=1}^{3}(i+j)$。"
+    answer: 21
+    tolerance: 0.001
+    explanation: "固定 $i=1$：$2+3+4=9$；固定 $i=2$：$3+4+5=12$；合计 $9+12=21$。"
+    source: "00-准备/02-数学语言-集合映射与求和.md#5-例子"
+    tags: [求和符号, 手算]
+
+  - id: q-0.2-002
+    concept: "0.2"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: "设 $A=\\begin{bmatrix}2&1\\\\0&3\\end{bmatrix}$，$B=\\begin{bmatrix}1&-1\\\\2&0\\end{bmatrix}$，用指标公式 $(AB)_{ij}=\\sum_k a_{ik}b_{kj}$ 求 $(AB)_{21}$。"
+    answer: 6
+    tolerance: 0.001
+    explanation: "取 $A$ 第 2 行 $(0,3)$ 与 $B$ 第 1 列 $(1,2)^\\top$：$0\\cdot1+3\\cdot2=6$。"
+    source: "00-准备/02-数学语言-集合映射与求和.md#5-例子"
+    tags: [矩阵乘法, 指标记号, 手算]
+
+  - id: q-0.2-003
+    concept: "0.2"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: "对任意可相乘的同形方阵，$(AB)_{ij}=a_{ij}b_{ij}$ 都成立。"
+    answer: false
+    explanation: "$a_{ij}b_{ij}$ 是逐元素积 $A\\odot B$；矩阵乘法的 $(AB)_{ij}$ 要对中间维度 $k$ 求和，混合 $A$ 的整行与 $B$ 的整列。"
+    source: "00-准备/02-数学语言-集合映射与求和.md#6-常见误区"
+    tags: [矩阵乘法, 逐元素积, 误区]
+
+  - id: q-0.2-004
+    concept: "0.2"
+    section: 8
+    type: true_false
+    difficulty: 2
+    stem: "attention 的权重矩阵 $P=\\operatorname{softmax}(QK^\\top/\\sqrt{d_k})$ 的每一行元素之和等于 1。"
+    answer: true
+    explanation: "softmax 沿最后一维（被关注的 $T$ 个位置）归一化，所以对每个 query 行都有 $\\sum_{j=1}^{T}p_{ij}=1$，输出是 value 向量的加权平均。"
+    source: "00-准备/02-数学语言-集合映射与求和.md#8-通往大模型用指标读懂-attention"
+    tags: [attention, softmax, 大模型关联]
+
+  - id: q-0.3-001
+    concept: "0.3"
+    section: 8
+    type: numeric
+    difficulty: 2
+    stem: "取 $B=1$、$H=32$、$T=4096$，注意力权重矩阵形状为 `[1,32,4096,4096]`，用 fp16（每元素 2 字节）存下它需要多少 GiB？"
+    answer: 1
+    tolerance: 0.01
+    unit: "GiB"
+    explanation: "$32\\times4096^2\\times2$ 字节 $=1{,}073{,}741{,}824$ 字节，恰好 1 GiB；这也是长上下文必须先处理 $T^2$ 复杂度的原因。"
+    source: "00-准备/03-标量向量矩阵张量.md#8-通往大模型把-btd-刻进脑子"
+    tags: [注意力显存, 张量形状, 大模型关联]
+
+  - id: q-0.3-002
+    concept: "0.3"
+    section: 4
+    type: single_choice
+    difficulty: 2
+    stem: "`A` 的形状是 `[8,5,3]`，`B` 的形状是 `[8,3,7]`，`A @ B` 的结果形状是？"
+    options:
+      - "`[8,3,7]`"
+      - "`[8,5,7]`"
+      - "`[5,7]`"
+      - "报错：两个数组轴数不同，不能相乘"
+    answer: [1]
+    explanation: "批量矩阵乘只作用在最后两维：每个 batch 做 $(5\\times3)(3\\times7)\\to5\\times7$，批量轴 8 保留，所以得到 `[8,5,7]`。"
+    source: "00-准备/03-标量向量矩阵张量.md#4-性质与推导"
+    tags: [批量矩阵乘, 形状推导]
+
+  - id: q-0.3-003
+    concept: "0.3"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: "`reshape` 会重排元素在内存中的顺序，所以把 `[2,3,4]` 变成 `[6,4]` 后，元素的位置会改变。"
+    answer: false
+    explanation: "`reshape` 不移动数据，只改变「怎么索引」的解释（按行优先展开）；真正改变轴顺序的是 `transpose`/`permute`。"
+    source: "00-准备/03-标量向量矩阵张量.md#6-常见误区"
+    tags: [reshape, 内存布局, 误区]
+
+  - id: q-0.3-004
+    concept: "0.3"
+    section: 4
+    type: multiple_choice
+    difficulty: 2
+    stem: "把形状 `[2,3,4]` 的数组做 reshape，下列哪些目标形状在元素总数上是合法的？"
+    options:
+      - "`[6,4]`"
+      - "`[2,12]`"
+      - "`[24]`"
+      - "`[5,5]`"
+    answer: [0, 1, 2]
+    explanation: "原数组有 $2\\times3\\times4=24$ 个元素，`[6,4]`、`[2,12]`、`[24]` 都是 24 个；`[5,5]` 需要 25 个，元素数不守恒。"
+    source: "00-准备/03-标量向量矩阵张量.md#4-性质与推导"
+    tags: [reshape, 元素总数, 多选]

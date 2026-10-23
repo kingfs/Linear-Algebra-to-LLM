@@ -1,0 +1,130 @@
+---
+import Base from "../layouts/Base.astro";
+import nav from "../data/nav.json";
+import stats from "../data/stats.json";
+import cards from "../data/cards.json";
+import quizbank from "../data/quizbank.json";
+
+const modules = nav as any[];
+const totalMinutes = modules.reduce((s: number, m: any) => s + m.concepts.reduce((x: number, c: any) => x + c.minutes, 0), 0);
+const featured = modules.slice(0, 6);
+const cardCount = (cards as any[]).length;
+const questionCount = Object.values(quizbank as Record<string, any[]>).reduce((s, q) => s + q.length, 0);
+const moduleBlurb: Record<string, string> = {
+  M00: "从集合、映射、求和符号到张量轴，先建立读公式的眼睛。",
+  M01: "向量、点积、范数、余弦与投影：embedding 相似度的全部几何。",
+  M02: "张成、无关、基、秩、正交化：表示空间的骨架。",
+  M03: "矩阵的四种身份、乘法、逆、LU 与四子空间。",
+  M04: "解的结构、最小二乘、伪逆与条件数：从方程到微调。",
+  M05: "行列式作为体积缩放、可逆性与 Jacobian。",
+  M06: "特征值、对角化、谱定理、二次型与幂迭代。",
+  M07: "奇异值、低秩近似、伪逆：LoRA 与压缩的数学。",
+  M08: "梯度、Jacobian、Hessian、反向传播与优化。",
+  M09: "协方差、高斯、PCA、白化与马尔可夫链。",
+  M10: "浮点误差、条件数、GEMM、迭代法与稀疏矩阵。",
+  M11: "Token、Attention、RoPE、KV Cache、LoRA、量化、MoE。",
+  M12: "张量/einsum、随机矩阵与全景研究路线。",
+};
+---
+
+<Base title="首页" wide={true}>
+  <section class="hero">
+    <div class="eyebrow">Linear Algebra · for LLM learners</div>
+    <h1>把线性代数<br />变成你能用的直觉</h1>
+    <p class="lead">
+      从「向量是什么」讲到 Attention、KV Cache 与 LoRA。每个概念都先给场景，再给定义，
+      最后落到大模型的形状与计算。现在，它也可以做题、翻卡、看图和记录进度。
+    </p>
+    <div class="hero-actions">
+      <a class="btn primary" href="/learn/m00/why-linear-algebra/">从第一课开始 →</a>
+      <a class="btn" href="/learn/m01/dot-product/">从点积开始</a>
+      <a class="btn" href="/practice/">进入练习场</a>
+      <a class="btn ghost" href="/pages/docs/学习地图/">看学习地图</a>
+    </div>
+    <div class="stats">
+      <div class="stat"><b>{stats.concepts}</b><span>概念文档</span></div>
+      <div class="stat"><b>{stats.modules}</b><span>课程模块</span></div>
+      <div class="stat"><b>{questionCount}</b><span>可判分题目</span></div>
+      <div class="stat"><b>{cardCount}</b><span>知识卡</span></div>
+    </div>
+  </section>
+
+  <div class="section-head">
+    <h2>从哪开始</h2>
+    <a href="/pages/docs/学习地图/">完整依赖图 →</a>
+  </div>
+  <div class="grid modules-grid">
+    <a class="module-card" href="/learn/m00/why-linear-algebra/">
+      <div class="m-id">路线 A · 零基础</div>
+      <h3>按顺序打地基</h3>
+      <p>M00 → M12，每周 6–8 小时。先把几何直觉和矩阵语言建起来，再进入 SVD 与大模型专题。</p>
+      <div class="m-meta"><span>约 {Math.round(totalMinutes / 60)} 小时</span><span>·</span><span>81 篇</span></div>
+    </a>
+    <a class="module-card" href="/learn/m11/attention-qkv/">
+      <div class="m-id">路线 B · 直奔大模型</div>
+      <h3>只为读懂 Transformer</h3>
+      <p>M00 → M01 → M02 核心 → M03 → M07 低秩 → M11。跳过暂不需要的证明，保留形状与量级。</p>
+      <div class="m-meta"><span>约 12 小时</span><span>·</span><span>精选 30 篇</span></div>
+    </a>
+    <a class="module-card" href="/practice/">
+      <div class="m-id">路线 C · 以题带学</div>
+      <h3>先做 5 题，再读一节</h3>
+      <p>用题目暴露盲点，再回链原文。做错的题进入错题本，知识卡按间隔重复出现。</p>
+      <div class="m-meta"><span>{questionCount} 题</span><span>·</span><span>{cardCount} 张卡</span></div>
+    </a>
+  </div>
+
+  <div class="section-head">
+    <h2>课程模块</h2>
+    <a href="/pages/curriculum/syllabus/">完整大纲 →</a>
+  </div>
+  <div class="grid modules-grid">
+    {modules.map((m: any) => (
+      <a class="module-card" href={m.route}>
+        <div class="m-id">{m.id} · {m.concepts.length} 篇</div>
+        <h3>{m.title.replace(/^M\d\d\s*/, "")}</h3>
+        <p>{moduleBlurb[m.id] || ""}</p>
+        <div class="m-meta">
+          <span>{m.concepts.reduce((s: number, c: any) => s + c.minutes, 0)} 分钟</span>
+          <span>·</span>
+          <span>{m.concepts[0]?.id} – {m.concepts[m.concepts.length - 1]?.id}</span>
+        </div>
+      </a>
+    ))}
+  </div>
+
+  <div class="section-head">
+    <h2>怎么用这套课程</h2>
+    <a href="/pages/AGENTS/">写作与维护规范 →</a>
+  </div>
+  <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));">
+    <div class="module-card">
+      <div class="m-id">01 · 读</div>
+      <h3>每篇 11 节，先看场景</h3>
+      <p>不要一上来背定义。先读「场景引入」和「直觉」，再看定义与为什么；每篇末尾都有一页速记。</p>
+    </div>
+    <div class="module-card">
+      <div class="m-id">02 · 做</div>
+      <h3>随堂测 + 手算</h3>
+      <p>读完一节做 3–5 题；数值题自己算一遍再提交。做错会显示解析，并链回对应小节。</p>
+    </div>
+    <div class="module-card">
+      <div class="m-id">03 · 复</div>
+      <h3>知识卡按间隔出现</h3>
+      <p>「一页速记」自动转成填空卡；每天 10–20 张，按重来/困难/良好/简单排期。</p>
+    </div>
+  </div>
+
+  <div class="section-head">
+    <h2>快速入口</h2>
+  </div>
+  <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));">
+    {featured.map((m: any) => (
+      <a class="module-card" href={m.route}>
+        <div class="m-id">{m.id}</div>
+        <h3>{m.title.replace(/^M\d\d\s*/, "")}</h3>
+        <p>{moduleBlurb[m.id]}</p>
+      </a>
+    ))}
+  </div>
+</Base>

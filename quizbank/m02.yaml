@@ -1,0 +1,497 @@
+module: M02
+questions:
+  # ---------- 2.1 向量空间公理 ----------
+  - id: q-2.1-001
+    concept: "2.1"
+    section: 5
+    type: numeric
+    difficulty: 1
+    stem: "在多项式空间 $P_2$ 中，$(1+2x)+(3x-x^2)$ 的一次项系数是多少？"
+    answer: 5
+    tolerance: 0.001
+    explanation: "逐项相加得 $1+5x-x^2$，一次项系数为 5。"
+    source: "02-向量空间/01-向量空间公理.md#5-例子"
+    tags: [多项式空间, 手算]
+
+  - id: q-2.1-002
+    concept: "2.1"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: "第一象限 $\\{(x,y)\\mid x\\ge 0,\\,y\\ge 0\\}$ 对加法封闭，因此它是 $\\mathbb{R}^2$ 的向量空间。"
+    answer: false
+    explanation: "还要求对数乘封闭；取 $(1,1)$ 乘 $-1$ 得 $(-1,-1)$，跑出第一象限，所以它不是向量空间。"
+    source: "02-向量空间/01-向量空间公理.md#6-常见误区"
+    tags: [向量空间, 反例]
+
+  - id: q-2.1-003
+    concept: "2.1"
+    section: 2
+    type: single_choice
+    difficulty: 2
+    stem: "下列集合按通常的加法与数乘，哪一个**不是**实向量空间？"
+    options:
+      - "所有 $2\\times2$ 对称矩阵"
+      - "次数不超过 3 的多项式 $P_3$"
+      - "第一象限 $\\{(x,y)\\mid x\\ge 0,\\,y\\ge 0\\}$"
+      - "闭区间 $[0,1]$ 上的连续函数 $C[0,1]$"
+    answer: [2]
+    explanation: "第一象限对乘负数不封闭，例如 $(1,1)$ 乘 $-1$ 后跑出集合；其余三个都满足八条公理。"
+    source: "02-向量空间/01-向量空间公理.md#2-定义"
+    tags: [向量空间, 非例子]
+
+  - id: q-2.1-004
+    concept: "2.1"
+    section: 4
+    type: multiple_choice
+    difficulty: 2
+    stem: "由向量空间的八条公理可以推出下列哪些结论？"
+    options:
+      - "零向量唯一"
+      - "对任意向量 $\\mathbf{v}$，都有 $0\\mathbf{v}=\\mathbf{0}$"
+      - "每个向量都有唯一的负元"
+      - "每个非零向量都有确定的长度和夹角"
+    answer: [0, 1, 2]
+    explanation: "前三条都能由公理推出；长度和夹角需要额外的内积结构（第 2.7 节），八条公理只给线性结构。"
+    source: "02-向量空间/01-向量空间公理.md#4-性质与推导"
+    tags: [公理, 推论]
+
+  # ---------- 2.2 子空间与张成 ----------
+  - id: q-2.2-001
+    concept: "2.2"
+    section: 5
+    type: single_choice
+    difficulty: 1
+    stem: "下列 $\\mathbb{R}^3$ 的子集中，哪一个**不是**子空间？"
+    options:
+      - "$\\{(x,y,0)\\mid x,y\\in\\mathbb{R}\\}$"
+      - "$\\{(x,y,1)\\mid x,y\\in\\mathbb{R}\\}$"
+      - "$\\{(x,y,z)\\mid x+y+z=0\\}$"
+      - "$\\{(x,0,0)\\mid x\\in\\mathbb{R}\\}$"
+    answer: [1]
+    explanation: "$z=1$ 的平面不过原点、不含零向量，因此不是子空间。"
+    source: "02-向量空间/02-子空间与张成.md#5-例子"
+    tags: [子空间, 判断]
+
+  - id: q-2.2-002
+    concept: "2.2"
+    section: 5
+    type: numeric
+    difficulty: 1
+    stem: "$\\operatorname{span}\\{(1,2,0),(0,1,1)\\}$ 的维数是多少？"
+    answer: 2
+    tolerance: 0.001
+    explanation: "两个向量不成比例，线性无关，所以它们张成二维平面。"
+    source: "02-向量空间/02-子空间与张成.md#5-例子"
+    tags: [张成, 维数]
+
+  - id: q-2.2-003
+    concept: "2.2"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: "两个子空间的并集仍然是子空间。"
+    answer: false
+    explanation: "反例是 $x$ 轴 $\\cup$ $y$ 轴：$(1,0)+(0,1)=(1,1)$ 不在并集里，对加法不封闭。"
+    source: "02-向量空间/02-子空间与张成.md#6-常见误区"
+    tags: [子空间, 并集]
+
+  - id: q-2.2-004
+    concept: "2.2"
+    section: 4
+    type: numeric
+    difficulty: 2
+    stem: "设 $S,T$ 是 $\\mathbb{R}^3$ 的子空间，$\\dim S=1$、$\\dim T=2$，且 $S\\cap T=\\{\\mathbf{0}\\}$，则 $\\dim(S+T)$ 是多少？"
+    answer: 3
+    tolerance: 0.001
+    explanation: "直和时维数相加：$\\dim(S+T)=1+2-0=3$。"
+    source: "02-向量空间/02-子空间与张成.md#4-性质与推导"
+    tags: [直和, 维数公式]
+
+  # ---------- 2.3 线性无关 ----------
+  - id: q-2.3-001
+    concept: "2.3"
+    section: 5
+    type: single_choice
+    difficulty: 1
+    stem: "下列向量组中，哪一组线性无关？"
+    options:
+      - "$(1,2),(2,1)$"
+      - "$(1,2),(2,4)$"
+      - "$(1,0,1),(0,1,0),(1,1,1)$"
+      - "$(1,0,0),(0,1,0),(0,0,1),(1,1,1)$"
+    answer: [0]
+    explanation: "第一组行列式 $1-4=-3\\neq0$；第二组成比例，第三组第三 $=$ 第一 $+$ 第二，第四组有 4 个向量在 $\\mathbb{R}^3$ 中必相关。"
+    source: "02-向量空间/03-线性无关.md#5-例子"
+    tags: [线性无关, 判断]
+
+  - id: q-2.3-002
+    concept: "2.3"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: "三个向量两两不共线，就一定线性无关。"
+    answer: false
+    explanation: "$(1,0,1),(0,1,0),(1,1,1)$ 两两不共线，但第三 $=$ 第一 $+$ 第二，整组线性相关。"
+    source: "02-向量空间/03-线性无关.md#6-常见误区"
+    tags: [线性无关, 共线]
+
+  - id: q-2.3-003
+    concept: "2.3"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: "对 $\\mathbf{v}_1=(1,0,1)$、$\\mathbf{v}_2=(0,1,0)$、$\\mathbf{v}_3=(1,1,1)$，已知 $c_1\\mathbf{v}_1+c_2\\mathbf{v}_2+\\mathbf{v}_3=\\mathbf{0}$，则 $c_1$ 是多少？"
+    answer: -1
+    tolerance: 0.001
+    explanation: "$\\mathbf{v}_3=\\mathbf{v}_1+\\mathbf{v}_2$，所以 $-\\mathbf{v}_1-\\mathbf{v}_2+\\mathbf{v}_3=\\mathbf{0}$，对应 $c_1=-1$。"
+    source: "02-向量空间/03-线性无关.md#5-例子"
+    tags: [线性相关, 手算]
+
+  - id: q-2.3-004
+    concept: "2.3"
+    section: 4
+    type: multiple_choice
+    difficulty: 3
+    stem: "关于线性无关，下列哪些说法正确？"
+    options:
+      - "含有零向量的向量组一定线性相关"
+      - "$\\mathbb{R}^n$ 中任意 $n+1$ 个向量一定线性相关"
+      - "非零向量构成的正交组一定线性无关"
+      - "线性无关组的任意子集可能变得相关"
+    answer: [0, 1, 2]
+    explanation: "前三项都是基本性质；第四项错误，无关组的任意子集仍然无关。"
+    source: "02-向量空间/03-线性无关.md#4-性质与推导"
+    tags: [线性无关, 性质]
+
+  - id: q-2.3-005
+    concept: "2.3"
+    section: 8
+    type: true_false
+    difficulty: 2
+    stem: "在深层 Transformer 中，不同 token 的隐藏状态越来越相似，意味着激活矩阵的秩会下降。"
+    answer: true
+    explanation: "这就是表示坍缩（rank collapse）：token 表示趋同，激活矩阵 $H\\in\\mathbb{R}^{T\\times D}$ 的有效秩下降，极端时秩为 1。"
+    source: "02-向量空间/03-线性无关.md#8-通往大模型冗余无处不在"
+    tags: [秩坍缩, 大模型]
+
+  # ---------- 2.4 基与维数 ----------
+  - id: q-2.4-001
+    concept: "2.4"
+    section: 5
+    type: numeric
+    difficulty: 1
+    stem: "在 $\\mathbb{R}^2$ 的基 $\\mathcal{B}=\\{(1,1),(1,-1)\\}$ 下，向量 $\\mathbf{v}=(3,1)$ 的第二个坐标是多少？"
+    answer: 1
+    tolerance: 0.001
+    explanation: "设 $a(1,1)+b(1,-1)=(3,1)$，则 $a+b=3$、$a-b=1$，解得 $b=1$。"
+    source: "02-向量空间/04-基与维数.md#5-例子"
+    tags: [坐标, 手算]
+
+  - id: q-2.4-002
+    concept: "2.4"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: "向量空间的基必须由两两正交的单位向量组成。"
+    answer: false
+    explanation: "正交只是使用方便，不是基的定义要求；$\\{(1,1),(1,-1)\\}$ 就是 $\\mathbb{R}^2$ 的一组合法基。"
+    source: "02-向量空间/04-基与维数.md#6-常见误区"
+    tags: [基, 正交基]
+
+  - id: q-2.4-003
+    concept: "2.4"
+    section: 5
+    type: numeric
+    difficulty: 1
+    stem: "多项式空间 $P_2=\\{a_0+a_1x+a_2x^2\\mid a_i\\in\\mathbb{R}\\}$ 的维数是多少？"
+    answer: 3
+    tolerance: 0.001
+    explanation: "基 $\\{1,x,x^2\\}$ 含 3 个向量，所以 $\\dim P_2=3$。"
+    source: "02-向量空间/04-基与维数.md#5-例子"
+    tags: [维数, 多项式空间]
+
+  - id: q-2.4-004
+    concept: "2.4"
+    section: 2
+    type: single_choice
+    difficulty: 2
+    stem: "一组向量成为向量空间 $V$ 的基，必须满足什么条件？"
+    options:
+      - "线性无关，但不要求张成 $V$"
+      - "张成 $V$，但不要求线性无关"
+      - "既线性无关又张成 $V$"
+      - "两两正交且长度都为 1"
+    answer: [2]
+    explanation: "无关保证每个向量的坐标唯一，张成保证每个向量都能被表示；两者缺一不可。"
+    source: "02-向量空间/04-基与维数.md#2-定义"
+    tags: [基, 定义]
+
+  - id: q-2.4-005
+    concept: "2.4"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: "矩阵 $A=\\begin{bmatrix}1&2&3\\\\2&4&6\\end{bmatrix}$ 的零空间维数是多少？"
+    answer: 2
+    tolerance: 0.001
+    explanation: "第二行是第一行的 2 倍，秩为 1；未知数个数为 3，所以零空间维数为 $3-1=2$。"
+    source: "02-向量空间/04-基与维数.md#5-例子"
+    tags: [零空间, 秩-零化度]
+
+  # ---------- 2.5 坐标与基变换 ----------
+  - id: q-2.5-001
+    concept: "2.5"
+    section: 5
+    type: numeric
+    difficulty: 1
+    stem: "取 $\\mathcal{B}=\\{(1,1),(1,-1)\\}$，向量 $\\mathbf{v}=(3,1)$ 在 $\\mathcal{B}$ 下的第一个坐标是多少？"
+    answer: 2
+    tolerance: 0.001
+    explanation: "解 $a(1,1)+b(1,-1)=(3,1)$ 得 $a=2,b=1$，所以第一个坐标是 2。"
+    source: "02-向量空间/05-坐标与基变换.md#5-例子"
+    tags: [坐标, 手算]
+
+  - id: q-2.5-002
+    concept: "2.5"
+    section: 2
+    type: single_choice
+    difficulty: 2
+    stem: "设基 $\\mathcal{B}$、$\\mathcal{C}$ 的基矩阵分别为 $B$、$C$（列是基向量），则基变换矩阵 $P_{\\mathcal{B}\\leftarrow\\mathcal{C}}$ 等于？"
+    options:
+      - "$CB^{-1}$"
+      - "$B^{-1}C$"
+      - "$C^{-1}B$"
+      - "$BC^{-1}$"
+    answer: [1]
+    explanation: "由 $\\mathbf{v}=B[\\mathbf{v}]_{\\mathcal{B}}=C[\\mathbf{v}]_{\\mathcal{C}}$ 得 $[\\mathbf{v}]_{\\mathcal{B}}=B^{-1}C[\\mathbf{v}]_{\\mathcal{C}}$。"
+    source: "02-向量空间/05-坐标与基变换.md#2-定义"
+    tags: [基变换矩阵, 坐标]
+
+  - id: q-2.5-003
+    concept: "2.5"
+    section: 4
+    type: true_false
+    difficulty: 1
+    stem: "相似矩阵一定具有相同的特征值。"
+    answer: true
+    explanation: "若 $A_{\\mathcal{B}}=P^{-1}A_{\\mathcal{C}}P$，则 $\\det(A_{\\mathcal{B}}-\\lambda I)=\\det(A_{\\mathcal{C}}-\\lambda I)$，特征多项式相同。"
+    source: "02-向量空间/05-坐标与基变换.md#4-性质与推导"
+    tags: [相似矩阵, 特征值]
+
+  - id: q-2.5-004
+    concept: "2.5"
+    section: 8
+    type: true_false
+    difficulty: 2
+    stem: "用正交矩阵 $Q$ 旋转隐藏空间后，任意两个隐藏状态向量的余弦相似度会改变。"
+    answer: false
+    explanation: "正交变换保持内积与范数：$\\langle Q\\mathbf{x},Q\\mathbf{y}\\rangle=\\langle\\mathbf{x},\\mathbf{y}\\rangle$，所以余弦相似度不变。"
+    source: "02-向量空间/05-坐标与基变换.md#8-通往大模型换基思维能解释什么"
+    tags: [正交变换, 余弦相似度]
+
+  - id: q-2.5-005
+    concept: "2.5"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: "标准基下 90° 旋转矩阵 $A=\\begin{bmatrix}0&-1\\\\1&0\\end{bmatrix}$ 在基 $\\mathcal{B}=\\{(1,1),(1,-1)\\}$ 下的矩阵为 $A_{\\mathcal{B}}=B^{-1}AB$，它的行列式是多少？"
+    answer: 1
+    tolerance: 0.001
+    explanation: "相似变换保持行列式，$\\det A=0\\cdot0-(-1)\\cdot1=1$，所以 $\\det A_{\\mathcal{B}}=1$。"
+    source: "02-向量空间/05-坐标与基变换.md#5-例子"
+    tags: [相似不变量, 行列式]
+
+  # ---------- 2.6 秩 ----------
+  - id: q-2.6-001
+    concept: "2.6"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: "矩阵 $A=\\begin{bmatrix}1&2&3\\\\2&4&6\\\\1&1&1\\end{bmatrix}$ 的秩是多少？"
+    answer: 2
+    tolerance: 0.001
+    explanation: "第二行是第一行的 2 倍，消元后只剩 2 个主元，所以 $\\operatorname{rank}(A)=2$。"
+    source: "02-向量空间/06-秩.md#5-例子"
+    tags: [秩, 手算]
+
+  - id: q-2.6-002
+    concept: "2.6"
+    section: 2
+    type: numeric
+    difficulty: 1
+    stem: "一个 $4\\times6$ 矩阵的秩为 4，它的零空间维数是多少？"
+    answer: 2
+    tolerance: 0.001
+    explanation: "秩-零化度定理：$\\dim\\operatorname{null}(A)=n-r=6-4=2$。"
+    source: "02-向量空间/06-秩.md#2-定义"
+    tags: [秩-零化度, 零空间]
+
+  - id: q-2.6-003
+    concept: "2.6"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: "对任意同型矩阵 $A,B$，都有 $\\operatorname{rank}(A+B)=\\operatorname{rank}(A)+\\operatorname{rank}(B)$。"
+    answer: false
+    explanation: "一般只有上界 $\\operatorname{rank}(A+B)\\le\\operatorname{rank}A+\\operatorname{rank}B$；取 $A=I$、$B=-I$ 时和为 0，秩为 0。"
+    source: "02-向量空间/06-秩.md#6-常见误区"
+    tags: [秩, 不等式]
+
+  - id: q-2.6-004
+    concept: "2.6"
+    section: 4
+    type: single_choice
+    difficulty: 1
+    stem: "设 $\\mathbf{u},\\mathbf{v}$ 都是非零列向量，则 $\\mathbf{u}\\mathbf{v}^\\top$ 的秩是多少？"
+    options:
+      - "0"
+      - "1"
+      - "$\\min(\\|\\mathbf{u}\\|,\\|\\mathbf{v}\\|)$"
+      - "等于 $\\mathbf{u}$ 与 $\\mathbf{v}$ 维数的乘积"
+    answer: [1]
+    explanation: "外积的所有列都是 $\\mathbf{u}$ 的倍数，列空间只有一维，所以秩为 1。"
+    source: "02-向量空间/06-秩.md#4-性质与推导"
+    tags: [外积, 秩]
+
+  - id: q-2.6-005
+    concept: "2.6"
+    section: 8
+    type: numeric
+    difficulty: 2
+    stem: "LoRA 中 $\\Delta W=BA$，其中 $B\\in\\mathbb{R}^{4096\\times8}$、$A\\in\\mathbb{R}^{8\\times4096}$。按 $2Dr$ 计算，可训练参数量是多少？"
+    answer: 65536
+    tolerance: 0.5
+    explanation: "两个低秩矩阵的参数量为 $2Dr=2\\times4096\\times8=65{,}536$。"
+    source: "02-向量空间/06-秩.md#8-通往大模型低秩是主线"
+    tags: [LoRA, 参数量]
+
+  # ---------- 2.7 内积空间与 Gram–Schmidt ----------
+  - id: q-2.7-001
+    concept: "2.7"
+    section: 3
+    type: single_choice
+    difficulty: 1
+    stem: "在标准正交基 $\\{\\mathbf{q}_1,\\dots,\\mathbf{q}_n\\}$ 下，向量 $\\mathbf{v}$ 的第 $j$ 个坐标是什么？"
+    options:
+      - "$\\langle\\mathbf{v},\\mathbf{q}_j\\rangle$"
+      - "$\\|\\mathbf{v}\\|/\\|\\mathbf{q}_j\\|$"
+      - "$\\langle\\mathbf{v},\\mathbf{q}_j\\rangle/\\|\\mathbf{q}_j\\|^2$"
+      - "必须解线性方程组 $Q\\mathbf{c}=\\mathbf{v}$ 才能得到"
+    answer: [0]
+    explanation: "把 $\\mathbf{v}=\\sum_i c_i\\mathbf{q}_i$ 两边与 $\\mathbf{q}_j$ 做内积，正交性使其他项消失，得 $c_j=\\langle\\mathbf{v},\\mathbf{q}_j\\rangle$。"
+    source: "02-向量空间/07-内积空间与Gram-Schmidt.md#3-为什么这样定义"
+    tags: [正交基, 坐标]
+
+  - id: q-2.7-002
+    concept: "2.7"
+    section: 5
+    type: numeric
+    difficulty: 3
+    stem: "对 $\\mathbf{v}_1=(1,1,0)$、$\\mathbf{v}_2=(1,0,1)$ 做 Gram–Schmidt，得到的 $\\mathbf{q}_2$ 的第一个分量是多少？保留三位小数。"
+    answer: 0.408
+    tolerance: 0.01
+    explanation: "$\\mathbf{u}_2=(1,0,1)-\\frac{1}{\\sqrt2}\\mathbf{q}_1=(\\frac12,-\\frac12,1)$，$\\|\\mathbf{u}_2\\|=\\sqrt{3/2}$，所以第一分量为 $\\frac{1/2}{\\sqrt{3/2}}=1/\\sqrt6\\approx0.408$。"
+    source: "02-向量空间/07-内积空间与Gram-Schmidt.md#5-例子"
+    tags: [Gram-Schmidt, 手算]
+
+  - id: q-2.7-003
+    concept: "2.7"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: "Gram–Schmidt 正交化的结果与输入向量的顺序无关。"
+    answer: false
+    explanation: "顺序不同时减去的投影方向不同，得到的正交基通常不同，只是张成的空间相同。"
+    source: "02-向量空间/07-内积空间与Gram-Schmidt.md#6-常见误区"
+    tags: [Gram-Schmidt, 顺序]
+
+  - id: q-2.7-004
+    concept: "2.7"
+    section: 5
+    type: single_choice
+    difficulty: 2
+    stem: "用 QR 分解解最小二乘 $\\min\\|A\\mathbf{c}-\\mathbf{y}\\|$ 时，为什么通常比直接解正规方程更数值稳定？"
+    options:
+      - "$Q$ 是正交矩阵，不放大误差；而 $A^\\top A$ 会把条件数平方"
+      - "$R$ 总是对角矩阵，求逆只需逐元素取倒数"
+      - "QR 分解把问题变成了非线性优化"
+      - "$Q$ 的列一定都是标准基向量"
+    answer: [0]
+    explanation: "$\\kappa_2(A^\\top A)=\\kappa_2(A)^2$，正规方程会放大舍入误差；QR 只涉及正交变换，$\\kappa_2(Q)=1$。"
+    source: "02-向量空间/07-内积空间与Gram-Schmidt.md#5-例子"
+    tags: [QR分解, 最小二乘, 数值稳定]
+
+  - id: q-2.7-005
+    concept: "2.7"
+    section: 8
+    type: true_false
+    difficulty: 2
+    stem: "正交初始化使 $\\|W\\mathbf{x}\\|\\approx\\|\\mathbf{x}\\|$，从而深层连乘时范数不容易爆炸或消失。"
+    answer: true
+    explanation: "若 $W$ 的列标准正交，则 $\\|W\\mathbf{x}\\|_2=\\|\\mathbf{x}\\|_2$，且条件数为 1，误差不会被放大。"
+    source: "02-向量空间/07-内积空间与Gram-Schmidt.md#8-通往大模型正交性为什么值钱"
+    tags: [正交初始化, 数值稳定]
+
+  # ---------- 2.8 正交补与投影定理 ----------
+  - id: q-2.8-001
+    concept: "2.8"
+    section: 5
+    type: numeric
+    difficulty: 1
+    stem: "在 $\\mathbb{R}^3$ 中，$S=\\operatorname{span}\\{(1,2,3)\\}$，则 $\\dim S^\\perp$ 是多少？"
+    answer: 2
+    tolerance: 0.001
+    explanation: "有限维空间满足 $\\dim S+\\dim S^\\perp=3$，所以 $\\dim S^\\perp=3-1=2$。"
+    source: "02-向量空间/08-正交补与投影定理.md#5-例子"
+    tags: [正交补, 维数]
+
+  - id: q-2.8-002
+    concept: "2.8"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: "$S^\\perp$ 就是「所有不在 $S$ 中的向量」组成的集合。"
+    answer: false
+    explanation: "$S^\\perp$ 要求与 $S$ 中**所有**向量正交，比补集小得多；零向量同时属于 $S$ 与 $S^\\perp$。"
+    source: "02-向量空间/08-正交补与投影定理.md#6-常见误区"
+    tags: [正交补, 补集]
+
+  - id: q-2.8-003
+    concept: "2.8"
+    section: 4
+    type: single_choice
+    difficulty: 2
+    stem: "若 $Q$ 的列构成子空间 $S$ 的标准正交基，则投影矩阵 $P_S$ 等于？"
+    options:
+      - "$Q^\\top Q$"
+      - "$QQ^\\top$"
+      - "$Q^{-1}$"
+      - "$I-Q^\\top Q$"
+    answer: [1]
+    explanation: "$P_S=Q(Q^\\top Q)^{-1}Q^\\top$，而标准正交列的 $Q^\\top Q=I$，所以 $P_S=QQ^\\top$。"
+    source: "02-向量空间/08-正交补与投影定理.md#4-性质与推导"
+    tags: [投影矩阵, 正交基]
+
+  - id: q-2.8-004
+    concept: "2.8"
+    section: 5
+    type: numeric
+    difficulty: 1
+    stem: "把 $\\mathbf{v}=(1,2,3)$ 正交投影到 $xy$ 平面 $S=\\{(x,y,0)\\}$，垂直分量 $\\mathbf{v}_\\perp$ 的范数是多少？"
+    answer: 3
+    tolerance: 0.001
+    explanation: "$\\mathbf{v}_\\parallel=(1,2,0)$，$\\mathbf{v}_\\perp=(0,0,3)$，其范数为 3。"
+    source: "02-向量空间/08-正交补与投影定理.md#5-例子"
+    tags: [正交分解, 投影]
+
+  - id: q-2.8-005
+    concept: "2.8"
+    section: 8
+    type: true_false
+    difficulty: 2
+    stem: "对任意子空间 $S$ 和向量 $\\mathbf{h}$，用 $I-P_S$ 投影后范数不会增大。"
+    answer: true
+    explanation: "$\\|(I-P_S)\\mathbf{h}\\|\\le\\|\\mathbf{h}\\|$，因为残差是正交分量；等号仅在 $\\mathbf{h}\\perp S$ 时成立。"
+    source: "02-向量空间/08-正交补与投影定理.md#8-通往大模型正交分解与概念擦除"
+    tags: [正交投影, 概念擦除]

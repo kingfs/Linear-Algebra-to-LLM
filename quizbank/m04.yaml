@@ -1,0 +1,506 @@
+module: M04
+questions:
+  # ===== 4.1 方程组的几何 =====
+  - id: q-4.1-001
+    concept: "4.1"
+    section: 5
+    type: numeric
+    difficulty: 1
+    stem: '解方程组 $2x+y=4$、$x-y=1$，$x$ 的值是多少？（保留三位小数）'
+    answer: 1.667
+    tolerance: 0.01
+    explanation: '两式相加消去 $y$：$3x=5$，所以 $x=\frac53\approx1.667$。'
+    source: '04-线性方程组/01-方程组的几何.md#5-例子'
+    tags: [线性方程组, 手算]
+
+  - id: q-4.1-002
+    concept: "4.1"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: '方程个数多于未知数个数时，线性方程组一定无解。'
+    answer: false
+    explanation: '反例：$x=1$、$y=2$、$x+y=3$ 三个方程两个未知数仍有唯一解；有没有解要看 $\operatorname{rank}(A)$ 与增广秩是否相等。'
+    source: '04-线性方程组/01-方程组的几何.md#6-常见误区'
+    tags: [线性方程组, 秩判据]
+
+  - id: q-4.1-003
+    concept: "4.1"
+    section: 2
+    type: single_choice
+    difficulty: 2
+    stem: '关于行图像与列图像，下列说法正确的是？'
+    options:
+      - '行图像只能用于二维，列图像只能用于三维'
+      - '行图像与列图像是两套不同的代数解法，会得到不同的解集'
+      - '行图像把解看成若干超平面的交集，列图像问 $\mathbf{b}$ 能否写成 $A$ 的列的线性组合'
+      - '列图像会改变方程组的解，所以不能用来判断是否有解'
+    answer: [2]
+    explanation: '两者是同一个等式 $A\mathbf{x}=\mathbf{b}$ 的两种读法，代数上等价；列图像把有解性变成 $\mathbf{b}\in\operatorname{col}(A)$。'
+    source: '04-线性方程组/01-方程组的几何.md#2-定义'
+    tags: [行图像, 列图像]
+
+  - id: q-4.1-004
+    concept: "4.1"
+    section: 8
+    type: numeric
+    difficulty: 2
+    stem: '微调中令 $W\in\mathbb{R}^{4096\times4096}$ 满足 $WH=Y$，其中 $H$ 有 $K=32$ 列且列满秩。每一行方程的可行解自由度是多少？'
+    answer: 4064
+    tolerance: 0.5
+    explanation: '每一行是 $D=4096$ 个未知数、$r=32$ 个独立约束，自由度 $D-r=4096-32=4064$。'
+    source: '04-线性方程组/01-方程组的几何.md#8-通往大模型微调就是一个欠定方程组'
+    tags: [欠定系统, 大模型]
+
+  - id: q-4.1-005
+    concept: "4.1"
+    section: 4
+    type: single_choice
+    difficulty: 2
+    stem: '方程组 $2x+y=4$、$x-y=1$ 的解集 $\{(5/3,2/3)\}$，从几何上看是什么？'
+    options:
+      - '过原点的二维子空间'
+      - '两条直线的交点；作为集合它不过原点，不是子空间'
+      - '一条直线'
+      - '空集'
+    answer: [1]
+    explanation: '两个方程各是一张超平面（这里是直线），交集是一个点；非齐次解集是仿射集，一般不过原点。'
+    source: '04-线性方程组/01-方程组的几何.md#4-性质与推导'
+    tags: [解集, 仿射集]
+
+  # ===== 4.2 解的存在性与通解 =====
+  - id: q-4.2-001
+    concept: "4.2"
+    section: 2
+    type: single_choice
+    difficulty: 1
+    stem: '秩判据（Rouché–Capelli）说的是什么？'
+    options:
+      - '$\operatorname{rank}(A)=\operatorname{rank}([A\mid\mathbf{b}])$ 时方程组无解'
+      - '$\operatorname{rank}(A)=\operatorname{rank}([A\mid\mathbf{b}])$ 时有解，再用 $r$ 与 $n$ 判断解是否唯一'
+      - '只要 $m=n$ 就一定有唯一解'
+      - '$\operatorname{rank}(A)<n$ 时一定无解'
+    answer: [1]
+    explanation: '两个秩相等只保证有解；有解后 $r=n$ 唯一，$r<n$ 有无穷多解。'
+    source: '04-线性方程组/02-解的存在性与通解.md#2-定义'
+    tags: [秩判据, 存在性]
+
+  - id: q-4.2-002
+    concept: "4.2"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: '设 $A=\begin{bmatrix}1&2&1&-1\\2&4&3&1\\3&6&4&0\end{bmatrix}$、$\mathbf{b}=(1,3,4)^\top$，通解中有几个自由变量？'
+    answer: 2
+    tolerance: 0.01
+    explanation: '消元后主元在第 1、3 列，$r=2$，$n=4$，自由变量个数为 $n-r=2$。'
+    source: '04-线性方程组/02-解的存在性与通解.md#5-例子'
+    tags: [通解, 自由变量, 手算]
+
+  - id: q-4.2-003
+    concept: "4.2"
+    section: 6
+    type: true_false
+    difficulty: 2
+    stem: '只要系数矩阵满足 $\operatorname{rank}(A)=n$，$A\mathbf{x}=\mathbf{b}$ 就一定有唯一解。'
+    answer: false
+    explanation: '还需 $\operatorname{rank}(A)=\operatorname{rank}([A\mid\mathbf{b}])$；例如 $A=\begin{bmatrix}1&0\\0&1\\1&1\end{bmatrix}$、$\mathbf{b}=(0,0,1)^\top$ 时 $r=n=2$ 但无解。'
+    source: '04-线性方程组/02-解的存在性与通解.md#6-常见误区'
+    tags: [唯一解, 增广秩]
+
+  - id: q-4.2-004
+    concept: "4.2"
+    section: 4
+    type: multiple_choice
+    difficulty: 2
+    stem: '关于高斯消元中的行变换，下列说法正确的是？'
+    options:
+      - '行变换保持方程组的解集不变'
+      - '行变换保持矩阵的列空间不变'
+      - '行变换可以看成左乘一个可逆矩阵 $E$'
+      - '行变换会改变零空间 $N(A)$'
+    answer: [0, 2]
+    explanation: '行变换对应左乘可逆矩阵，$A\mathbf{x}=\mathbf{b}\iff EA\mathbf{x}=E\mathbf{b}$，所以解集与零空间都不变；但它会改变列空间。'
+    source: '04-线性方程组/02-解的存在性与通解.md#4-性质与推导'
+    tags: [行变换, 解集]
+
+  - id: q-4.2-005
+    concept: "4.2"
+    section: 2
+    type: single_choice
+    difficulty: 1
+    stem: '关于 $A\mathbf{x}=\mathbf{b}$ 的通解，下列说法正确的是？'
+    options:
+      - '特解唯一，所以通解的写法唯一'
+      - '零空间向量可以任意缩放，但特解不能替换'
+      - '自由变量的个数是 $m-r$'
+      - '任取一个特解 $\mathbf{x}_p$，全部解可写成 $\mathbf{x}_p+\mathbf{z}$，其中 $\mathbf{z}\in N(A)$'
+    answer: [3]
+    explanation: '特解任选，不同特解只差一个零空间向量；自由变量个数由列数决定，是 $n-r$ 而不是 $m-r$。'
+    source: '04-线性方程组/02-解的存在性与通解.md#2-定义'
+    tags: [通解, 零空间]
+
+  - id: q-4.2-006
+    concept: "4.2"
+    section: 8
+    type: true_false
+    difficulty: 2
+    stem: '设 $W_1,W_2$ 都满足 $WH=Y$，则 $\Delta=W_1-W_2$ 的每一行都属于 $H$ 的左零空间，即 $\Delta H=0$。'
+    answer: true
+    explanation: '两式相减得 $(W_1-W_2)H=Y-Y=0$，所以每个行向量都落在 $H$ 的左零空间里。'
+    source: '04-线性方程组/02-解的存在性与通解.md#8-通往大模型微调中的解不唯一'
+    tags: [零空间, 微调, 大模型]
+
+  # ===== 4.3 齐次方程与零空间 =====
+  - id: q-4.3-001
+    concept: "4.3"
+    section: 5
+    type: numeric
+    difficulty: 1
+    stem: '设 $A=\begin{bmatrix}1&2&0\\0&1&1\\1&3&1\end{bmatrix}$，$\dim N(A)$ 是多少？'
+    answer: 1
+    tolerance: 0.01
+    explanation: '第三行减第一行等于第二行，秩为 2；零度 $n-r=3-2=1$。'
+    source: '04-线性方程组/03-齐次方程与零空间.md#5-例子'
+    tags: [零空间, 维数, 手算]
+
+  - id: q-4.3-002
+    concept: "4.3"
+    section: 2
+    type: multiple_choice
+    difficulty: 2
+    stem: '关于零空间 $N(A)$（其中 $A\in\mathbb{R}^{m\times n}$），下列说法正确的是？'
+    options:
+      - '$N(A)$ 是 $\mathbb{R}^m$ 的子空间'
+      - '$\dim N(A)=n-\operatorname{rank}(A)$'
+      - '$N(A)$ 与行空间 $\operatorname{row}(A)$ 互为正交补'
+      - '齐次方程只有零解时，$A$ 的列向量线性相关'
+    answer: [1, 2]
+    explanation: '$N(A)\subseteq\mathbb{R}^n$ 而不是 $\mathbb{R}^m$；只有零解说明列向量线性无关。'
+    source: '04-线性方程组/03-齐次方程与零空间.md#2-定义'
+    tags: [零空间, 秩零度定理]
+
+  - id: q-4.3-003
+    concept: "4.3"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: '零空间的一组基（基础解系）是唯一的。'
+    answer: false
+    explanation: '基不唯一，唯一确定的是零空间维数 $n-r$；例如 $\mathbb{R}^2$ 中 $\{(1,0),(0,1)\}$ 与 $\{(1,1),(1,-1)\}$ 都是基。'
+    source: '04-线性方程组/03-齐次方程与零空间.md#6-常见误区'
+    tags: [基础解系, 基]
+
+  - id: q-4.3-004
+    concept: "4.3"
+    section: 8
+    type: numeric
+    difficulty: 2
+    stem: 'LoRA 把权重更新写成 $\Delta W=BA$，其中 $B\in\mathbb{R}^{4096\times8}$、$A\in\mathbb{R}^{8\times4096}$。$\Delta W$ 的零空间维数至少是多少？'
+    answer: 4088
+    tolerance: 0.5
+    explanation: '$\operatorname{rank}(\Delta W)\le r=8$，由秩–零度定理，零度至少为 $4096-8=4088$。'
+    source: '04-线性方程组/03-齐次方程与零空间.md#8-通往大模型零空间秩亏与-lora'
+    tags: [零空间, LoRA, 大模型]
+
+  - id: q-4.3-005
+    concept: "4.3"
+    section: 3
+    type: single_choice
+    difficulty: 2
+    stem: '齐次方程 $A\mathbf{x}=\mathbf{0}$ 存在非零解，等价于？'
+    options:
+      - '$A$ 的列向量线性相关'
+      - '$A$ 的行向量线性无关'
+      - '$A$ 是方阵且可逆'
+      - '对任意 $\mathbf{b}$，$A\mathbf{x}=\mathbf{b}$ 都无解'
+    answer: [0]
+    explanation: '非零解给出列向量的一组非平凡线性组合为零，即列相关；同时说明映射不单射、方阵不可逆。'
+    source: '04-线性方程组/03-齐次方程与零空间.md#3-为什么这样定义'
+    tags: [齐次方程, 列相关]
+
+  # ===== 4.4 最小二乘 =====
+  - id: q-4.4-001
+    concept: "4.4"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: '用直线 $y=a+bx$ 最小二乘拟合三点 $(0,0)$、$(1,1)$、$(2,3)$，残差平方和是多少？（保留三位小数）'
+    answer: 0.167
+    tolerance: 0.01
+    explanation: '最优直线为 $y=-\frac16+\frac32x$，残差是 $(1/6,-1/3,1/6)$，平方和 $1/36+4/36+1/36=1/6\approx0.167$。'
+    source: '04-线性方程组/04-最小二乘.md#5-例子'
+    tags: [最小二乘, 残差, 手算]
+
+  - id: q-4.4-002
+    concept: "4.4"
+    section: 5
+    type: numeric
+    difficulty: 1
+    stem: '对 $(0,0)$、$(1,1)$、$(2,3)$ 三点拟合 $y=a+bx$，正规方程解出的斜率 $b$ 是多少？'
+    answer: 1.5
+    tolerance: 0.01
+    explanation: '正规方程为 $3a+3b=4$、$3a+5b=7$，相减得 $2b=3$，所以 $b=1.5$。'
+    source: '04-线性方程组/04-最小二乘.md#5-例子'
+    tags: [最小二乘, 正规方程, 手算]
+
+  - id: q-4.4-003
+    concept: "4.4"
+    section: 2
+    type: single_choice
+    difficulty: 1
+    stem: '满列秩时，最小二乘解满足的正规方程是？'
+    options:
+      - '$A\hat{\mathbf{x}}=\mathbf{b}$'
+      - '$A^\top A\hat{\mathbf{x}}=\mathbf{b}$'
+      - '$A^\top A\hat{\mathbf{x}}=A^\top\mathbf{b}$'
+      - '$AA^\top\hat{\mathbf{x}}=A\mathbf{b}$'
+    answer: [2]
+    explanation: '最优残差与列空间正交，即 $A^\top(A\hat{\mathbf{x}}-\mathbf{b})=\mathbf{0}$，展开得 $A^\top A\hat{\mathbf{x}}=A^\top\mathbf{b}$。'
+    source: '04-线性方程组/04-最小二乘.md#2-定义'
+    tags: [正规方程, 最小二乘]
+
+  - id: q-4.4-004
+    concept: "4.4"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: '最小二乘解能让 $A\mathbf{x}=\mathbf{b}$ 的每一个方程都精确成立。'
+    answer: false
+    explanation: '只有 $\mathbf{b}\in\operatorname{col}(A)$ 时残差才为零；一般情况下残差非零，只是与列空间正交。'
+    source: '04-线性方程组/04-最小二乘.md#6-常见误区'
+    tags: [残差, 最小二乘]
+
+  - id: q-4.4-005
+    concept: "4.4"
+    section: 6
+    type: single_choice
+    difficulty: 2
+    stem: '实践中求解最小二乘，为什么不推荐显式写 `inv(A.T @ A) @ A.T @ b`？'
+    options:
+      - '因为 NumPy 没有 `inv` 函数'
+      - '因为 $A^\top A$ 在任何情况下都奇异'
+      - '因为正规方程一定没有解'
+      - '因为 $\kappa(A^\top A)=\kappa(A)^2$，显式求逆会平方放大误差，而 QR/SVD 直接在 $A$ 上工作'
+    answer: [3]
+    explanation: '正规方程把条件数平方；`np.linalg.lstsq` 用 QR/SVD，数值上更稳定。'
+    source: '04-线性方程组/04-最小二乘.md#6-常见误区'
+    tags: [数值稳定, 正规方程]
+
+  - id: q-4.4-006
+    concept: "4.4"
+    section: 4
+    type: multiple_choice
+    difficulty: 2
+    stem: '设 $H=A(A^\top A)^{-1}A^\top$ 是到 $\operatorname{col}(A)$ 的投影矩阵，下列正确的是？'
+    options:
+      - '$H^\top=H$'
+      - '$H^2=H$'
+      - '$H$ 一定可逆'
+      - '$H\mathbf{b}$ 是 $\mathbf{b}$ 在 $\operatorname{col}(A)$ 上的投影'
+    answer: [0, 1, 3]
+    explanation: '投影矩阵对称且幂等；它一般不可逆（会把垂直方向压成零），$H\mathbf{b}$ 就是最小二乘的拟合值 $\hat{\mathbf{y}}$。'
+    source: '04-线性方程组/04-最小二乘.md#4-性质与推导'
+    tags: [投影矩阵, 对称, 幂等]
+
+  - id: q-4.4-007
+    concept: "4.4"
+    section: 8
+    type: single_choice
+    difficulty: 2
+    stem: '用线性头 $W\in\mathbb{R}^{D\times C}$ 拟合 $X\in\mathbb{R}^{N\times D}$、$Y\in\mathbb{R}^{N\times C}$，当样本数 $N<D$ 时会发生什么？'
+    options:
+      - '$X^\top X$ 不可逆，正规方程有无穷多解，应取最小范数解'
+      - '$X^\top X$ 一定可逆，最小二乘解唯一'
+      - '最小二乘问题没有解'
+      - '只能逐个样本单独求解'
+    answer: [0]
+    explanation: '$X$ 不满列秩，$X^\top X$ 奇异；最小二乘解不唯一，实践中的 `lstsq` 返回其中范数最小的那个。'
+    source: '04-线性方程组/04-最小二乘.md#8-通往大模型线性回归头与表示对齐'
+    tags: [最小二乘, 线性头, 大模型]
+
+  # ===== 4.5 伪逆与最小范数解 =====
+  - id: q-4.5-001
+    concept: "4.5"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: '设 $A=\operatorname{diag}(2,\frac12,0)$，$\mathbf{b}=(2,1,0)^\top$，最小范数解 $A^{+}\mathbf{b}$ 的范数是多少？（保留三位小数）'
+    answer: 2.236
+    tolerance: 0.01
+    explanation: '$A^{+}=\operatorname{diag}(\frac12,2,0)$，$A^{+}\mathbf{b}=(1,2,0)^\top$，范数为 $\sqrt5\approx2.236$。'
+    source: '04-线性方程组/05-伪逆与最小范数解.md#5-例子'
+    tags: [伪逆, 最小范数解, 手算]
+
+  - id: q-4.5-002
+    concept: "4.5"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: '设 $A=\begin{bmatrix}1&1\\1&1\end{bmatrix}$、$\mathbf{b}=(2,0)^\top$，最小范数最小二乘解的第一个分量是多少？'
+    answer: 0.5
+    tolerance: 0.01
+    explanation: '$A^{+}=\frac14J$，故 $A^{+}\mathbf{b}=(0.5,0.5)^\top$；它是解集 $x_1+x_2=1$ 中离原点最近的点。'
+    source: '04-线性方程组/05-伪逆与最小范数解.md#5-例子'
+    tags: [伪逆, 最小二乘, 手算]
+
+  - id: q-4.5-003
+    concept: "4.5"
+    section: 1
+    type: single_choice
+    difficulty: 1
+    stem: '当 $A$ 满行秩（$m<n$）时，伪逆的公式是？'
+    options:
+      - '$(A^\top A)^{-1}A^\top$'
+      - '$A^{-1}$'
+      - '$A^\top(AA^\top)^{-1}$'
+      - '$(AA^\top)^{-1}A^\top$'
+    answer: [2]
+    explanation: '满行秩时 $AA^\top$ 可逆，$A^{+}=A^\top(AA^\top)^{-1}$，给出最小范数解；满列秩时才用 $(A^\top A)^{-1}A^\top$。'
+    source: '04-线性方程组/05-伪逆与最小范数解.md#1-直觉'
+    tags: [伪逆, 满行秩]
+
+  - id: q-4.5-004
+    concept: "4.5"
+    section: 6
+    type: true_false
+    difficulty: 2
+    stem: '对任意矩阵 $A,B$，都有 $(AB)^{+}=B^{+}A^{+}$。'
+    answer: false
+    explanation: '该等式一般不成立，需要额外条件；它和转置的性质 $(AB)^\top=B^\top A^\top$ 不同。'
+    source: '04-线性方程组/05-伪逆与最小范数解.md#6-常见误区'
+    tags: [伪逆, 乘积]
+
+  - id: q-4.5-005
+    concept: "4.5"
+    section: 6
+    type: single_choice
+    difficulty: 2
+    stem: '$A^{+}\mathbf{b}$ 一定是 $A\mathbf{x}=\mathbf{b}$ 的精确解吗？'
+    options:
+      - '一定是，因为伪逆是 $A$ 的广义逆'
+      - '只有 $\mathbf{b}$ 落在列空间时才是；否则它给出的是最小二乘解'
+      - '只对方阵成立，长方形矩阵没有伪逆'
+      - '一定不是，伪逆只用于齐次方程'
+    answer: [1]
+    explanation: '伪逆先做最小二乘、再取最小范数；残差为零当且仅当 $\mathbf{b}\in\operatorname{col}(A)$。'
+    source: '04-线性方程组/05-伪逆与最小范数解.md#6-常见误区'
+    tags: [伪逆, 列空间]
+
+  - id: q-4.5-006
+    concept: "4.5"
+    section: 2
+    type: multiple_choice
+    difficulty: 2
+    stem: '关于伪逆 $A^{+}$，下列说法正确的是？'
+    options:
+      - '任意 $m\times n$ 矩阵都有伪逆，形状为 $n\times m$'
+      - '$A^{+}A$ 是到行空间 $\operatorname{row}(A)$ 的投影'
+      - '满列秩时 $A^{+}=(A^\top A)^{-1}A^\top$'
+      - '$A^{+}A$ 总是单位矩阵'
+    answer: [0, 1, 2]
+    explanation: '由四条 Penrose 条件可证伪逆存在且唯一；$A^{+}A$ 是到行空间的投影，只有满列秩时才等于 $I$。'
+    source: '04-线性方程组/05-伪逆与最小范数解.md#2-定义'
+    tags: [伪逆, Penrose条件, 投影]
+
+  - id: q-4.5-007
+    concept: "4.5"
+    section: 8
+    type: true_false
+    difficulty: 2
+    stem: '闭式权重编辑取 $\Delta W=(Y-WH)H^{+}$，它满足 $\operatorname{rank}(\Delta W)\le K$，因此只改动一个低维子空间。'
+    answer: true
+    explanation: '$H^{+}\in\mathbb{R}^{K\times D}$，所以 $\Delta W\in\mathbb{R}^{D\times D}$ 的秩不超过 $K$；$K\ll D$ 时改动只落在 $K$ 维子空间里。'
+    source: '04-线性方程组/05-伪逆与最小范数解.md#8-通往大模型最小改动权重编辑'
+    tags: [伪逆, 模型编辑, 低秩]
+
+  # ===== 4.6 条件数与病态 =====
+  - id: q-4.6-001
+    concept: "4.6"
+    section: 9
+    type: numeric
+    difficulty: 1
+    stem: '求 $A=\operatorname{diag}(2,\frac12)$ 的 $\kappa_2(A)$。'
+    answer: 4
+    tolerance: 0.01
+    explanation: '$\kappa_2=\sigma_{\max}/\sigma_{\min}=2/(1/2)=4$。'
+    source: '04-线性方程组/06-条件数与病态.md#9-练习'
+    tags: [条件数, 手算]
+
+  - id: q-4.6-002
+    concept: "4.6"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: '求 $A=\begin{bmatrix}1&1\\1&1.01\end{bmatrix}$ 的 $\kappa_2(A)$，结果保留整数。'
+    answer: 402
+    tolerance: 2
+    explanation: '$\det(A)=0.01$，$A^\top A$ 的特征值约为 $4.0201$ 与 $2.49\times10^{-5}$，奇异值之比约为 $402$。'
+    source: '04-线性方程组/06-条件数与病态.md#5-例子'
+    tags: [条件数, 病态, 手算]
+
+  - id: q-4.6-003
+    concept: "4.6"
+    section: 4
+    type: single_choice
+    difficulty: 2
+    stem: '在 2-范数下，$\kappa(A^\top A)$ 与 $\kappa(A)$ 的关系是？'
+    options:
+      - '$\kappa(A^\top A)=\kappa(A)$'
+      - '$\kappa(A^\top A)=\sqrt{\kappa(A)}$'
+      - '$\kappa(A^\top A)=\kappa(A)^2$'
+      - '$\kappa(A^\top A)=2\kappa(A)$'
+    answer: [2]
+    explanation: '$\kappa(A^\top A)=\sigma_{\max}^2/\sigma_{\min}^2=\kappa(A)^2$，所以正规方程会把误差平方放大。'
+    source: '04-线性方程组/06-条件数与病态.md#4-性质与推导'
+    tags: [条件数, 正规方程]
+
+  - id: q-4.6-004
+    concept: "4.6"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: '$\det(A)$ 很小就说明 $A$ 是病态矩阵。'
+    answer: false
+    explanation: '$0.1I_{100}$ 的行列式是 $10^{-100}$，但 $\kappa=1$；病态看的是最大与最小奇异值的比值。'
+    source: '04-线性方程组/06-条件数与病态.md#6-常见误区'
+    tags: [条件数, 行列式, 误区]
+
+  - id: q-4.6-005
+    concept: "4.6"
+    section: 1
+    type: true_false
+    difficulty: 2
+    stem: '条件数反映问题本身的敏感性，换一个数值稳定的算法不能突破由 $\kappa$ 决定的精度上限。'
+    answer: true
+    explanation: '算法只决定额外引入多少误差；$\kappa$ 给出的放大倍数对任何算法都成立。'
+    source: '04-线性方程组/06-条件数与病态.md#1-直觉'
+    tags: [条件数, 数值稳定]
+
+  - id: q-4.6-006
+    concept: "4.6"
+    section: 4
+    type: single_choice
+    difficulty: 2
+    stem: '对 $A=\begin{bmatrix}1&1\\1&1+\varepsilon\end{bmatrix}$，当 $\varepsilon$ 减半时，$\kappa_2(A)$ 大约怎样变化？'
+    options:
+      - '基本不变'
+      - '约变为原来的 2 倍'
+      - '约变为原来的 4 倍'
+      - '约变为原来的一半'
+    answer: [1]
+    explanation: '$\kappa_2\approx4/\varepsilon$，与 $\varepsilon$ 成反比，所以 $\varepsilon$ 减半时 $\kappa$ 约翻倍。'
+    source: '04-线性方程组/06-条件数与病态.md#4-性质与推导'
+    tags: [条件数, 近似]
+
+  - id: q-4.6-007
+    concept: "4.6"
+    section: 8
+    type: numeric
+    difficulty: 2
+    stem: '某层权重满足 $\kappa(W)\approx1000$，权重扰动的相对误差约为 $0.4\%$。按一阶上界，输出相对误差最坏约为输入相对误差的多少倍？'
+    answer: 4
+    tolerance: 0.1
+    explanation: '上界为 $\kappa(W)\cdot\|\delta W\|/\|W\|=1000\times0.004=4$，即最坏放大 4 倍；随机扰动通常远小于这个上界。'
+    source: '04-线性方程组/06-条件数与病态.md#8-通往大模型训练不稳与量化误差'
+    tags: [条件数, 量化, 大模型]

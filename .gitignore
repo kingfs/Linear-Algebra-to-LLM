@@ -8,3 +8,13 @@ venv/
 *.egg-info/
 .pytest_cache/
 .uv/
+
+# Web app build artifacts
+web/node_modules/
+web/dist/
+web/.astro/
+web/src/content/generated/
+web/src/data/
+web/public/figures/
+web/public/labs/
+web/public/search.json
