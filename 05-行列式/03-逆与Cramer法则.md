@@ -26,7 +26,7 @@ llm_hooks: [gaussian-likelihood, normalizing-flow]
 
 逆矩阵（inverse matrix）是「撤销变换」。在 5.1 里，$A$ 把体积放大 $|\det A|$ 倍；那么 $A^{-1}$ 就该把它缩回去，所以分母出现 $\det A$ 并不意外。
 
-伴随矩阵（adjugate）$\operatorname{adj}(A)$ 可以理解为「余子式的转置」：每个元素记录「删掉某行某列后，剩下的变换把体积放大几倍」。把 $\operatorname{adj}(A)$ 除以 $\det A$，体积因子正好抵消。
+[伴随矩阵](#ref-horn-2012)（adjugate）$\operatorname{adj}(A)$ 可以理解为「余子式的转置」：每个元素记录「删掉某行某列后，剩下的变换把体积放大几倍」。把 $\operatorname{adj}(A)$ 除以 $\det A$，体积因子正好抵消。
 
 Cramer 法则（Cramer's rule）则是逐分量的版本：要求 $x_i$，就把 $A$ 的第 $i$ 列换成 $\mathbf{b}$，算一个行列式，再除以 $\det A$。
 
@@ -87,7 +87,7 @@ $$
 
 Cramer 法则要算 $n+1$ 个行列式。每个若按 Leibniz 是 $O(n!)$；即使每个都用消元，也是 $O(n^4)$，而 LU 解方程只要 $O(n^3)$。
 
-数值上更糟：行列式可能极大或极小，计算中有大量相消；解的相对误差大致被条件数（condition number）$\operatorname{cond}(A)$ 放大。实际软件用带主元的 LU（或 QR、SVD），Cramer 只作为理论工具和 $2\times2$、$3\times3$ 的闭式公式。
+数值上更糟：行列式可能极大或极小，计算中有大量相消；解的相对误差大致被[条件数](#ref-higham-2002)（condition number）$\operatorname{cond}(A)$ 放大。实际软件用带主元的 [LU](#ref-golub-2012)（或 QR、SVD），Cramer 只作为理论工具和 $2\times2$、$3\times3$ 的闭式公式。
 
 ### 4.3 为什么理论上有价值
 
@@ -206,6 +206,14 @@ $$
 - Cramer：$x_i=\det(A_i)/\det A$，$A_i$ 把第 $i$ 列换成 $\mathbf{b}$。
 - 可逆 $\iff\det\neq0\iff$ 满秩 $\iff$ 零空间为 $\{\mathbf{0}\}$。
 - Cramer 是 $O(n^4)$ 且数值不稳；实际用 LU/QR/SVD。
+
+## 11. 参考文献与致谢
+
+这一页的知识不是凭空来的。下面列出本页直接借用的原始工作与权威整理；正文中的人名、定理名已链接到对应条目。链接优先指向 DOI、arXiv 或可长期访问的原文存档。
+
+- <a id="ref-horn-2012"></a>**Horn & Johnson（Roger A. Horn & Charles R. Johnson, 2012）**：*Matrix Analysis*（2nd ed.）。把伴随矩阵、$A\operatorname{adj}(A)=\det(A)I$ 与 $A^{-1}=\operatorname{adj}(A)/\det A$ 作为行列式的标准推论给出，本页第 2、3 节沿这条路线推导。[Cambridge University Press](https://doi.org/10.1017/CBO9781139020411)
+- <a id="ref-golub-2012"></a>**Golub & Van Loan（Gene H. Golub & Charles F. Van Loan, 2012）**：*Matrix Computations*（4th ed.）。带主元的 LU 解 $A\mathbf{x}=\mathbf{b}$ 只要 $O(n^3)$，并给出前向/后向误差与条件数的关系——本页第 4.2 节「Cramer 只作理论工具」的工程依据。[Johns Hopkins University Press](https://doi.org/10.56021/9781421407944)
+- <a id="ref-higham-2002"></a>**Higham（Nicholas J. Higham, 2002）**：*Accuracy and Stability of Numerical Algorithms*（2nd ed.）。系统分析了线性系统求解中的相消、上溢下溢与条件数放大，是第 4.2 节「误差被 $\operatorname{cond}(A)$ 放大」的定量版本。[SIAM](https://doi.org/10.1137/1.9780898718027)
 
 ---
 

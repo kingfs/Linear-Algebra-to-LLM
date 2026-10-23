@@ -40,7 +40,7 @@ llm_hooks: [change-of-variables, normalizing-flow, log-determinant]
 
 ### 2.1 Jacobian 矩阵
 
-对 $f:\mathbb{R}^n\to\mathbb{R}^m$，$f(\mathbf{u})=(f_1(\mathbf{u}),\dots,f_m(\mathbf{u}))$，**Jacobian 矩阵**是 $J_f(\mathbf{u})=\big[\partial f_i/\partial u_j\big]_{m\times n}\in\mathbb{R}^{m\times n}$，即第 $i$ 行第 $j$ 列是 $\partial f_i/\partial u_j$。当 $m=n$ 时，$\det J_f$ 有意义，称为 **Jacobian 行列式（Jacobian determinant）**。
+对 $f:\mathbb{R}^n\to\mathbb{R}^m$，$f(\mathbf{u})=(f_1(\mathbf{u}),\dots,f_m(\mathbf{u}))$，**[Jacobian 矩阵](#ref-jacobi-1841)** 是 $J_f(\mathbf{u})=\big[\partial f_i/\partial u_j\big]_{m\times n}\in\mathbb{R}^{m\times n}$，即第 $i$ 行第 $j$ 列是 $\partial f_i/\partial u_j$。当 $m=n$ 时，$\det J_f$ 有意义，称为 **Jacobian 行列式（Jacobian determinant）**。
 
 ### 2.2 变量替换公式（change of variables）
 
@@ -51,7 +51,7 @@ $$
 =\int_U f(g(\mathbf{u}))\,|\det J_g(\mathbf{u})|\,d\mathbf{u}.
 $$
 
-逐项读法：目标空间的体积元 $d\mathbf{y}$，换成源空间的 $|\det J_g|\,d\mathbf{u}$。绝对值保证体积为正。
+逐项读法：目标空间的体积元 $d\mathbf{y}$，换成源空间的 $|\det J_g|\,d\mathbf{u}$。绝对值保证体积为正。完整的条件与证明见 [Munkres](#ref-munkres-1991)。
 
 ### 2.3 概率密度（probability density）变换
 
@@ -155,7 +155,7 @@ $$
 
 **为什么需要**：生成模型要最大化数据似然。密度变换必须带体积修正；少了这一项，优化的就不再是数据空间的归一化似然：模型可以靠任意改变体积把密度数值抬高，而不用为体积变化负责（偏好放大还是缩小，取决于网络参数化成 $z\to x$ 还是 $x\to z$）。
 
-**怎么算得动**：一般 $D\times D$ 矩阵的 $\det$ 是 $O(D^3)$，且高维容易下溢。Coupling 层把 $z$ 分成两半：
+**怎么算得动**：一般 $D\times D$ 矩阵的 $\det$ 是 $O(D^3)$，且高维容易下溢。Coupling 层（[Dinh 等](#ref-dinh-2016)）把 $z$ 分成两半：
 
 $$
 x_1=z_1,\qquad x_2=z_2\odot s(z_1)+t(z_1).
@@ -191,6 +191,14 @@ $$
 - 极坐标 $\det J=r$，所以 $dx\,dy=r\,dr\,d\theta$；球坐标 $\det J=\rho^2\sin\varphi$。
 - 链式法则让 $\det$ 相乘，$\log|\det|$ 相加；三角 $J$ 的 $\det$ 是对角元乘积。
 - 高维用 $\log|\det|$（`slogdet`），别直接算 $\det$。
+
+## 11. 参考文献与致谢
+
+这一页的知识不是凭空来的。下面列出本页直接借用的原始工作与权威整理；正文中的人名、定理名已链接到对应条目。链接优先指向 DOI、arXiv 或可长期访问的原文存档。
+
+- <a id="ref-jacobi-1841"></a>**Jacobi（Carl Gustav Jacob Jacobi, 1841）**：*De determinantibus functionalibus*。把 $n$ 个函数对 $n$ 个变量的偏导行列式作为独立对象研究，并给出复合时的乘法规则；「Jacobian 行列式」的名字由此而来，本页第 2.1 节与第 4 节的链式法则都建立在这个对象上。[Journal für die reine und angewandte Mathematik](https://doi.org/10.1515/crll.1841.22.319)
+- <a id="ref-munkres-1991"></a>**Munkres（James R. Munkres, 1991；CRC 2018 重印）**：*Analysis on Manifolds*。给出变量替换定理的完整陈述与证明，包括 $C^1$、单射、$\det J_g$ 几乎处处非零这些条件各自的作用——本页第 2.2 节的公式以它为准。[CRC Press](https://doi.org/10.1201/9780429494147)
+- <a id="ref-dinh-2016"></a>**Dinh 等（Laurent Dinh, Jascha Sohl-Dickstein & Samy Bengio, 2016）**：*Density estimation using Real NVP*。提出仿射 coupling 层 $x_2=z_2\odot s(z_1)+t(z_1)$，其块三角 Jacobian 让 $\log|\det J|$ 只需 $O(D)$；本页第 8 节的设计直接取自这篇。[arXiv:1605.08803](https://arxiv.org/abs/1605.08803)
 
 ---
 
