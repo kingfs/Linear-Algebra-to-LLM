@@ -18,7 +18,7 @@ llm_hooks: [representation-analysis, dimensionality-reduction, kv-cache]
 
 ## 0. 场景引入
 
-一层模型的激活有 4096 维，你只能画二维图。随机挑两个维度，图可能是一团没有结构的云；把点投影到「最有信息量的两个方向」上，往往能看到按词性、语言或情感分出的条带。
+一层模型的激活有 4096 维，你只能画二维图。**主成分分析（principal component analysis, PCA）** 要回答的就是「投到哪两个方向」。随机挑两个维度，图可能是一团没有结构的云；把点投影到「最有信息量的两个方向」上，往往能看到按词性、语言或情感分出的条带。
 
 **问题**：哪两个方向最「有信息量」？要用 $k$ 维尽量保住原点云，最该丢哪些方向？丢掉之后误差多大？
 
@@ -82,7 +82,7 @@ $$
 
 ### 2.6 投影与重建
 
-取前 $k$ 个主成分 $V_k\in\mathbb{R}^{D\times k}$，则 $\mathbf{z}=V_k^\top(\mathbf{x}-\hat{\boldsymbol\mu})\in\mathbb{R}^k$，重建 $\hat{\mathbf{x}}=V_k\mathbf{z}+\hat{\boldsymbol\mu}$。矩阵形式的重建是 $X_cV_kV_k^\top$；$V_kV_k^\top$ 是到前 $k$ 个主成分子空间的**正交投影矩阵**（第 1.6 节）。
+取前 $k$ 个主成分 $V_k\in\mathbb{R}^{D\times k}$，则 $\mathbf{z}=V_k^\top(\mathbf{x}-\hat{\boldsymbol\mu})\in\mathbb{R}^k$，重建 $\hat{\mathbf{x}}=V_k\mathbf{z}+\hat{\boldsymbol\mu}$。矩阵形式的重建是 $X_cV_kV_k^\top$；$V_kV_k^\top$ 是到前 $k$ 个主成分子空间的**正交投影矩阵（orthogonal projection matrix）**（第 1.6 节）。
 
 ## 3. 为什么这样定义
 

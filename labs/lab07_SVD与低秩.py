@@ -123,7 +123,6 @@ print(f"\n误差单调不增？{all(errs[i] >= errs[i + 1] - 1e-12 for i in rang
 
 # ---------------------------------------------------------------- 5
 section("5. Eckart–Young：A_k 是秩 k 下最优")
-ns = np.linalg.svd(A, compute_uv=False)
 print("两类「竞争者」，各随机抽样，看能否赢过 A_k：")
 print("  (a) 同范数的随机秩 k 矩阵")
 print("  (b) 随机 k 维子空间上的投影 P(PᵀAQ)Qᵀ")
