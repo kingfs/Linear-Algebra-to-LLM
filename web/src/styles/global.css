@@ -118,6 +118,9 @@ button { font: inherit; }
   width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; cursor: pointer;
 }
 .icon-btn:hover { border-color: var(--line-strong); color: var(--ink); }
+.github-btn { text-decoration: none; }
+.github-btn:hover { text-decoration: none; }
+.github-btn svg { display: block; }
 .search-trigger {
   display: flex; align-items: center; gap: 8px; border: 1px solid var(--line); background: var(--bg-elev);
   color: var(--ink-faint); padding: 7px 10px; border-radius: 10px; cursor: pointer; font-size: 13px;
