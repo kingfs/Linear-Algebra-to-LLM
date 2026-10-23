@@ -215,7 +215,7 @@ $$
 **计算**：一次 $H(\mathbf{x})$ 要跑 2000 万条辐射传输/插值，按每条 $10^4$ FLOP 估算约 $2\times10^{11}$ FLOP；伴随 $J^\top\mathbf{w}$ 同量级。一轮 4D-Var 里正演与伴随合计要应用约 $2\times10^3$ 次，于是
 
 $$
-2\times10^3\times2\times10^{11}=4\times10^{14}\ \text{FLOP}
+2\times10^3\times\left(2\times10^{11}\right)=4\times10^{14}\ \text{FLOP}
 $$
 
 在 $10^{13}$ FLOP/s 的机器上约 40 秒纯计算。**但实际耗时远不止**——每次应用都要把 288 MB 的状态在几百个节点之间做一次全局转置，通信与 IO 才是瓶颈。
