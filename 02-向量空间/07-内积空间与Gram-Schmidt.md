@@ -22,7 +22,7 @@ llm_hooks: [orthogonal-init, qr-decomposition, decorrelation]
 
 直接套公式会发现：两个基向量不正交，投影会「重复计算」重叠分量。怎么办？
 
-答案：先把这组基**正交化**（Gram–Schmidt），再分别投影、相加。这正是 QR 分解与最小二乘数值算法的核心。
+答案：先把这组基**正交化**（[Gram–Schmidt](#ref-gram-1883)），再分别投影、相加。这正是 QR 分解与最小二乘数值算法的核心。
 
 ## 1. 直觉
 
@@ -72,6 +72,8 @@ $$
 $$
 \mathbf{u}_j=\mathbf{v}_j-\sum_{i=1}^{j-1}\langle\mathbf{v}_j,\mathbf{q}_i\rangle\mathbf{q}_i
 $$
+
+这个递推由 [Schmidt](#ref-schmidt-1907) 在 1907 年写成显式形式，名字里的 Gram 则来自 1883 年的最小二乘正交化。
 
 ### 2.4 QR 分解
 
@@ -245,6 +247,13 @@ $$
 - 正交基下坐标 = 点积；$\mathbf{v}=\sum\langle\mathbf{v},\mathbf{q}_i\rangle\mathbf{q}_i$。
 - Gram–Schmidt：逐个减去已有方向的投影。
 - $A=QR$：$Q$ 正交，$R$ 上三角；最小二乘用 $R\hat{\mathbf{c}}=Q^\top\mathbf{y}$。
+
+## 11. 参考文献与致谢
+
+这一页的知识不是凭空来的。下面列出本页直接借用的原始工作与权威整理；正文中的人名、定理名已链接到对应条目。链接优先指向 DOI、arXiv 或可长期访问的原文存档。
+
+- <a id="ref-gram-1883"></a>**格拉姆（Jørgen Pedersen Gram, 1883）**：*Ueber die Entwickelung reeller Functionen in Reihen mittelst der Methode der kleinsten Quadrate*。在最小二乘的级数展开里用「减去已选方向上的投影」构造正交系，Gram–Schmidt 的正交化思想由此而来；本页第 0 节要解决的正是这类「基不正交」的问题。[J. Reine Angew. Math. 94 (1883), 41–73](https://doi.org/10.1515/crll.1883.94.41)
+- <a id="ref-schmidt-1907"></a>**施密特（Erhard Schmidt, 1907）**：*Zur Theorie der linearen und nichtlinearen Integralgleichungen*。把正交化写成显式的逐步递推，也就是今天教材里的 Gram–Schmidt 过程；本页 2.3 的 $\mathbf{u}_j=\mathbf{v}_j-\sum_{i<j}\langle\mathbf{v}_j,\mathbf{q}_i\rangle\mathbf{q}_i$ 就是它。[Math. Ann. 63 (1907), 433–476](https://doi.org/10.1007/BF01449770)
 
 ---
 
