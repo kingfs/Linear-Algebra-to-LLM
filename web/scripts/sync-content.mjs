@@ -189,7 +189,11 @@ function rewriteLinks(body, srcAbs) {
 }
 
 function transformMermaid(body) {
-  return body.replace(/```mermaid\n([\s\S]*?)```/g, (_m, code) => `<div class="mermaid">\n${code.trim()}\n</div>`);
+  return body.replace(/```mermaid\n([\s\S]*?)```/g, (_m, code) => {
+    // 空行会终止 Markdown 的 HTML block，把后续源码甩成代码块；Mermaid 本身不需要空行。
+    const lines = code.trim().split("\n").filter((line) => line.trim() !== "");
+    return `<div class="mermaid">\n${lines.join("\n")}\n</div>`;
+  });
 }
 
 // ---------------------------------------------------------------- 写内容

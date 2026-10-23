@@ -109,6 +109,11 @@ if (fs.existsSync(DIST)) {
     const page = path.relative(DIST, file).replaceAll(path.sep, "/");
     distChecked++;
     if (html.includes("katex-error")) errors.push(`dist/${page}: KaTeX 解析失败（katex-error）`);
+    for (const block of html.match(/<div class="mermaid">[\s\S]*?<\/div>/g) || []) {
+      if (block.includes("<pre")) {
+        errors.push(`dist/${page}: Mermaid 源码被空行截断（div 内出现 <pre>），图表会渲染成语法错误`);
+      }
+    }
     const text = html
       .replace(/<script[\s\S]*?<\/script>/g, " ")
       .replace(/<style[\s\S]*?<\/style>/g, " ")

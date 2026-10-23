@@ -18,3 +18,6 @@ web/src/data/
 web/public/figures/
 web/public/labs/
 web/public/search.json
+
+# pnpm local store (sandbox fallback)
+.pnpm-store/

@@ -96,9 +96,31 @@ try {
   if (!imgOk) throw new Error("generated figure did not load");
   ok("generated SVG figure loads");
 
-  await page.goto(`${BASE}/modules/m01/`, { waitUntil: "networkidle" });
-  await page.waitForSelector(".mermaid svg", { timeout: 10000 });
-  ok("Mermaid diagram renders to SVG");
+  const mermaidRoutes = [
+    "/modules/m01/",
+    "/learn/m03/four-fundamental-subspaces/",
+    "/learn/m09/markov-chain/",
+    "/learn/m11/token-embedding/",
+  ];
+  for (const route of mermaidRoutes) {
+    await page.goto(`${BASE}${route}`, { waitUntil: "networkidle" });
+    await page.waitForSelector(".mermaid svg", { timeout: 10000 });
+    const kinds = await page.evaluate(() =>
+      [...document.querySelectorAll(".mermaid svg")].map((s) => s.getAttribute("aria-roledescription"))
+    );
+    if (kinds.includes("error")) throw new Error(`Mermaid 渲染报错：${route}`);
+  }
+  ok("Mermaid diagrams render without parse errors");
+
+  await page.goto(`${BASE}/learn/m04/linear-systems-geometry/`, { waitUntil: "networkidle" });
+  const fracScale = await page.evaluate(() => {
+    const small = document.querySelector(".mfrac .sizing");
+    const katex = small?.closest(".katex");
+    if (!small || !katex) return null;
+    return parseFloat(getComputedStyle(small).fontSize) / parseFloat(getComputedStyle(katex).fontSize);
+  });
+  if (!(fracScale && fracScale < 0.8)) throw new Error(`KaTeX 字号未正确缩放（ratio=${fracScale}），CSS 与标记版本可能不匹配`);
+  ok("KaTeX fraction is typeset at script size");
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(`${BASE}/learn/m01/dot-product/`, { waitUntil: "networkidle" });

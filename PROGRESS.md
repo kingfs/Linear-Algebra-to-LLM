@@ -33,14 +33,14 @@
 | 知识卡复习 | 完成 | 402 张，Leitner 间隔重复 |
 | 错题本 | 完成 | 按最近一次作答聚合，可整组/单题重做 |
 | 学习进度 | 完成 | 阅读、正确率、薄弱概念、到期卡片；IndexedDB 本地保存 |
-| 生成图 | 完成 | 15 张 Matplotlib SVG：8 张页首 + 7 张正文内联 |
-| 质量门禁 | 完成 | `pnpm build`、`pnpm check`、`check-quiz.mjs`、`check-site-links.mjs`、`check-render.mjs`、12 项 Playwright E2E |
+| 生成图 | 完成 | 16 张 Matplotlib SVG：8 张页首 + 8 张正文内联 |
+| 质量门禁 | 完成 | `pnpm build`、`pnpm check`、`check-quiz.mjs`、`check-site-links.mjs`、`check-render.mjs`、13 项 Playwright E2E |
 | 子路径部署 | 完成 | `BASE_PATH=/LinearAlgebra/` 构建验证；tag 触发 GitHub Pages workflow |
 
 ```bash
 cd web && pnpm dev --port 4321   # http://127.0.0.1:4321/
 cd web && pnpm build             # 152 页，输出 web/dist
-cd web && pnpm build && pnpm links && node scripts/e2e.mjs   # 0 断链 / 12 checks
+cd web && pnpm build && pnpm links && node scripts/e2e.mjs   # 0 断链 / 13 checks
 ```
 
 内容仍以根目录 Markdown 为唯一来源；`web/src/content/generated/`、`web/src/data/` 等为构建产物，不提交。
@@ -93,4 +93,5 @@ cd web && pnpm build && pnpm links && node scripts/e2e.mjs   # 0 断链 / 12 che
 | 2026-10-23 | 新增 Web 学习平台：Astro 阅读站、358 题题库、402 张知识卡、8 张生成图、错题本与本地进度 | 2f04eca |
 | 2026-10-23 | 修复 MoE `id: 11.10` 解析冲突、M10/M12 三处内容笔误 | 0584c9b |
 | 2026-10-23 | 修复 Web 渲染：表格内公式裸 `|`、`</details>` 吞掉小节；16 处 ASCII 图改为 7 张 SVG、5 个 Mermaid、1 个表格，新增 `check-render.mjs` | — |
+| 2026-10-23 | 对齐 KaTeX 版本修复分数字号、Mermaid 空行截断、流水线图重绘为 SVG、单选题选项字母改为圆形徽章 | — |
 | 2026-10-23 | 支持 `/LinearAlgebra/` 子路径构建、搜索/React 链接适配与 tag 触发 Pages 部署 | 7daef01 |
