@@ -168,6 +168,15 @@ function rewriteLinks(body, srcAbs) {
       }
       return full;
     }
+    // 正文内联图：figures/out 里的 SVG 复制到 public/figures，链接改根路径
+    if (rawPath.endsWith(".svg")) {
+      const abs = path.resolve(path.dirname(srcAbs), rawPath);
+      if (fs.existsSync(abs) && path.dirname(abs) === path.join(ROOT, "figures/out")) {
+        fs.copyFileSync(abs, path.join(PUBLIC_FIG, path.basename(abs)));
+        return `](/figures/${encodeURIComponent(path.basename(abs))}${title})`;
+      }
+      return full;
+    }
     if (!rawPath.endsWith(".md")) return full;
     const abs = path.resolve(path.dirname(srcAbs), rawPath);
     const route = routeBySource.get(abs);

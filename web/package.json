@@ -11,6 +11,7 @@
     "check": "pnpm sync && astro check",
     "quiz": "node scripts/check-quiz.mjs",
     "links": "node scripts/check-site-links.mjs",
+    "render": "node scripts/check-render.mjs",
     "e2e": "node scripts/e2e.mjs"
   },
   "dependencies": {

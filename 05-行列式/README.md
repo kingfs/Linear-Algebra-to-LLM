@@ -41,9 +41,9 @@ flowchart LR
 | 消元 | $\det A=(-1)^s\prod_i u_{ii}$ |
 | 逆 | $A^{-1}=\operatorname{adj}(A)/\det A$ |
 | Cramer | $x_i=\det(A_i)/\det A$ |
-| 换元 | $d\mathbf{y}=|\det J_g(\mathbf{u})|\,d\mathbf{u}$ |
+| 换元 | $d\mathbf{y}=\lvert\det J_g(\mathbf{u})\rvert\,d\mathbf{u}$ |
 | 极坐标 | $dx\,dy=r\,dr\,d\theta$ |
-| 流模型 | $\log p_X(x)=\log p_Z(z)-\log|\det J_f(z)|$ |
+| 流模型 | $\log p_X(x)=\log p_Z(z)-\log\lvert\det J_f(z)\rvert$ |
 
 ## 本模块的大模型钩子
 

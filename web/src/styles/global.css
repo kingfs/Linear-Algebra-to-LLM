@@ -211,6 +211,9 @@ html[data-theme="dark"] .btn.primary { color: #111; }
 .figure-card { background: var(--bg-elev); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; margin: 22px 0; }
 .figure-card img { width: 100%; display: block; border: 0; background: #fff; border-radius: 8px; }
 .figure-card figcaption { font-size: 12.5px; color: var(--ink-faint); margin-top: 8px; line-height: 1.55; }
+/* 正文内联 SVG：与页首 figure-card 视觉一致 */
+.prose p > img { display: block; max-width: calc(100% - 2px); height: auto; margin: 24px auto; background: var(--bg-elev); border: 1px solid var(--line); border-radius: 12px; }
+.prose p:has(> img) + p > em { display: block; text-align: center; font-size: 12.5px; color: var(--ink-faint); margin-top: -14px; }
 
 /* quiz */
 .quiz { background: var(--bg-elev); border: 1px solid var(--line); border-radius: 16px; padding: 20px; margin: 26px 0; box-shadow: var(--shadow); }

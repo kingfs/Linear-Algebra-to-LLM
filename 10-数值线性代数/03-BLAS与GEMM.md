@@ -198,6 +198,7 @@ CUTLASS 把这些策略写成模板；cuBLAS 则是闭源的高度调优版本�
 5. 共享内存/寄存器容量限制 tile 大小；occupancy 与并行度会随 tile 增大而下降；边界 tile 在 $M,N$ 不能被 $b$ 整除时浪费算力；此外还有 L2 容量、银行冲突、指令级并行等。实际 kernel 要在这些约束下搜索 tile 与流水线深度。
 
 </details>
+
 ## 10. 一页速记
 - GEMM：$C=\alpha AB+\beta C$，$A:[M,K]$、$B:[K,N]$、$C:[M,N]$，FLOPs $=2MNK$。
 - BLAS L1/L2/L3 分别对应向量、矩阵-向量、矩阵-矩阵；只有 L3 有高复用。

@@ -166,13 +166,15 @@ $$
 
 ### 5.2 场景：一个 token 的旅程
 
-```text
-"猫" → id 8721 → E[8721] = x ∈ R^4096
-     → + 位置编码
-     → 32 层 × (attention + FFN + 残差)
-     → h ∈ R^4096
-     → h @ W_vocab → logits ∈ R^128000
-     → softmax → 下一个 token 的概率
+```mermaid
+flowchart TD
+    A["「猫」"] --> B["token id 8721"]
+    B --> C["查表 E[8721]<br/>x ∈ R^4096"]
+    C --> D["加位置编码"]
+    D --> E["32 层 ×（Attention + FFN + 残差）"]
+    E --> F["h ∈ R^4096"]
+    F --> G["h W_vocab<br/>logits ∈ R^128000"]
+    G --> H["softmax<br/>下一个 token 的概率"]
 ```
 
 **注意**：$E$ 只在第 0 层使用；后面每层都有新的权重矩阵，但隐藏维度始终是 $D$。

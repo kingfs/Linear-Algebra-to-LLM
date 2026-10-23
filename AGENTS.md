@@ -257,6 +257,7 @@ pnpm check               # astro check（TypeScript）
 node scripts/e2e.mjs     # 12 项浏览器端到端检查
 node scripts/check-quiz.mjs ../quizbank/m01.yaml
 node scripts/check-site-links.mjs   # 构建后全站链接/锚点检查
+node scripts/check-render.mjs      # 表格公式 / details / ASCII 图 / 未渲染 $ 检查
 ```
 
 ### 14.2 改内容后的顺序
@@ -279,13 +280,15 @@ node scripts/check-site-links.mjs   # 构建后全站链接/锚点检查
 - 脚本：`figures/scripts/fig_*.py`；产物：`figures/out/*.svg`；映射：`figures/manifest.yaml`。
 - 重新生成：`uv run --with matplotlib --with numpy python figures/scripts/fig_projection.py`。
 - 概念页按 `concepts` 匹配第一张图；新增图后在 manifest 里登记 `caption` 与 `alt`。
+- 正文内联图：把 SVG 放进 `figures/out/`，概念页用相对路径引用（`../figures/out/xxx.svg`）；`pnpm sync` 会复制到 `web/public/figures/` 并改写成 `/figures/xxx.svg`，不要手改生成目录。
+- **禁止 ASCII 字符画**：几何/数据图用 SVG，流程与关系用 Mermaid，表格性内容（矩阵行、对照表）用 Markdown 表格。表格单元格里的公式若含绝对值/范数，用 `\lvert … \rvert`、`\lVert … \rVert`，不要写裸 `|`（会把单元格切断）。
 
 ### 14.5 提交门禁
 
 Web 相关改动至少满足：
 
 ```bash
-cd web && pnpm build && node scripts/check-site-links.mjs && node scripts/e2e.mjs
+cd web && pnpm build && node scripts/check-site-links.mjs && node scripts/check-render.mjs && node scripts/e2e.mjs
 python3 scripts/check.py
 python3 scripts/check_links.py
 ```
