@@ -56,7 +56,7 @@ llm_hooks: [multi-head, gqa, flash-attention]
 
 softmax 像一台**总额固定的预算分配器**：手上只有 1 份预算，按各项目的报价（logits）分配；多头则像 40 位互不通气的评审同时读同一份材料，各写一份意见，最后由 $W_O$ 汇总成一份。
 
-量级上，如果 $q,k$ 的每一维都是独立的标准正态，那么 $\mathbf{q}^\top\mathbf{k}$ 的方差是 $d_k$，标准差 $\sqrt{128}\approx11.3$。也就是说，未缩放的 logits 天然散布在 $\pm11$ 的范围里；$e^{11.3}\approx8\times10^4$ 已经越过 fp16 的上限 65504。除以 $\sqrt{d_k}$ 后标准差回到 1，$e^{1}\approx2.7$，softmax 才有可用的梯度。
+量级上，如果 $q,k$ 的每一维都是独立的标准正态，那么 $\mathbf{q}^\top\mathbf{k}$ 的方差是 $d_k$，标准差 $\sqrt{128}\approx11.3$。也就是说，未缩放的 logits 天然散布在 $\pm11$ 的范围里，分布一动就接近 one-hot；若再省掉减最大值，$e^{11.3}\approx8\times10^4$ 已经越过 fp16 的上限 65504。除以 $\sqrt{d_k}$ 后标准差回到 1，$e^{1}\approx2.7$，softmax 才有可用的梯度。
 
 **这个类比在哪里失效**：预算分配假设「总额守恒、可以任意细分」，而 attention 的输出是 $V$ 的凸组合，范数取决于 $V$ 本身，并不守恒；40 位评审也不独立——它们共享输入，$W_O$ 会把意见重新混合，「每位评审负责一个议题」只是事后解释。
 
@@ -128,7 +128,7 @@ KV 参数量与缓存随 $H_{kv}$ 线性下降。
 
 取 $d_k=128$，$\mathbf{q}=\mathbf{k}=(1,1,\dots,1)$，则 $\mathbf{q}^\top\mathbf{k}=128$。
 
-**不除 $\sqrt{d_k}$**：logit 就是 128。fp32 里 $e^{128}$ 已超过 $3.4\times10^{38}$ 的上限（$\ln 3.4\times10^{38}\approx88.7$），直接变 `inf`；fp16 更早，$\ln 65504\approx11.09$，logit 超过 11.1 就溢出。就算向量不取全 1，$\sqrt{128}\approx11.3$ 的标准差也意味着「11 左右」是常态，fp16 里相当一部分 logits 会溢出。
+**不除 $\sqrt{d_k}$**：logit 就是 128。若按 2.1 的定义直接算 $e^{z_i}$，fp32 里 $e^{128}$ 已超过 $3.4\times10^{38}$ 的上限（$\ln(3.4\times10^{38})\approx88.7$），直接变 `inf`；fp16 更早，$\ln(65504)\approx11.09$，logit 超过 11.1 就溢出。就算向量不取全 1，$\sqrt{128}\approx11.3$ 的标准差也意味着「11 左右」是常态，fp16 里相当一部分 logits 会溢出。
 
 **就算换 fp32、也没溢出**，还有第二个坑：softmax 对尺度的响应会饱和。两维 logits 为 $(0,11.3)$ 时，输出约 $(1.2\times10^{-5},1)$，梯度 $\partial\mathbf{p}/\partial\mathbf{z}$ 的非对角元只有 $1.2\times10^{-5}$，几乎学不动；除以 $\sqrt{d_k}$ 后 logits 变成 $(0,1)$，输出 $(0.27,0.73)$，非对角元回到约 $0.2$。
 
@@ -213,7 +213,7 @@ Llama 2 70B 使用 GQA：$H=64$ 个 query 头，$H_{kv}=8$ 组 KV。KV Cache 约
 - attention 乘加：每层 $4T^2D$，全模型 $4T^2DL\approx4\times(1.28\times10^5)^2\times5120\times40\approx1.3\times10^{16}$ FLOP。
 - 若把打分矩阵 $[B,H,T,T]$ 真存下来：$40\times128{,}000^2\times2\ \text{B}\approx1.3\ \text{TB}$，不可能；FlashAttention 分块后峰值显存只与块大小有关，约 $O(Td_k)$。
 
-**输出决策**：21 GB KV + 约 26 GB 权重（13B，fp16）+ 激活，总量约 50 GB，80 GB 卡放得下——**选一次全量前向**，保留跨章节指代；若只有 40 GB 卡，则退化为 8 段 16k 的分块摘要。
+**输出决策**：21 GB KV + 约 26 GB 权重（13B，fp16）+ 激活，总量约 50–60 GB，80 GB 卡放得下——**选一次全量前向**，保留跨章节指代；若只有 40 GB 卡，则退化为 8 段 16k 的分块摘要。
 
 **成本**：按有效 100 TFLOPS 估算，attention 部分约 $1.3\times10^{16}/10^{14}\approx134$ 秒；分块方案约 $1/8$，约 17 秒。解码时每生成一个 token 要读一遍 21 GB 的 KV，按 2 TB/s 带宽估算约 10.5 ms，单请求上限约 95 token/s。
 

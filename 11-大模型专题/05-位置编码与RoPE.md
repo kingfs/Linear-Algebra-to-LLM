@@ -18,7 +18,7 @@ llm_hooks: [rope, long-context, position]
 
 ## 0. 场景引入
 
-「猫追狗」和「狗追猫」的 token 集合相同，attention 只看内容时输出一样——顺序信息必须由外部注入。早期 Transformer 把位置向量直接加到 embedding 上（[Vaswani 等, 2017](#ref-vaswani-2017)），而 [RoPE](#ref-su-2021) 换成了旋转。
+「猫追狗」和「狗追猫」的 token 集合相同，attention 只看内容时输出一样——顺序信息必须由外部注入。早期 Transformer 把位置向量直接加到 embedding 上（[Vaswani 等, 2017](#ref-vaswani-2017)）：$H^{(0)}=E[T]+P$（$P$ 是位置向量），而 [RoPE](#ref-su-2021) 换成了旋转。
 
 现在有一个具体现场：一个代码助手要给整个仓库做问答，仓库是 3.2 万 token 的源码加文档；模型训练时的上下文只有 8000，$d_k=128$，$\text{base}=10^4$，32 层。
 
