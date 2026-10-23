@@ -59,7 +59,7 @@ $$
 X_{i_1 i_2\cdots i_n}\in\mathbb{R}^{d_1\times\cdots\times d_n}
 $$
 
-标量 0 阶，向量 1 阶，矩阵 2 阶。深度学习里常见 4 阶：`[B,H,T,d]`。
+标量 0 阶，向量 1 阶，矩阵 2 阶。深度学习里常见 4 阶：`[B,H,T,d]`。把张量写成多索引数组、并系统整理它的运算与分解，可以接着读 [Kolda 与 Bader](#ref-kolda-bader-2009) 的综述。
 
 ### 2.2 einsum 语法
 
@@ -67,7 +67,7 @@ $$
 \texttt{"input1, input2, ... -> output"}(A, B, \dots)
 $$
 
-规则：
+einsum 的语法是[爱因斯坦求和约定](#ref-einstein-1916)的程序化版本，规则：
 
 1. 输入中重复的字母（同一张量内）表示对角线；
 2. 跨输入重复的字母表示对应轴相乘；
@@ -110,7 +110,7 @@ $$
 
 ### 4.3 结合顺序影响性能
 
-einsum 可能有多种 contraction order。`"ij,jk,kl->il"` 可以先算 $ij,jk$ 再乘 $kl$，也可以先算 $jk,kl$。不同顺序的 FLOPs 可能差很多；NumPy/PyTorch 会尝试优化，但复杂表达式建议手动分步或用 `opt_einsum`。
+einsum 可能有多种 contraction order。`"ij,jk,kl->il"` 可以先算 $ij,jk$ 再乘 $kl$，也可以先算 $jk,kl$。不同顺序的 FLOPs 可能差很多；NumPy/PyTorch 会尝试优化，但复杂表达式建议手动分步或用 [`opt_einsum`](#ref-smith-gray-2018) 搜索最优收缩路径。
 
 ### 4.4 与广播的区别
 
@@ -230,6 +230,14 @@ $$
 - 常见：`ik,kj->ij`、`bhid,bhjd->bhij`、`bhij,bhjd->bhid`。
 - 显式写输出，避免隐式求和陷阱。
 - 简单矩阵乘用 `@`，复杂表达式再考虑 einsum/opt_einsum。
+
+## 11. 参考文献与致谢
+
+这一页的知识不是凭空来的。下面列出本页直接借用的原始工作与权威整理；正文中的人名、定理名已链接到对应条目。链接优先指向 DOI、arXiv 或可长期访问的原文存档。
+
+- <a id="ref-einstein-1916"></a>**爱因斯坦（Albert Einstein, 1916）**：*Die Grundlage der allgemeinen Relativitätstheorie*。广义相对论里「同一指标重复即求和、不写 $\sum$」的书写约定，就是本页 §2.2 那五条规则的源头。[Annalen der Physik（Wiley）](https://doi.org/10.1002/andp.19163540702)
+- <a id="ref-kolda-bader-2009"></a>**Kolda 与 Bader（2009）**：*Tensor Decompositions and Applications*。把张量定义为多索引数组、并统一其记法与乘法的综述，本页「$n$ 阶张量」的写法沿用它。[SIAM Review](https://doi.org/10.1137/07070111X)
+- <a id="ref-smith-gray-2018"></a>**Smith 与 Gray（2018）**：*opt_einsum - A Python package for optimizing contraction order for einsum-like expressions*。本页 §4.3「收缩顺序影响 FLOPs」的工程答案：把 $n$ 个张量的收缩顺序当作路径搜索来优化。[JOSS](https://doi.org/10.21105/joss.00753)
 
 ---
 
