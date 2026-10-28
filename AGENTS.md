@@ -283,7 +283,7 @@ node scripts/check-render.mjs      # 表格公式 / details / ASCII 图 / 未渲
 
 - 脚本：`figures/scripts/fig_*.py`；产物：`figures/out/*.svg`；映射：`figures/manifest.yaml`。
 - 重新生成：`uv run --with matplotlib --with numpy python figures/scripts/fig_projection.py`。
-- 概念页按 `concepts` 匹配第一张图；新增图后在 manifest 里登记 `caption` 与 `alt`。
+- 概念页按 `concepts` 匹配第一张**非 `inline`** 图；新增图后在 manifest 里登记 `caption` 与 `alt`，正文内联图加 `inline: true`，避免同一张图在页首重复出现。
 - 正文内联图：把 SVG 放进 `figures/out/`，概念页用相对路径引用（`../figures/out/xxx.svg`）；`pnpm sync` 会复制到 `web/public/figures/` 并改写成 `/figures/xxx.svg`，不要手改生成目录。
 - **禁止 ASCII 字符画**：几何/数据图用 SVG，流程与关系用 Mermaid，表格性内容（矩阵行、对照表）用 Markdown 表格。表格单元格里的公式若含绝对值/范数，用 `\lvert … \rvert`、`\lVert … \rVert`，不要写裸 `|`（会把单元格切断）。
 - Mermaid 源码里的空行会被 `sync` 去掉（空行会提前结束 HTML 块，把余下源码变成代码块），所以可以放心用空行分段；但一个 ` ```mermaid ` 块内不要再嵌别的代码围栏。

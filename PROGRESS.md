@@ -2,7 +2,7 @@
 
 > Agent 工作流：从这里挑任务 → 完成后更新状态 → 提交。
 > 状态：`未开始` / `草稿` / `完成`。
-> 最近更新：2026-10-23
+> 最近更新：2026-10-28
 
 ## 模块状态
 
@@ -34,7 +34,7 @@
 | 知识卡复习 | 完成 | 479 张，Leitner 间隔重复 |
 | 错题本 | 完成 | 按最近一次作答聚合，可整组/单题重做 |
 | 学习进度 | 完成 | 阅读、正确率、薄弱概念、到期卡片；IndexedDB 本地保存 |
-| 生成图 | 完成 | 16 张 Matplotlib SVG：8 张页首 + 8 张正文内联 |
+| 生成图 | 完成 | 27 张 Matplotlib SVG：8 张页首 + 19 张正文内联；新增《图示规划》 |
 | 质量门禁 | 完成 | `pnpm build`、`pnpm check`、`check-quiz.mjs`、`check-site-links.mjs`、`check-render.mjs`、13 项 Playwright E2E |
 | 子路径部署 | 完成 | `BASE_PATH=/Linear-Algebra-to-LLM/` 构建验证；tag 触发 GitHub Pages workflow |
 
@@ -103,4 +103,5 @@ cd web && pnpm build && pnpm links && node scripts/e2e.mjs   # 0 断链 / 13 che
 | 2026-10-23 | 支持 `/linear-algebra-to-llm/` 子路径构建、搜索/React 链接适配与 tag 触发 Pages 部署 | 7daef01 |
 | 2026-10-23 | 为 81 篇概念页补充第 11 节「参考文献与致谢」与正文锚点（247 条文献、222 个锚点）；新增 `check_refs.py`、文献写作规范与模板示例 | 本系列 docs(mNN) |
 | 2026-10-23 | 全课程叙事增强：81 篇补「现场（数字/决策/代价）→ 现实对应与边界 → 反事实反例 → 场景闭环」；新增《叙事增强规范》与 81 行《概念—现实对应表》；同步 13 个模块导览 | 本系列 docs(mNN) |
+| 2026-10-28 | 新增 11 张生成图（旋转、范数单位球、余弦投影、张成、可逆/奇异、二次型、幂迭代、凸性、梯度下降、因果 mask、量化刻度），补《图示规划》并给内联图加 `inline` 标记 | 本系列 docs(figures) |
 

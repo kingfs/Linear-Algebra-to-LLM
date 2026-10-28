@@ -39,3 +39,118 @@ figures:
     concepts: ["11.7"]
     caption: "KV Cache 显存随序列长度线性增长；T=4096 时约 2 GB（示例配置）。"
     alt: "KV cache 显存随序列长度线性增长的折线图"
+  # 以下为正文内联图：inline: true，概念页不会自动插到页首。
+  - id: transformer-pipeline
+    file: transformer-pipeline.svg
+    concepts: ["0.1"]
+    inline: true
+    caption: "一个 token 的旅程：文本 → token id → embedding → 位置编码 → L 层 Transformer → logits → softmax。"
+    alt: "token 经过 Transformer 各阶段的流程图"
+  - id: vector-add
+    file: vector-add.svg
+    concepts: ["1.2"]
+    inline: true
+    caption: "把 v 的起点移到 u 的终点；虚线补出平行四边形，对角线就是 u+v。"
+    alt: "两个向量首尾相接相加的平行四边形示意"
+  - id: cross-product
+    file: cross-product.svg
+    concepts: ["1.7"]
+    inline: true
+    caption: "a、b 张成的平行四边形是浅色平面；叉积沿法线方向，长度等于面积。"
+    alt: "叉积垂直于 a、b 平面且长度等于平行四边形面积"
+  - id: least-squares
+    file: least-squares.svg
+    concepts: ["4.4"]
+    inline: true
+    caption: "从 y 向列空间作垂线，垂足就是最小二乘解 ŷ。"
+    alt: "最小二乘把 y 投影到列空间"
+  - id: condition-number
+    file: condition-number.svg
+    concepts: ["4.6"]
+    inline: true
+    caption: "单位圆经过病态矩阵 A 变成扁椭圆，κ = σmax/σmin = 8。"
+    alt: "病态矩阵把单位圆压成扁椭圆"
+  - id: covariance-sign
+    file: covariance-sign.svg
+    concepts: ["9.1"]
+    inline: true
+    caption: "左：正相关，点云沿右上方向拉长；右：负相关，沿右下方向拉长。"
+    alt: "正相关与负相关的二维点云对比"
+  - id: gaussian-contours
+    file: gaussian-contours.svg
+    concepts: ["9.2"]
+    inline: true
+    caption: "二元高斯的等高线是以 μ 为中心的同心椭圆，轴长是 √λi。"
+    alt: "二元高斯分布的同心椭圆等高线"
+  - id: whitening
+    file: whitening.svg
+    concepts: ["9.4"]
+    inline: true
+    caption: "三步：原斜椭圆 → PCA 白化成正圆并转正 → ZCA 白化成正圆但方向不变。"
+    alt: "白化前后协方差椭圆的变化"
+  - id: rotation
+    file: rotation.svg
+    concepts: ["0.1"]
+    inline: true
+    caption: "R 把每个向量逆时针转 90°；连续作用两次得到 R²=−I，也就是 180° 旋转。"
+    alt: "二维旋转矩阵对两个向量的作用，以及连续两次旋转的结果"
+  - id: norm-balls
+    file: norm-balls.svg
+    concepts: ["1.4"]
+    inline: true
+    caption: "同一个方向与三个单位球相交于不同位置；「长度 1」在 L1/L2/L∞ 下分别是菱形、圆、正方形。"
+    alt: "L1、L2、L∞ 三种范数的单位球形状对比"
+  - id: cosine-angle
+    file: cosine-angle.svg
+    concepts: ["1.5"]
+    inline: true
+    caption: "余弦相似度就是单位向量在 x 方向上的投影长度；这里 cosθ=0.6。"
+    alt: "两个向量的夹角与余弦投影示意"
+  - id: span-independence
+    file: span-independence.svg
+    concepts: ["2.3"]
+    inline: true
+    caption: "左：v₂=1.5v₁ 时所有组合落在一条直线上；右：两个无关向量的组合铺满整个平面。"
+    alt: "线性相关与线性无关的张成空间对比"
+  - id: inverse-singular
+    file: inverse-singular.svg
+    concepts: ["3.4"]
+    inline: true
+    caption: "左：可逆矩阵把单位正方形变成仍有面积的平行四边形；右：奇异矩阵把平面压成一条线，不同输入映到同一输出。"
+    alt: "可逆矩阵与奇异矩阵对平面的作用对比"
+  - id: quadratic-form
+    file: quadratic-form.svg
+    concepts: ["6.5"]
+    inline: true
+    caption: "左：正定二次型是开口向上的碗；右：不定二次型是鞍面，沿特征方向一上一下。"
+    alt: "正定与不定二次型的等高线对比"
+  - id: power-iteration
+    file: power-iteration.svg
+    concepts: ["6.6"]
+    inline: true
+    caption: "反复乘 A 并归一化，方向被主特征向量 v₁ 吸过去；收敛比 r≈0.24。"
+    alt: "幂迭代的向量方向逐步收敛到主特征向量"
+  - id: convexity
+    file: convexity.svg
+    concepts: ["8.6"]
+    inline: true
+    caption: "左：凸函数的弦始终在图像上方；右：非凸函数会出现图像高于弦的区间。"
+    alt: "凸函数与非凸函数的弦位置对比"
+  - id: gradient-descent
+    file: gradient-descent.svg
+    concepts: ["8.7"]
+    inline: true
+    caption: "同一个扁碗：梯度下降沿长轴之字形前进，牛顿法用 Hessian 一步到中心。"
+    alt: "梯度下降与牛顿法在扁二次函数上的路径对比"
+  - id: attention-mask
+    file: attention-mask.svg
+    concepts: ["11.4"]
+    inline: true
+    caption: "因果 mask 把上三角置 −∞，softmax 后第 i 行只在前 i 列分配预算，每行和为 1。"
+    alt: "带因果 mask 的注意力分数与 softmax 权重热力图"
+  - id: quantization-levels
+    file: quantization-levels.svg
+    concepts: ["11.9"]
+    inline: true
+    caption: "量化把连续值吸到最近的刻度；步长 s=1/7 时最大误差不超过 s/2。"
+    alt: "连续值映射到均匀量化网格的示意"

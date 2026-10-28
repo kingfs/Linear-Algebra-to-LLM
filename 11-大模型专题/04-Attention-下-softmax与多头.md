@@ -90,6 +90,10 @@ $$
 
 其中 $M$ 是 mask（合法位置 0，非法位置 $-\infty$）。
 
+![因果 mask：上三角置为 -∞ 后，每行只在前缀上做 softmax](../figures/out/attention-mask.svg)
+
+*图：左图是 $6\times6$ 的示例分数矩阵，上三角被 mask 成 $-\infty$；右图按行做 softmax 后，第 $i$ 行只在前 $i$ 列分配概率，每行和为 1。这就是自回归模型「只能看前面」的数学实现。*
+
 $$
 \operatorname{MHA}(X)=\operatorname{Concat}(\text{head}_1,\dots,\text{head}_H)W_O
 $$

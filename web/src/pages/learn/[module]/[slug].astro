@@ -26,7 +26,9 @@ const idx = module?.concepts.findIndex((c: any) => c.slug === entry.data.slug) ?
 const prev = idx > 0 ? module.concepts[idx - 1] : null;
 const next = idx >= 0 && idx < module.concepts.length - 1 ? module.concepts[idx + 1] : null;
 const questions = (quizbank as Record<string, any[]>)[entry.data.id] || [];
-const figure = (figures as any[]).find((f) => (f.concepts || []).includes(entry.data.id));
+const figure = (figures as any[]).find(
+  (f) => !f.inline && (f.concepts || []).includes(entry.data.id),
+);
 const toc = headings.filter((h: any) => h.depth === 2);
 ---
 

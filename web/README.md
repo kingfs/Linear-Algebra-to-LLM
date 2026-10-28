@@ -107,7 +107,7 @@ node scripts/check-quiz.mjs ../quizbank/m01.yaml
 
 ## 图
 
-`../figures/scripts/*.py` 用 Matplotlib 生成 `../figures/out/*.svg`，`../figures/manifest.yaml` 把图映射到概念 id。概念页会自动在正文前插入第一张匹配的图。
+`../figures/scripts/*.py` 用 Matplotlib 生成 `../figures/out/*.svg`，`../figures/manifest.yaml` 把图映射到概念 id。概念页会自动在正文前插入第一张匹配且未标记 `inline: true` 的图；正文内联图只由 Markdown 引用。
 
 重新生成：
 
