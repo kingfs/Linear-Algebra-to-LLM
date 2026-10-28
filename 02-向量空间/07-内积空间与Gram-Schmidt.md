@@ -105,6 +105,10 @@ $$
 
 这个递推由 [Schmidt](#ref-schmidt-1907) 在 1907 年写成显式形式，名字里的 Gram 则来自 1883 年的最小二乘正交化。
 
+![Gram-Schmidt：从 v2 中减掉它在 v1 上的投影](../figures/out/gram-schmidt.svg)
+
+*图：$\mathrm{proj}$ 是 $\mathbf{v}_2$ 在 $\mathbf{v}_1$ 上的投影；把它从 $\mathbf{v}_2$ 减掉，剩下的红色向量与 $\mathbf{v}_1$ 垂直。单位化后就是 $\mathbf{q}_1,\mathbf{q}_2$。*
+
 ### 2.4 QR 分解
 
 若 $A\in\mathbb{R}^{m\times n}$ 的列线性无关，则可分解为

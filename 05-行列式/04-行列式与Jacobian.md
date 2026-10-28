@@ -48,6 +48,10 @@ llm_hooks: [change-of-variables, normalizing-flow, log-determinant]
 
 极坐标的网格是同心圆和射线：半径 $r$ 处的格子，沿 $r$ 方向宽 $dr$，沿 $\theta$ 方向弧长 $r\,d\theta$，面积约 $r\,dr\,d\theta$。那个 $r$ 就是「离原点越远，同样的角宽度对应的弧越长」。类比边界：这个「小格子近似平行四边形」的误差是 $o(\Delta u)$，单独看不为零；但积分取极限后消失。要求 $f$ 连续可微，且 $J_f$ 在积分区域上几乎处处可逆。
 
+![极坐标映射把 (r, θ) 方格变成扇形小格](../figures/out/jacobian-polar.svg)
+
+*图：左图是 $(r,\theta)$ 平面上的方格；右图是极坐标映射后的像。橙色小格在 $r\approx1.4$ 处的面积被放大 $r$ 倍，所以面积元要乘 $r\,dr\,d\theta$。*
+
 ### 1.3 它在现实世界里对应什么
 
 地图上，Jacobian 行列式是**面积汇率**：地面上 1 km²，画到这张图上占多少 km²。

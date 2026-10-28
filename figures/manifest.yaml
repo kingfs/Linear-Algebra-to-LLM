@@ -154,3 +154,111 @@ figures:
     inline: true
     caption: "量化把连续值吸到最近的刻度；步长 s=1/7 时最大误差不超过 s/2。"
     alt: "连续值映射到均匀量化网格的示意"
+  - id: dot-product
+    file: dot-product.svg
+    concepts: ["1.3"]
+    inline: true
+    caption: "y 的长度乘 x 在 y 方向上的影子长度就是点积；这里 2.12×1.41=3。"
+    alt: "点积作为 y 的长度与 x 的投影长度之积"
+  - id: change-of-basis
+    file: change-of-basis.svg
+    concepts: ["2.5"]
+    inline: true
+    caption: "同一个向量的坐标随基改变：标准基下是 (1.2,1.0)，在另一组基下是 (1.36,0.32)。"
+    alt: "同一向量在标准网格与斜基网格下的坐标"
+  - id: gram-schmidt
+    file: gram-schmidt.svg
+    concepts: ["2.7"]
+    inline: true
+    caption: "从 v₂ 中减掉它在 v₁ 上的投影，剩下的红色向量与 v₁ 垂直；单位化后得到 q₂。"
+    alt: "Gram-Schmidt 通过减去投影构造正交方向"
+  - id: matrix-vector-columns
+    file: matrix-vector-columns.svg
+    concepts: ["3.2"]
+    inline: true
+    caption: "Ax 是按输入系数把矩阵各列加权相加；输入 (1,2) 取 1 份 a₁ 和 2 份 a₂。"
+    alt: "矩阵乘向量作为列向量的加权和"
+  - id: matrix-composition
+    file: matrix-composition.svg
+    concepts: ["3.3"]
+    inline: true
+    caption: "先作用 B 再作用 A，与直接乘 AB 得到同一个像；图用 2×2 矩阵演示复合结构。"
+    alt: "两个线性变换的复合与乘积矩阵的等价性"
+  - id: system-geometry
+    file: system-geometry.svg
+    concepts: ["4.1"]
+    inline: true
+    caption: "两条约束线交于一点、平行或重合，分别对应唯一解、无解、无穷多解。"
+    alt: "线性方程组三种解的几何情形"
+  - id: solution-structure
+    file: solution-structure.svg
+    concepts: ["4.2"]
+    inline: true
+    caption: "通解是一条直线：特解 x_p 加上零空间方向 n 的任意倍数仍落在解集上。"
+    alt: "特解加零空间方向构成通解"
+  - id: jacobian-polar
+    file: jacobian-polar.svg
+    concepts: ["5.4"]
+    inline: true
+    caption: "极坐标把 (r,θ) 方格映射成扇形小格；在半径 r 处面积放大 r 倍。"
+    alt: "极坐标映射的网格与局部面积缩放"
+  - id: low-rank
+    file: low-rank.svg
+    concepts: ["7.3"]
+    inline: true
+    caption: "合成矩阵的截断 SVD：保留前 1、2、4 层时，相对误差约为 29%、10%、2%。"
+    alt: "同一矩阵的 rank-1、rank-2、rank-4 重建对比"
+  - id: gradient-field
+    file: gradient-field.svg
+    concepts: ["8.1"]
+    inline: true
+    caption: "梯度箭头垂直等高线并指向函数增大的方向；这里 f=(x₁²+2x₂²)/2。"
+    alt: "等高线与梯度向量场"
+  - id: lagrange
+    file: lagrange.svg
+    concepts: ["8.8"]
+    inline: true
+    caption: "最优点处目标等值线与约束圆相切，∇f 与 ∇g 平行。"
+    alt: "约束圆、目标等值线与梯度平行的切点"
+  - id: float-spacing
+    file: float-spacing.svg
+    concepts: ["10.1"]
+    inline: true
+    caption: "fp32 的相邻间距每个 2 的幂区间翻倍；在 1 附近是 2⁻²³，在 1024 附近是 2⁻¹³。"
+    alt: "浮点数相邻间距随数量级增长的阶梯图"
+  - id: roofline
+    file: roofline.svg
+    concepts: ["10.3"]
+    inline: true
+    caption: "fp32 与 bf16 的两条 Roofline，拐点分别为 10 和 150 FLOP/byte；4096 GEMM 落在计算受限区。"
+    alt: "带宽斜线与算力平台组成的 Roofline 模型"
+  - id: sparse-pattern
+    file: sparse-pattern.svg
+    concepts: ["10.5"]
+    inline: true
+    caption: "同样 284 个非零元：按块/带排列便于硬件跳过，随机排列则索引不规则。"
+    alt: "结构化稀疏与随机稀疏的非零元分布对比"
+  - id: layernorm-rmsnorm
+    file: layernorm-rmsnorm.svg
+    concepts: ["11.6"]
+    inline: true
+    caption: "D=2 时 LayerNorm 把输出压到零均值线与球的交点，RMSNorm 只把输出重定到同一半径的圆上。"
+    alt: "LayerNorm 与 RMSNorm 输出所在几何位置的对比"
+  - id: lora
+    file: lora.svg
+    concepts: ["11.8"]
+    inline: true
+    caption: "LoRA 冻结 W，只训练 A（r×D）与 B（D×r）；D=4096、r=16 时参数量约 0.78%。"
+    alt: "全参数微调与 LoRA 低秩瓶颈结构的参数对比"
+  - id: einsum
+    file: einsum.svg
+    concepts: ["12.1"]
+    inline: true
+    caption: "bhid,bhjd->bhij：b,h 共享保留，d 被求和，i,j 是输出保留的自由轴。"
+    alt: "einsum 下标中共享轴、自由轴与求和轴的对应关系"
+  - id: random-matrix
+    file: random-matrix.svg
+    concepts: ["12.2"]
+    inline: true
+    caption: "n=600、元素方差 1/n 的对称随机矩阵，特征值大多落在 [−2,2]，与 Wigner 半圆律吻合。"
+    alt: "随机对称矩阵特征值直方图与 Wigner 半圆律"
