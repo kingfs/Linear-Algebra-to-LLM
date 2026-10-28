@@ -13,7 +13,7 @@ for ax in axes:
 ax = axes[0]
 v1 = np.array([1.0, 0.5])
 v2 = 1.5 * v1
-c1, c2 = np.meshgrid(np.linspace(-2, 2, 23), np.linspace(-2, 2, 23))
+c1, c2 = np.meshgrid(np.linspace(-0.9, 0.9, 19), np.linspace(-0.9, 0.9, 19))
 pts = c1[..., None] * v1 + c2[..., None] * v2
 ax.scatter(pts[..., 0], pts[..., 1], s=7, color=ORANGE, alpha=0.35, linewidths=0)
 
