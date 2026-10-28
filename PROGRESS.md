@@ -34,7 +34,7 @@
 | 知识卡复习 | 完成 | 479 张，Leitner 间隔重复 |
 | 错题本 | 完成 | 按最近一次作答聚合，可整组/单题重做 |
 | 学习进度 | 完成 | 阅读、正确率、薄弱概念、到期卡片；IndexedDB 本地保存 |
-| 生成图 | 完成 | 45 张 Matplotlib SVG（8 页首 + 37 内联）；SVG 覆盖 44/81，加 Mermaid 共 49/81 |
+| 生成图 | 完成 | 52 张 Matplotlib SVG（8 页首 + 44 内联）；SVG 覆盖 51/81，加 Mermaid 共 56/81 |
 | 质量门禁 | 完成 | `pnpm build`、`pnpm check`、`check-quiz.mjs`、`check-site-links.mjs`、`check-render.mjs`、13 项 Playwright E2E |
 | 子路径部署 | 完成 | `BASE_PATH=/Linear-Algebra-to-LLM/` 构建验证；tag 触发 GitHub Pages workflow |
 
@@ -105,4 +105,5 @@ cd web && pnpm build && pnpm links && node scripts/e2e.mjs   # 0 断链 / 13 che
 | 2026-10-23 | 全课程叙事增强：81 篇补「现场（数字/决策/代价）→ 现实对应与边界 → 反事实反例 → 场景闭环」；新增《叙事增强规范》与 81 行《概念—现实对应表》；同步 13 个模块导览 | 本系列 docs(mNN) |
 | 2026-10-28 | 新增 11 张生成图（旋转、范数单位球、余弦投影、张成、可逆/奇异、二次型、幂迭代、凸性、梯度下降、因果 mask、量化刻度），补《图示规划》并给内联图加 `inline` 标记 | 本系列 docs(figures) |
 | 2026-10-28 | 第二轮新增 18 张生成图（点积投影、换基、Gram–Schmidt、列组合、矩阵复合、方程组几何、通解结构、极坐标 Jacobian、低秩、梯度场、拉格朗日、浮点间距、Roofline、稀疏结构、LayerNorm/RMSNorm、LoRA、einsum、Wigner 半圆），覆盖提升到 44/81 | 本系列 docs(figures) |
+| 2026-10-28 | 第三轮新增 7 张生成图（基与维数、正交补、最小范数解、对角化、Hessian 二次近似、共轭梯度、QKV 形状），SVG 覆盖提升到 51/81 | 本系列 docs(figures) |
 

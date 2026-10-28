@@ -50,6 +50,10 @@ llm_hooks: [self-attention, causal-mask, kv-cache]
 
 类比边界：它不是数据库检索，Q/K/V 都是**学出来的**线性投影，匹配度不等于语义相关性；attention 权重也不等于「解释」。
 
+![QKV 形状流：投影、分头、打分、softmax、乘 V、拼接](../figures/out/qkv-shapes.svg)
+
+*图：$X[T,D]$ 经 $W_Q/W_K/W_V$ 投到每头 $d=D/H$；$QK^\top$ 给出 $[H,T,T]$ 分数，softmax 后乘 $V$ 得到 $[H,T,d]$，拼接回 $[T,D]$。*
+
 ### 1.1 它在现实世界里对应什么
 
 一句话对应：**attention 是一块「内容寻址存储器」**（content-addressable memory, CAM）——递进去的不是地址，而是一个「我想找什么」的向量；每个槽位用自己的标签（key）与它比对，再按匹配度把内容（value）按比例倒出来。

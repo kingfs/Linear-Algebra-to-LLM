@@ -262,3 +262,45 @@ figures:
     inline: true
     caption: "n=600、元素方差 1/n 的对称随机矩阵，特征值大多落在 [−2,2]，与 Wigner 半圆律吻合。"
     alt: "随机对称矩阵特征值直方图与 Wigner 半圆律"
+  - id: basis-dimension
+    file: basis-dimension.svg
+    concepts: ["2.4"]
+    inline: true
+    caption: "左：两条无关方向 b1,b2 足以表示平面上任意向量；右：加入 b3=b1+b2 后仍只有 2 维，v 的坐标不再唯一。"
+    alt: "基的两条无关方向与加入相关向量后的坐标不唯一"
+  - id: orthogonal-complement
+    file: orthogonal-complement.svg
+    concepts: ["2.8"]
+    inline: true
+    caption: "S 是一张平面（侧视成菱形），S⊥ 是它的法线；任意 v 唯一拆成 p∈S 与 e∈S⊥，维数 2+1=3。"
+    alt: "平面 S、法线 S⊥ 与向量 v=p+e 的正交分解"
+  - id: min-norm
+    file: min-norm.svg
+    concepts: ["4.5"]
+    inline: true
+    caption: "所有解在 x1+2x2=3 上；以原点为圆心的圆与直线相切于 p=(0.6,1.2)，所以 p 是范数最小的解。"
+    alt: "解集直线与原点圆相切于最小范数解"
+  - id: diagonalization
+    file: diagonalization.svg
+    concepts: ["6.3"]
+    inline: true
+    caption: "A 把 x=0.7v1+0.9v2 变成 Ax=1.4v1+2.7v2；在特征基下只剩坐标各自乘 λ1=2、λ2=3。"
+    alt: "标准坐标与特征基下同一向量及其像的分解"
+  - id: hessian-approximation
+    file: hessian-approximation.svg
+    concepts: ["8.4"]
+    inline: true
+    caption: "p 处沿两个特征方向的切片：实线是真实 f，虚线是二阶模型；两者在 p 附近贴合，曲率由 λ1≈1.25、λ2≈2.81 决定。"
+    alt: "Hessian 特征方向上的真实函数与二次近似切片"
+  - id: conjugate-gradient
+    file: conjugate-gradient.svg
+    concepts: ["10.4"]
+    inline: true
+    caption: "同一个二次函数、同一个起点：GD 在狭长山谷里之字形前进，CG 用两个共轭方向两步到达解。"
+    alt: "梯度下降的之字形路径与共轭梯度两步路径对比"
+  - id: qkv-shapes
+    file: qkv-shapes.svg
+    concepts: ["11.3"]
+    inline: true
+    caption: "X[T,D] 经 WQ/WK/WV 投到每头 d=D/H；QK^T 给出 [H,T,T] 分数，softmax 后乘 V 得到 [H,T,d]，拼接回 [T,D]。"
+    alt: "QKV 投影、多头分数、softmax 与输出拼接的形状流"

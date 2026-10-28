@@ -56,6 +56,10 @@ Hessian 是 $12\text{ 万}\times12\text{ 万}$，$1.44\times10^{10}$ 个数，fp
 
 > 💡 **一句话直觉**：**Hessian 是曲率的矩阵；特征值告诉你每个方向多弯，特征向量告诉你朝哪弯。**
 
+![Hessian：沿特征方向的真实曲率与二次近似](../figures/out/hessian-approximation.svg)
+
+*图：$\mathbf{p}$ 处沿两个特征方向的切片：实线是真实 $f$，虚线是二阶模型；两者在 $\mathbf{p}$ 附近贴合，曲率由 $\lambda_1\approx1.25$、$\lambda_2\approx2.81$ 决定。*
+
 ### 1.3 它在现实世界里对应什么
 
 在拓扑优化里，Hessian 有一个非常具体的身份：**刚度的二阶敏感度**。
