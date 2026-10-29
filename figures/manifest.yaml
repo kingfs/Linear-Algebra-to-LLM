@@ -52,6 +52,24 @@ figures:
     inline: true
     caption: "把 v 的起点移到 u 的终点；虚线补出平行四边形，对角线就是 u+v。"
     alt: "两个向量首尾相接相加的平行四边形示意"
+  - id: scalar-multiple
+    file: scalar-multiple.svg
+    concepts: ["1.2"]
+    inline: true
+    caption: "数乘只改变长度和正负：1.8v 拉长、0.5v 缩短、−1.3v 反向，但都留在 v 所在的直线上。"
+    alt: "同一个向量的不同数乘结果都落在一条直线上"
+  - id: linear-combination
+    file: linear-combination.svg
+    concepts: ["1.2"]
+    inline: true
+    caption: "左：两个正系数把 w 夹在 v₁、v₂ 之间；右：负系数让第二项反向，w 跑到另一侧。"
+    alt: "正系数与含负系数的线性组合对比"
+  - id: span-grid
+    file: span-grid.svg
+    concepts: ["1.2"]
+    inline: true
+    caption: "左边每选一组系数 (c₁,c₂)，右边就落在一个向量上；系数窗口放大到整个平面，组合就铺满张成。"
+    alt: "系数平面中的网格映射为向量平面中铺满的张成网格"
   - id: cross-product
     file: cross-product.svg
     concepts: ["1.7"]
@@ -106,6 +124,12 @@ figures:
     inline: true
     caption: "余弦相似度就是单位向量在 x 方向上的投影长度；这里 cosθ=0.6。"
     alt: "两个向量的夹角与余弦投影示意"
+  - id: span-membership
+    file: span-membership.svg
+    concepts: ["2.2"]
+    inline: true
+    caption: "左：b 在张成平面内，存在精确配方；右：b 在平面外，垂足 p 是张成里离它最近的点。"
+    alt: "目标向量在张成内与张成外的对比，含最近点投影"
   - id: span-independence
     file: span-independence.svg
     concepts: ["2.3"]
