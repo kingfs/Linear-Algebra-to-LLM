@@ -1,0 +1,215 @@
+version: '3'
+
+# Linear-Algebra-to-LLM 本地工作流。
+# 用法：task --list
+# 所有任务都在仓库根目录执行；Web 任务会自动切到 web/。
+
+vars:
+  PYTHON: python3
+  PORT: '4321'
+  BASE_PATH: '/'
+  MODULE: m01
+  LAB: '01'
+
+env:
+  PYTHONUNBUFFERED: '1'
+
+tasks:
+  default:
+    desc: 列出全部任务
+    cmds:
+      - task --list
+
+  doctor:
+    desc: 检查本地工具链（python/node/pnpm/uv/task/Chrome）
+    cmds:
+      - |
+        set -e
+        echo "task:   $(task --version)"
+        echo "python: $({{.PYTHON}} --version)"
+        echo "node:   $(node --version)"
+        echo "pnpm:   $(pnpm --version)"
+        echo "uv:     $(uv --version)"
+        if [ -x "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" ]; then
+          echo "chrome: OK"
+        else
+          echo "chrome: 未找到（只有 task e2e 需要）"
+        fi
+
+  setup:
+    desc: 安装 Web 依赖与 Python 实验/画图依赖（创建 .venv）
+    cmds:
+      - cd web && pnpm install
+      - "{{.PYTHON}} -m venv .venv"
+      - .venv/bin/python -m pip install --upgrade pip
+      - .venv/bin/python -m pip install -r labs/requirements.txt -r figures/requirements.txt
+
+  dev:
+    desc: 启动 Astro 开发服务器（PORT=4321）
+    aliases: [serve, start]
+    dir: web
+    cmds:
+      - pnpm dev --port {{.PORT}}
+
+  sync:
+    desc: 从根目录 Markdown 生成 Web 内容与索引
+    dir: web
+    cmds:
+      - pnpm sync
+
+  build:
+    desc: 构建静态站点到 web/dist（BASE_PATH=/）
+    dir: web
+    env:
+      BASE_PATH: '{{.BASE_PATH}}'
+    cmds:
+      - pnpm build
+
+  preview:
+    desc: 预览构建产物（先 task build）
+    dir: web
+    cmds:
+      - pnpm preview --port {{.PORT}}
+
+  build:pages:
+    desc: 按 GitHub Pages 子路径 /Linear-Algebra-to-LLM/ 构建
+    dir: web
+    env:
+      BASE_PATH: '/Linear-Algebra-to-LLM/'
+    cmds:
+      - pnpm build
+
+  check:
+    desc: 内容质量门禁（概念结构 / 文献 / 全仓链接）
+    cmds:
+      - task: check:content
+      - task: check:refs
+      - task: check:links
+
+  check:content:
+    desc: 概念文档结构检查（12 节、front matter、站内链接）
+    cmds:
+      - '{{.PYTHON}} scripts/check.py'
+
+  check:refs:
+    desc: 参考文献格式、条目数与页内锚点检查
+    cmds:
+      - '{{.PYTHON}} scripts/check_refs.py'
+
+  check:links:
+    desc: 全仓 Markdown 相对链接检查
+    cmds:
+      - '{{.PYTHON}} scripts/check_links.py'
+
+  check:quiz:
+    desc: 校验单个题库（MODULE=m01）
+    dir: web
+    cmds:
+      - node scripts/check-quiz.mjs ../quizbank/{{.MODULE}}.yaml
+
+  check:quiz:all:
+    desc: 校验全部题库
+    dir: web
+    cmds:
+      - |
+        set -e
+        for f in ../quizbank/*.yaml; do
+          echo "== $f"
+          node scripts/check-quiz.mjs "$f"
+        done
+
+  check:web:
+    desc: 构建后检查站内链接、锚点与渲染（依赖 build）
+    deps: [build]
+    dir: web
+    cmds:
+      - node scripts/check-site-links.mjs
+      - node scripts/check-render.mjs
+
+  check:all:
+    desc: 内容检查 + Web 构建后检查
+    cmds:
+      - task: check
+      - task: check:web
+
+  e2e:
+    desc: 启动临时 dev server 并跑 13 项浏览器端到端检查
+    cmds:
+      - |
+        set -e
+        cd web
+        pnpm sync >/dev/null
+        pnpm exec astro dev --port {{.PORT}} >/tmp/linear-algebra-to-llm-dev.log 2>&1 &
+        pid=$!
+        trap 'kill "$pid" 2>/dev/null || true; pkill -P "$pid" 2>/dev/null || true' EXIT
+        ready=0
+        for i in $(seq 1 40); do
+          if curl -fsS "http://127.0.0.1:{{.PORT}}/" >/dev/null 2>&1; then
+            ready=1
+            break
+          fi
+          sleep 1
+        done
+        if [ "$ready" -ne 1 ]; then
+          echo "dev server 未就绪，最近日志："
+          tail -50 /tmp/linear-algebra-to-llm-dev.log
+          exit 1
+        fi
+        BASE_URL="http://127.0.0.1:{{.PORT}}" node scripts/e2e.mjs
+
+  lab:
+    desc: 运行一个 lab（LAB=01）
+    cmds:
+      - |
+        set -e
+        if [ -x .venv/bin/python ]; then
+          .venv/bin/python labs/lab{{.LAB}}_*.py
+        else
+          {{.PYTHON}} labs/lab{{.LAB}}_*.py
+        fi
+
+  labs:
+    desc: 运行全部 lab（可能较慢）
+    cmds:
+      - |
+        set -e
+        for f in labs/lab*.py; do
+          echo "== $f"
+          if [ -x .venv/bin/python ]; then
+            .venv/bin/python "$f"
+          else
+            {{.PYTHON}} "$f"
+          fi
+        done
+
+  figures:
+    desc: 重新生成全部 SVG 图（优先用 .venv）
+    cmds:
+      - |
+        set -e
+        for f in figures/scripts/fig_*.py; do
+          echo "== $f"
+          if [ -x .venv/bin/python ]; then
+            .venv/bin/python "$f"
+          else
+            uv run --with matplotlib --with numpy python "$f"
+          fi
+        done
+
+  clean:
+    desc: 清理构建产物、生成目录与 Python 缓存
+    cmds:
+      - rm -rf web/dist web/.astro web/src/content/generated web/src/data web/public/figures web/public/labs web/public/search.json
+      - find scripts labs figures -name __pycache__ -type d -prune -exec rm -rf {} +
+
+  status:
+    desc: 查看工作区状态与最近提交
+    cmds:
+      - git status --short
+      - git log -5 --oneline
+
+  ci:
+    desc: 本地 CI（内容门禁 + 构建 + 站点检查）
+    cmds:
+      - task: check
+      - task: check:web

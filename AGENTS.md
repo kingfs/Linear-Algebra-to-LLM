@@ -42,6 +42,7 @@
 ├── AGENTS.md                 # 本文件：协作宪法
 ├── README.md                 # 课程首页：地图、路线、使用方法
 ├── PROGRESS.md               # 模块进度与待办（agent 的任务队列）
+├── Taskfile.yml              # go-task 本地工作流（task --list）
 ├── docs/                     # 全局说明：学习地图、符号表、模板
 ├── curriculum/               # 大纲与周计划
 ├── 00-准备/ ... 13-推理服务/  # 课程主体，一个模块一个目录
@@ -182,6 +183,14 @@ llm_hooks: [embedding, attention]
 提交前必须运行：
 
 ```bash
+task check                       # = check.py + check_refs.py + check_links.py
+task check:web                   # 构建后查站内链接、锚点与渲染
+task e2e                         # 13 项浏览器检查
+```
+
+也可以直接跑底层脚本：
+
+```bash
 python3 scripts/check.py
 python3 scripts/check_refs.py    # 参考文献格式、锚点、外链可达性
 python3 scripts/check_links.py   # 全仓 README/习题/速查表链接
@@ -252,6 +261,8 @@ python3 scripts/check_links.py   # 全仓 README/习题/速查表链接
 Web 端是课程的第二消费层，**不是第二内容源**。根目录 Markdown 仍是唯一正文来源；`web/src/content/generated/`、`web/src/data/`、`web/public/figures/`、`web/public/search.json` 都是构建产物，已在 `.gitignore` 中，**不要手改**。
 
 ### 14.1 常用命令
+
+根目录的 `Taskfile.yml` 提供快捷入口：`task dev`、`task check`、`task check:web`、`task e2e`、`task build:pages`；完整说明见 [`docs/本地开发.md`](docs/本地开发.md)。
 
 ```bash
 cd web

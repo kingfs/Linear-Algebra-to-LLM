@@ -31,6 +31,23 @@ pnpm dev --port 4321
 
 ---
 
+## 本地开发（go-task）
+
+仓库根目录的 [`Taskfile.yml`](https://github.com/kingfs/Linear-Algebra-to-LLM/blob/main/Taskfile.yml) 把常用命令收成 `task`：
+
+```bash
+task doctor      # 检查 python/node/pnpm/uv/Chrome
+task setup       # 安装 Web 与 Python 依赖
+task dev         # 启动 http://127.0.0.1:4321/
+task check       # 概念结构 / 文献 / 全仓链接
+task check:web   # 构建后查站内链接、锚点与渲染
+task e2e         # 13 项浏览器检查
+```
+
+完整命令、变量与排错见 [`docs/本地开发.md`](docs/本地开发.md)。
+
+---
+
 ## 这门课为谁而写
 
 - 你已经会用大模型（调 API、写 prompt），但看到 `QK^T / sqrt(d_k)`、`W_Q`、`rank`、`SVD` 时心里发虚。
@@ -132,6 +149,7 @@ flowchart LR
 ```
 ├── AGENTS.md          # agent/贡献者协作规范（写作模板、检查、提交）
 ├── PROGRESS.md        # 模块进度与任务队列
+├── Taskfile.yml       # go-task 本地工作流
 ├── docs/              # 学习地图、符号表、概念-现实对应表、叙事增强规范、图示规划
 ├── curriculum/        # 完整大纲、周计划
 ├── 00-准备/ … 13-推理服务/ # 课程正文（每篇一个概念；M13 为专题手册）
@@ -159,7 +177,7 @@ flowchart LR
 ```bash
 python3 scripts/check.py        # 81 篇概念文档：0 error / 0 warning
 python3 scripts/check_refs.py    # 81 篇文献与页内锚点：0 error
-python3 scripts/check_links.py  # 139 个 Markdown：0 断链
+python3 scripts/check_links.py  # 140 个 Markdown：0 断链
 ```
 
 逐模块状态与变更记录见 [`PROGRESS.md`](PROGRESS.md)。

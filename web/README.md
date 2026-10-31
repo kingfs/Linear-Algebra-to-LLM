@@ -4,7 +4,7 @@
 
 ## 技术栈
 
-- **Astro 7**：静态生成 152 个页面，正文默认零 JS。
+- **Astro 7**：静态生成 159 个页面，正文默认零 JS。
 - **React islands**：只有题目、卡片、进度这些交互组件按需 hydrate。
 - **KaTeX + remark-math**：构建时渲染数学公式。
 - **Mermaid**：把 Markdown 里的流程图转成 SVG。
@@ -12,6 +12,15 @@
 - **Python + Matplotlib**：预生成解释型 SVG 图，见 `figures/`。
 
 ## 快速开始
+
+根目录已提供 go-task 入口，见 [`../docs/本地开发.md`](../docs/本地开发.md)：
+
+```bash
+task setup
+task dev
+```
+
+等价的手动命令：
 
 ```bash
 cd web
@@ -36,7 +45,7 @@ pnpm preview    # 预览 dist
 | `pnpm build` | sync + 静态构建 |
 | `pnpm check` | sync + `astro check`（TypeScript/Astro 类型检查） |
 | `node scripts/e2e.mjs` | 用本机 Chrome 跑 13 项端到端检查 |
-| `pnpm links` | 检查构建后 153 页的站内链接与锚点 |
+| `pnpm links` | 检查构建后 159 页的站内链接与锚点 |
 | `node scripts/check-quiz.mjs` | 校验题库字段、概念 id、source 与锚点 |
 
 ## 内容管线
@@ -134,7 +143,7 @@ for f in figures/scripts/fig_*.py; do uv run --with matplotlib --with numpy pyth
 ```bash
 cd web
 pnpm build
-pnpm links     # 153 页 / 95 个锚点 / 0 断链
+pnpm links     # 159 页 / 95 个锚点 / 0 断链
 node scripts/e2e.mjs
 ```
 
