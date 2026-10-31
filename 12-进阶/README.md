@@ -59,3 +59,5 @@ flowchart LR
 ---
 
 下一篇 → [12.1 张量与 einsum](01-张量与einsum.md)
+
+延伸 → [M13 推理服务与运行时](../13-推理服务/README.md)

@@ -30,24 +30,28 @@ const toc = headings.filter((h: any) => h.depth === 2);
   <article class="prose">
     <div class="meta-row">
       <span class="badge accent">{entry.data.module}</span>
-      <span class="badge">{module?.concepts.length || 0} 篇概念</span>
-      <span class="badge">{qcount} 道题</span>
+      <span class="badge">{module?.concepts.length ? `${module.concepts.length} 篇概念` : "专题手册"}</span>
+      <span class="badge">{qcount > 0 ? `${qcount} 道题` : "暂无题库"}</span>
     </div>
     <Content />
 
     <div class="section-head" style="margin-top:42px;">
-      <h2>本模块概念</h2>
-      <a href={`/practice/${entry.data.module.toLowerCase()}/`}>做本模块练习 →</a>
+      <h2>{module?.concepts.length ? "本模块概念" : "本模块说明"}</h2>
+      {qcount > 0 && <a href={`/practice/${entry.data.module.toLowerCase()}/`}>做本模块练习 →</a>}
     </div>
-    <div class="grid" style="grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));">
-      {module?.concepts.map((c: any) => (
-        <a class="module-card" href={c.route}>
-          <div class="m-id">{c.id} · {c.level}</div>
-          <h3>{c.title}</h3>
-          <div class="m-meta"><span>{c.minutes} 分钟</span><span>·</span><span>{(quizbank as any)[c.id]?.length || 0} 题</span></div>
-        </a>
-      ))}
-    </div>
+    {module?.concepts.length ? (
+      <div class="grid" style="grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));">
+        {module.concepts.map((c: any) => (
+          <a class="module-card" href={c.route}>
+            <div class="m-id">{c.id} · {c.level}</div>
+            <h3>{c.title}</h3>
+            <div class="m-meta"><span>{c.minutes} 分钟</span><span>·</span><span>{(quizbank as any)[c.id]?.length || 0} 题</span></div>
+          </a>
+        ))}
+      </div>
+    ) : (
+      <p style="color:var(--ink-soft);margin:0;">本模块是专题手册，正文即上方导览；不设概念页与题库。后续可拆成 13.1–13.6 的教学单元。</p>
+    )}
 
     <nav class="pager">
       {prev ? <a href={prev.route}><div class="dir">← 上一模块</div><div class="t">{prev.id} {prev.title}</div></a> : <span />}

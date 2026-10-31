@@ -24,6 +24,7 @@ const moduleBlurb: Record<string, string> = {
   M10: "浮点误差、条件数、GEMM、迭代法与稀疏矩阵。",
   M11: "Token、Attention、RoPE、KV Cache、LoRA、量化、MoE。",
   M12: "张量/einsum、随机矩阵与全景研究路线。",
+  M13: "推理引擎、模型专用优化、GPU 服务与选型决策。",
 };
 ---
 
@@ -57,13 +58,13 @@ const moduleBlurb: Record<string, string> = {
     <a class="module-card" href="/learn/m00/why-linear-algebra/">
       <div class="m-id">路线 A · 零基础</div>
       <h3>按顺序打地基</h3>
-      <p>M00 → M12，每周 6–8 小时。先把几何直觉和矩阵语言建起来，再进入 SVD 与大模型专题。</p>
+      <p>M00 → M13，每周 6–8 小时。先把几何直觉和矩阵语言建起来，再进入 SVD、大模型专题与推理服务。</p>
       <div class="m-meta"><span>约 {Math.round(totalMinutes / 60)} 小时</span><span>·</span><span>81 篇</span></div>
     </a>
     <a class="module-card" href="/learn/m11/attention-qkv/">
       <div class="m-id">路线 B · 直奔大模型</div>
       <h3>只为读懂 Transformer</h3>
-      <p>M00 → M01 → M02 核心 → M03 → M07 低秩 → M11。跳过暂不需要的证明，保留形状与量级。</p>
+      <p>M00 → M01 → M02 核心 → M03 → M07 低秩 → M11 → M13。跳过暂不需要的证明，保留形状、量级与选型。</p>
       <div class="m-meta"><span>约 12 小时</span><span>·</span><span>精选 30 篇</span></div>
     </a>
     <a class="module-card" href="/practice/">
@@ -81,13 +82,13 @@ const moduleBlurb: Record<string, string> = {
   <div class="grid modules-grid">
     {modules.map((m: any) => (
       <a class="module-card" href={m.route}>
-        <div class="m-id">{m.id} · {m.concepts.length} 篇</div>
+        <div class="m-id">{m.id} · {m.concepts.length > 0 ? `${m.concepts.length} 篇` : "专题"}</div>
         <h3>{m.title.replace(/^M\d\d\s*/, "")}</h3>
         <p>{moduleBlurb[m.id] || ""}</p>
         <div class="m-meta">
-          <span>{m.concepts.reduce((s: number, c: any) => s + c.minutes, 0)} 分钟</span>
+          <span>{m.concepts.length > 0 ? `${m.concepts.reduce((s: number, c: any) => s + c.minutes, 0)} 分钟` : "参考手册"}</span>
           <span>·</span>
-          <span>{m.concepts[0]?.id} – {m.concepts[m.concepts.length - 1]?.id}</span>
+          <span>{m.concepts.length > 0 ? `${m.concepts[0]?.id} – ${m.concepts[m.concepts.length - 1]?.id}` : "按需查阅"}</span>
         </div>
       </a>
     ))}

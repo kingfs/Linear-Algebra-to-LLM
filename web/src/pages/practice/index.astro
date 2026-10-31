@@ -30,9 +30,9 @@ const total = rows.reduce((s: number, m: any) => s + m.count, 0);
   <div class="grid modules-grid">
     {rows.map((m: any) => (
       <div class="module-card">
-        <div class="m-id">{m.id} · {m.count} 题</div>
+        <div class="m-id">{m.id} · {m.count > 0 ? `${m.count} 题` : "专题"}</div>
         <h3>{m.title.replace(/^M\d\d\s*/, "")}</h3>
-        <p>{m.concepts.length} 篇概念，{m.count > 0 ? "可以做整模块练习" : "题库补充中，可先读概念页"}</p>
+        <p>{m.concepts.length > 0 ? `${m.concepts.length} 篇概念，${m.count > 0 ? "可以做整模块练习" : "题库补充中，可先读概念页"}` : "专题手册，暂无题库；先读导览"}</p>
         <div class="m-meta">
           {m.count > 0 ? <a class="btn primary" href={`/practice/${m.id.toLowerCase()}/`}>开始练习</a> : <a class="btn" href={m.route}>先读模块</a>}
         </div>
