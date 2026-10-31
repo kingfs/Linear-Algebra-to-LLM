@@ -4,7 +4,7 @@
 >
 > 它把 [M10 的 GEMM 与 Roofline](../10-数值线性代数/03-BLAS与GEMM.md)、[M11 的 KV Cache](../11-大模型专题/07-KVCache.md)、[量化](../11-大模型专题/09-量化.md)、[MoE](../11-大模型专题/10-MoE路由.md) 和 [M12 的研究路线](../12-进阶/04-研究路线.md)，接到真实的引擎、服务和部署上。
 >
-> **性质**：专题手册 + 第一课 [13.1 推理的数学](01-推理的数学.md)。正文是六族系与选型导览；13.2–13.6 继续拆分（见 §17）。
+> **性质**：专题手册 + 课程 [13.1 推理的数学](01-推理的数学.md)、[13.2 模型格式与量化](02-模型格式与量化.md)。正文是六族系与选型导览；13.3–13.6 继续拆分（见 §17）。
 
 ---
 
@@ -30,16 +30,6 @@ llama.cpp、Ollama、vLLM、SGLang、TensorRT-LLM、Strata、NInfer、MLX、MLC�
 
 ---
 
-## 1.1 学习顺序
-
-| 顺序 | 内容 | 时间 | 读完你应该能…… |
-| --- | --- | --- | --- |
-| 1 | [13.1 推理的数学](01-推理的数学.md) | 45 min | 估算 TTFT/TPOT/显存，解释 32k 复读 |
-| 2 | 本手册 §3–§11 | 60 min | 说出六个族系的差别，做一次选型 |
-| 3 | 本手册 §13 | 30 min | 用日志和命令诊断一次上下文问题 |
-
-13.1 的习题见 [m13-习题](../exercises/m13-习题.md)，题库见 [quizbank/m13.yaml](https://github.com/kingfs/Linear-Algebra-to-LLM/blob/main/quizbank/m13.yaml)。
-
 ## 1. 这个模块在课程里的位置
 
 | 前面学过 | 在推理服务里变成什么 |
@@ -52,6 +42,17 @@ llama.cpp、Ollama、vLLM、SGLang、TensorRT-LLM、Strata、NInfer、MLX、MLC�
 | [12.4 研究路线](../12-进阶/04-研究路线.md) | 从“读论文”到“选引擎、读日志、做 A/B” |
 
 **一句话**：前面回答“模型内部发生了什么”，这一模块回答“模型外部怎么把它跑起来”。
+
+## 1.1 学习顺序
+
+| 顺序 | 内容 | 时间 | 读完你应该能…… |
+| --- | --- | --- | --- |
+| 1 | [13.1 推理的数学](01-推理的数学.md) | 45 min | 估算 TTFT/TPOT/显存，解释 32k 复读 |
+| 2 | [13.2 模型格式与量化](02-模型格式与量化.md) | 50 min | 分清容器/权重精度/KV 精度，选对格式 |
+| 3 | 本手册 §3–§11 | 60 min | 说出六个族系的差别，做一次选型 |
+| 4 | 本手册 §13 | 30 min | 用日志和命令诊断一次上下文问题 |
+
+13.1/13.2 的习题见 [m13-习题](../exercises/m13-习题.md)，题库见 [quizbank/m13.yaml](https://github.com/kingfs/Linear-Algebra-to-LLM/blob/main/quizbank/m13.yaml)。
 
 ---
 
@@ -385,7 +386,7 @@ flowchart TD
 
 ## 13. 一个最小诊断实验：LFM3 的 32k 复读
 
-### 13.1 先确认运行时给了多少上下文
+### 步骤 1：先确认运行时给了多少上下文
 
 ```bash
 ollama --version
@@ -397,7 +398,7 @@ curl -s http://localhost:11434/api/ps | jq '.models[] | {name, context_length, s
 
 Ollama 的默认上下文按显存分档：< 24 GiB 为 4k，24–48 GiB 为 32k，>= 48 GiB 为 256k（见 [Ollama Context length 文档](https://docs.ollama.com/context-length)）。24 GB 卡正好落在 32k 档。
 
-### 13.2 看日志有没有截断/移位
+### 步骤 2：看日志有没有截断/移位
 
 ```bash
 journalctl -u ollama -n 300 | grep -Ei "truncat|context shift|too large for model|n_ctx"
@@ -409,7 +410,7 @@ journalctl -u ollama -n 300 | grep -Ei "truncat|context shift|too large for mode
 - `slot context shift, n_keep = ..., n_discard = ...`：llama-server 在丢前一半、平移位置。
 - `requested context size too large for model`：请求的 `num_ctx` 被 GGUF 元数据钳制。
 
-### 13.3 提高上下文，并钉住 system prompt
+### 步骤 3：提高上下文，并钉住 system prompt
 
 ```bash
 OLLAMA_CONTEXT_LENGTH=65536 ollama serve
@@ -430,7 +431,7 @@ ollama run lfm3-64k
 
 `num_keep` 默认只有 4，截断时几乎保不住 system prompt；设成 512–2048，能显著降低“上下文被挖空后开始复读”的概率。
 
-### 13.4 用 llama.cpp 做对照
+### 步骤 4：用 llama.cpp 做对照
 
 ```bash
 llama-server \
@@ -446,13 +447,13 @@ llama-server \
 
 `--no-context-shift` 让上下文满时显式报错，而不是静默丢掉一半。对 Agent/长会话，这比“自动 shift”更可控。
 
-### 13.5 为什么混合模型更怕 context shift
+### 步骤 5：为什么混合模型更怕 context shift
 
 LFM3-1.7B 是 24 层 tri-hybrid：13 层 shortconv + 5 层 sliding-window attention + 6 层 global attention。shortconv 是递归状态，不能像 KV 那样精确删掉中间一段；注意力部分截断了，卷积状态还带着被丢掉内容的信息。两者不一致时，模型更容易进入复读。
 
 这不是说“llama.cpp 一定有 bug”，而是：**混合/递归模型在 context shift 下本来就比纯 attention 模型脆弱**。所以优先“给够上下文 + 钉住开头”，而不是依赖自动 shift。
 
-### 13.6 一张排查表
+### 步骤 6：一张排查表
 
 | 现象 | 先查 | 再查 |
 | --- | --- | --- |
@@ -519,10 +520,10 @@ LFM3-1.7B 是 24 层 tri-hybrid：13 层 shortconv + 5 层 sliding-window attent
 
 ## 17. 下一步
 
-这个模块目前是“专题手册 + 13.1 第一课”。后续继续拆成六个教学单元：
+这个模块目前是“专题手册 + 13.1/13.2 两课”。后续继续拆成六个教学单元：
 
 1. **13.1 推理的数学（已上线）**：[Roofline、prefill/decode、batching、KV、量化的收益边界](01-推理的数学.md)。
-2. **13.2 模型格式与量化**：GGUF K-quants/IQ、EXL2、NVFP4、FP8 KV、MLX 4-bit。
+2. **13.2 模型格式与量化（已上线）**：[GGUF K-quants/IQ、EXL2、NVFP4、FP8 KV、MLX 4-bit](02-模型格式与量化.md)。
 3. **13.3 引擎解剖**：llama.cpp 的 `llama-server`、vLLM 的 PagedAttention、Strata 的专家缓存。
 4. **13.4 调度与并发**：continuous batching、prefix cache、公平性、SLA。
 5. **13.5 选型与部署**：单机/多机/边缘、API 网关、鉴权、监控。

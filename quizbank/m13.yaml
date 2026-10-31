@@ -54,3 +54,58 @@ questions:
     explanation: '权重/ KV 量化直接减少字节；GQA 减少 KV 头数，也减少 KV 字节。增大 batch 会摊薄权重读取、提高总吞吐，但不会降低“每 token 读取的字节数”这个单请求指标。'
     source: "13-推理服务/01-推理的数学.md#4-性质与推导"
     tags: [量化, GQA, batching]
+
+  - id: q-13.2-001
+    concept: "13.2"
+    section: 2
+    type: single_choice
+    difficulty: 1
+    stem: 'GGUF 是什么？'
+    options:
+      - '一种 4-bit 量化算法'
+      - '一种模型容器格式，可装不同量化类型'
+      - '一种 KV Cache 精度'
+      - '一种 GPU kernel'
+    answer: [1]
+    explanation: 'GGUF 是容器，包含 metadata、tokenizer 和 tensor；同一个 GGUF 可以是 F16、Q8_0、Q4_K_M 或 IQ2_XS。'
+    source: "13-推理服务/02-模型格式与量化.md#2-定义"
+    tags: [GGUF, 容器, 量化]
+
+  - id: q-13.2-002
+    concept: "13.2"
+    section: 4
+    type: true_false
+    difficulty: 2
+    stem: 'Q4_K_M 的每个权重都严格用 4 bit 存储。'
+    answer: false
+    explanation: 'Q4_K_M 是混合 K-quant：主体约 4-bit，但包含更细的 scale、部分 Q6_K tensor、元数据/对齐，所以有效 bpw 约 5。'
+    source: "13-推理服务/02-模型格式与量化.md#4-性质与推导"
+    tags: [Q4_K_M, bpw, 混合精度]
+
+  - id: q-13.2-003
+    concept: "13.2"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: '1.7B 模型，Q4_K_M 文件 1.10 GB（十进制）。有效 bpw 大约是多少？'
+    answer: 5.1
+    tolerance: 0.2
+    explanation: '$1.10\times10^9\times8/(1.73\times10^9)\approx5.1$ bpw；多出来的是 scale、混合精度和 metadata。'
+    source: "13-推理服务/02-模型格式与量化.md#5-例子"
+    tags: [bpw, Q4_K_M, 估算]
+
+  - id: q-13.2-004
+    concept: "13.2"
+    section: 2
+    type: multiple_choice
+    difficulty: 2
+    stem: '下列哪些会减少权重读取字节？'
+    options:
+      - 'Q4_K_M'
+      - 'AWQ 4-bit'
+      - 'FP8'
+      - 'FP16'
+    answer: [0, 1, 2]
+    explanation: 'Q4_K_M、AWQ 4-bit、FP8 都比 FP16 更少字节；FP16 是基准，不减少。'
+    source: "13-推理服务/02-模型格式与量化.md#2-定义"
+    tags: [量化, 权重, 字节]
