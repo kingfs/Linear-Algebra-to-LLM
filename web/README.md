@@ -4,7 +4,7 @@
 
 ## 技术栈
 
-- **Astro 7**：静态生成 168 个页面，正文默认零 JS。
+- **Astro 7**：静态生成 174 个页面，正文默认零 JS。
 - **React islands**：只有题目、卡片、进度这些交互组件按需 hydrate。
 - **KaTeX + remark-math**：构建时渲染数学公式。
 - **Mermaid**：把 Markdown 里的流程图转成 SVG。
@@ -45,13 +45,13 @@ pnpm preview    # 预览 dist
 | `pnpm build` | sync + 静态构建 |
 | `pnpm check` | sync + `astro check`（TypeScript/Astro 类型检查） |
 | `node scripts/e2e.mjs` | 用本机 Chrome 跑 13 项端到端检查 |
-| `pnpm links` | 检查构建后 168 页的站内链接与锚点 |
+| `pnpm links` | 检查构建后 174 页的站内链接与锚点 |
 | `node scripts/check-quiz.mjs` | 校验题库字段、概念 id、source 与锚点 |
 
 ## 内容管线
 
 ```text
-根目录 87 篇 Markdown
+根目录 93 篇 Markdown
         │  scripts/sync-content.mjs
         ├─→ src/content/generated/*.md   Astro 内容集合
         ├─→ src/data/nav.json            侧边栏、上下篇
@@ -201,7 +201,7 @@ BASE_PATH=/Linear-Algebra-to-LLM/ pnpm links
 
 ## 已知取舍
 
-- 题库为 382 题（每篇 3–7 题），以概念理解为主，不追求题海。
+- 题库为 406 题（每篇 3–7 题），以概念理解为主，不追求题海。
 - 知识卡由「一页速记」自动抽取，部分卡片偏“填空”，后续可手工精修。
-- 搜索是前端子串匹配，中文可用但不如专业分词；87 篇规模足够。
+- 搜索是前端子串匹配，中文可用但不如专业分词；93 篇规模足够。
 - 全白化/PCA 图用静态 SVG，交互组件后续再加（2D 变换、SVD 分步、KV 计算器）。

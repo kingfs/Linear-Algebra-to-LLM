@@ -556,3 +556,333 @@ questions:
     explanation: '前三项都是标准结论；归一化只控制激活尺度，权重谱范数、残差累积与 softmax 饱和仍可能带来不稳定。'
     source: '11-大模型专题/12-反向传播与稳定性.md#4-性质与推导'
     tags: [残差, softmax, 谱范数]
+
+  - id: q-11.13-001
+    concept: "11.13"
+    section: 4
+    type: single_choice
+    difficulty: 1
+    stem: '全量 attention 每层的计算复杂度（忽略常数）是？'
+    options:
+      - '$O(TD)$'
+      - '$O(T^2D)$'
+      - '$O(D^2)$'
+      - '$O(TDN)$'
+    answer: [1]
+    explanation: '$T$ 个 query 与 $T$ 个 key 两两打分，每个分数是 $D$ 维点积，所以 $O(T^2D)$；SSM 才是 $O(TDN)$。'
+    source: "11-大模型专题/13-架构全景.md#4-性质与推导"
+    tags: [attention, 复杂度]
+
+  - id: q-11.13-002
+    concept: "11.13"
+    section: 4
+    type: numeric
+    difficulty: 2
+    stem: '7B 全 attention 在 32k 上下文的 KV 约 16 GiB。按线性外推，256k 的 KV 约多少 GiB？'
+    answer: 128
+    tolerance: 2
+    explanation: '$16\times(256/32)=128$ GiB；这也是全 attention 在长上下文的主要瓶颈。'
+    source: "11-大模型专题/13-架构全景.md#5-例子"
+    tags: [KV, 长上下文, 估算]
+
+  - id: q-11.13-003
+    concept: "11.13"
+    section: 2
+    type: true_false
+    difficulty: 1
+    stem: 'SSM/Mamba 没有状态，所以不需要任何缓存。'
+    answer: false
+    explanation: 'SSM 有固定大小的状态 $[D,N]$，只是不随 $T$ 增长；它不是“没有状态”，而是“状态不增长”。'
+    source: "11-大模型专题/13-架构全景.md#2-定义"
+    tags: [SSM, 状态, 误区]
+
+  - id: q-11.13-004
+    concept: "11.13"
+    section: 2
+    type: multiple_choice
+    difficulty: 2
+    stem: '下列哪些 mixer 通常不需要随 $T$ 增长的 KV Cache？'
+    options:
+      - '短卷积'
+      - 'SSM/Mamba'
+      - '线性 attention'
+      - '全量 attention'
+    answer: [0, 1, 2]
+    explanation: '短卷积有固定卷积窗，SSM/线性有固定状态；全量 attention 需要 $O(T)$ 的 KV。'
+    source: "11-大模型专题/13-架构全景.md#2-定义"
+    tags: [KV, mixer, 架构]
+
+  - id: q-11.14-001
+    concept: "11.14"
+    section: 2
+    type: single_choice
+    difficulty: 1
+    stem: 'Mamba 的状态大小与序列长度 $T$ 的关系是？'
+    options:
+      - '随 $T$ 线性增长'
+      - '随 $T$ 平方增长'
+      - '与 $T$ 无关，固定为 $O(DN)$'
+      - '只在训练时增长'
+    answer: [2]
+    explanation: 'Mamba 用固定状态 $[D,N]$ 递推，不缓存历史 KV，所以状态大小与 $T$ 无关。'
+    source: "11-大模型专题/14-Mamba与SSM.md#2-定义"
+    tags: [Mamba, 状态, 长上下文]
+
+  - id: q-11.14-002
+    concept: "11.14"
+    section: 4
+    type: true_false
+    difficulty: 2
+    stem: 'Mamba 的“选择性”是指 $A,B,C$ 都与输入无关，只由位置决定。'
+    answer: false
+    explanation: '选择性恰恰是让 $\Delta,B,C$ 由输入投影得到，从而按内容决定写/忘/读；$A$ 通常是固定的对角参数。'
+    source: "11-大模型专题/14-Mamba与SSM.md#4-性质与推导"
+    tags: [Mamba, 选择性, 误区]
+
+  - id: q-11.14-003
+    concept: "11.14"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: '$D=2048,N=16$、24 层、fp16，Mamba 状态约多少 MiB/序列？'
+    answer: 1.5
+    tolerance: 0.2
+    explanation: '$2048\times16\times24\times2$ 字节 = 1,572,864 B = 1.5 MiB。'
+    source: "11-大模型专题/14-Mamba与SSM.md#5-例子"
+    tags: [Mamba, 状态, 手算]
+
+  - id: q-11.14-004
+    concept: "11.14"
+    section: 2
+    type: multiple_choice
+    difficulty: 2
+    stem: 'Mamba 的“选择性”主要体现在哪些参数由输入决定？'
+    options:
+      - '$\Delta$'
+      - '$B$'
+      - '$C$'
+      - '层数 $L$'
+    answer: [0, 1, 2]
+    explanation: '$\Delta,B,C$ 由输入投影；层数 $L$ 是结构超参，不由输入决定。'
+    source: "11-大模型专题/14-Mamba与SSM.md#2-定义"
+    tags: [Mamba, 选择性, 参数]
+
+  - id: q-11.15-001
+    concept: "11.15"
+    section: 4
+    type: single_choice
+    difficulty: 1
+    stem: '线性 attention 的每层计算复杂度（$d_k,d_v\sim D$）是？'
+    options:
+      - '$O(T^2D)$'
+      - '$O(TD^2)$'
+      - '$O(D^2)$'
+      - '$O(T^2D^2)$'
+    answer: [1]
+    explanation: '先累加 $K^\top V$ 再读，计算 $O(TD^2)$；没有 $T\times T$ 分数矩阵。'
+    source: "11-大模型专题/15-RWKV与线性注意力.md#4-性质与推导"
+    tags: [线性attention, 复杂度]
+
+  - id: q-11.15-002
+    concept: "11.15"
+    section: 4
+    type: true_false
+    difficulty: 2
+    stem: 'RWKV 只能像传统 RNN 一样串行训练，不能并行。'
+    answer: false
+    explanation: 'RWKV 的 WKV 可以写成扫描/分块形式，训练可并行；推理才逐 token 递推。'
+    source: "11-大模型专题/15-RWKV与线性注意力.md#4-性质与推导"
+    tags: [RWKV, 并行训练, 误区]
+
+  - id: q-11.15-003
+    concept: "11.15"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: '7B 全 attention 在 32k 的 KV 约 16 GiB；128k 约多少 GiB？'
+    answer: 64
+    tolerance: 2
+    explanation: '$16\times(128/32)=64$ GiB；线性 attention 的状态则与 $T$ 无关。'
+    source: "11-大模型专题/15-RWKV与线性注意力.md#5-例子"
+    tags: [KV, 长上下文, 线性attention]
+
+  - id: q-11.15-004
+    concept: "11.15"
+    section: 2
+    type: multiple_choice
+    difficulty: 2
+    stem: '关于线性 attention 的状态 $S_t$，下列哪些说法正确？'
+    options:
+      - '$S_t$ 是 $d_k\times d_v$ 的矩阵'
+      - '$S_t$ 随 $T$ 线性增长'
+      - '输出可以用 $\phi(q_t)^\top S_t$ 读'
+      - '它不需要 $T\times T$ 分数矩阵'
+    answer: [0, 2, 3]
+    explanation: '$S_t$ 大小固定，不随 $T$ 增长；它由 $\phi(k)v^\top$ 累加，输出用 $\phi(q)^\top S$ 读。'
+    source: "11-大模型专题/15-RWKV与线性注意力.md#2-定义"
+    tags: [线性attention, 状态]
+
+  - id: q-11.16-001
+    concept: "11.16"
+    section: 5
+    type: single_choice
+    difficulty: 1
+    stem: 'LFM3-1.7B 的 24 层里，shortconv/SWA/global 的层数大约是？'
+    options:
+      - '12/6/6'
+      - '13/5/6'
+      - '6/6/12'
+      - '8/8/8'
+    answer: [1]
+    explanation: 'LFM3 是 13 层 gated short convolution、5 层 sliding-window attention、6 层 global attention。'
+    source: "11-大模型专题/16-混合架构.md#5-例子"
+    tags: [LFM3, 混合架构]
+
+  - id: q-11.16-002
+    concept: "11.16"
+    section: 4
+    type: true_false
+    difficulty: 2
+    stem: '混合架构里每一层都需要保存随 $T$ 增长的 KV Cache。'
+    answer: false
+    explanation: '只有 attention 层需要 KV；shortconv/SSM/线性层是固定状态，SWA 的 KV 还被窗口截断。'
+    source: "11-大模型专题/16-混合架构.md#4-性质与推导"
+    tags: [混合架构, KV, 误区]
+
+  - id: q-11.16-003
+    concept: "11.16"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: 'LFM3 在 32k 上下文的 KV 约多少 GiB？（课程估算）'
+    answer: 0.38
+    tolerance: 0.05
+    explanation: '6 层 global 约 384 MiB + 5 层 SWA 约 2.5 MiB ≈ 386.5 MiB ≈ 0.38 GiB。'
+    source: "11-大模型专题/16-混合架构.md#5-例子"
+    tags: [LFM3, KV, 估算]
+
+  - id: q-11.16-004
+    concept: "11.16"
+    section: 4
+    type: multiple_choice
+    difficulty: 2
+    stem: '混合架构的代价/风险包括哪些？'
+    options:
+      - '多种 kernel/缓存管理更复杂'
+      - '全局层比例调不好会又慢又弱'
+      - '训练/推理实现比纯 Transformer 复杂'
+      - '一定比纯 Transformer 质量高'
+    answer: [0, 1, 2]
+    explanation: '混合架构省 KV，但工程复杂、比例敏感；质量取决于数据/训练/评测，不是“一定更高”。'
+    source: "11-大模型专题/16-混合架构.md#4-性质与推导"
+    tags: [混合架构, 工程, 误区]
+
+  - id: q-11.17-001
+    concept: "11.17"
+    section: 2
+    type: single_choice
+    difficulty: 1
+    stem: 'RoPE 的注意力分数主要依赖什么？'
+    options:
+      - '绝对位置 $m$ 和 $n$ 分别的值'
+      - '相对位置 $m-n$'
+      - 'token id 的奇偶性'
+      - 'batch size'
+    answer: [1]
+    explanation: '旋转后 $q_m^\top k_n$ 只依赖 $m-n$，所以 RoPE 表达相对位置。'
+    source: "11-大模型专题/17-长上下文外推.md#2-定义"
+    tags: [RoPE, 相对位置]
+
+  - id: q-11.17-002
+    concept: "11.17"
+    section: 4
+    type: true_false
+    difficulty: 2
+    stem: "线性位置插值 $m'=m/s$ 会提高短距离分辨率，所以短任务一定更好。"
+    answer: false
+    explanation: '线性插值压缩所有频率，相邻 token 角度差变小，短距离/精确匹配分辨率下降。'
+    source: "11-大模型专题/17-长上下文外推.md#4-性质与推导"
+    tags: [线性插值, 分辨率, 误区]
+
+  - id: q-11.17-003
+    concept: "11.17"
+    section: 4
+    type: multiple_choice
+    difficulty: 2
+    stem: '验证“128k 上下文是否真的可用”，至少应看哪些指标？'
+    options:
+      - 'needle-in-a-haystack'
+      - '长文 QA/摘要'
+      - '困惑度随位置变化'
+      - '短任务回归'
+    answer: [0, 1, 2, 3]
+    explanation: '长上下文要同时看检索、跨段推理、位置质量与短任务回归；只看“能放进去”不够。'
+    source: "11-大模型专题/17-长上下文外推.md#4-性质与推导"
+    tags: [长上下文, 评测]
+
+  - id: q-11.17-004
+    concept: "11.17"
+    section: 2
+    type: numeric
+    difficulty: 2
+    stem: "线性位置插值 $m'=m/s$，$s=8$，原位置 $m=32000$ 映射到多少？"
+    answer: 4000
+    tolerance: 1
+    explanation: '$32000/8=4000$。'
+    source: "11-大模型专题/17-长上下文外推.md#2-定义"
+    tags: [线性插值, 位置]
+
+  - id: q-11.18-001
+    concept: "11.18"
+    section: 4
+    type: single_choice
+    difficulty: 1
+    stem: '按课程的粗略估算，attention 与线性/SSM 的 FLOPs 交叉点大约是？'
+    options:
+      - '$T\approx D/2$'
+      - '$T\approx 2D$'
+      - '$T\approx D^2$'
+      - '$T\approx 0.1D$'
+    answer: [1]
+    explanation: '$4T^2D\approx8TD^2$，得 $T\approx2D$；小于它时线性/SSM 不一定更省。'
+    source: "11-大模型专题/18-架构选型.md#4-性质与推导"
+    tags: [FLOPs, 交叉点, 架构]
+
+  - id: q-11.18-002
+    concept: "11.18"
+    section: 4
+    type: true_false
+    difficulty: 2
+    stem: 'MoE 既省算力，也按激活参数省权重显存。'
+    answer: false
+    explanation: 'MoE 权重按总参数存，省的是每 token 计算/读取；显存不按激活参数缩。'
+    source: "11-大模型专题/18-架构选型.md#4-性质与推导"
+    tags: [MoE, 显存, 误区]
+
+  - id: q-11.18-003
+    concept: "11.18"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: 'MoE 总参数 125B、每 token 激活 6B；权重显存约是激活参数的多少倍？'
+    answer: 20.8
+    tolerance: 0.5
+    explanation: '$125/6\approx20.8$；所以 MoE 省算力，不省权重显存。'
+    source: "11-大模型专题/18-架构选型.md#5-例子"
+    tags: [MoE, 显存, 估算]
+
+  - id: q-11.18-004
+    concept: "11.18"
+    section: 4
+    type: multiple_choice
+    difficulty: 2
+    stem: '架构选型至少要算哪些账单？'
+    options:
+      - '训练算力'
+      - '推理算力（prefill/decode）'
+      - 'KV/状态显存'
+      - '质量与长文能力'
+    answer: [0, 1, 2, 3]
+    explanation: '四本账一起算，才能避免“参数小就一定便宜/长上下文就一定强”的误判。'
+    source: "11-大模型专题/18-架构选型.md#4-性质与推导"
+    tags: [架构选型, 账单]
