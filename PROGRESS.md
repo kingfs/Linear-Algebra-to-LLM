@@ -28,20 +28,20 @@
 
 | 能力 | 状态 | 规模 / 验证 |
 |---|---|---|
-| 静态阅读站 | 完成 | Astro 7，174 个页面，93 篇概念 + 14 个模块 |
+| 静态阅读站 | 完成 | Astro 7，175 个页面，93 篇概念 + 14 个模块 |
 | 文献与锚点 | 完成 | 93 篇概念页共 306 条文献、283 个正文锚点；`check_refs.py` 校验格式、锚点、DOI/arXiv 元数据 |
 | 随堂测 | 完成 | 406 题，覆盖 93/93 概念，每篇 3–7 题 |
 | 即时判分 | 完成 | 单选/多选/判断/数值；解析 + 回看原文 |
 | 知识卡复习 | 完成 | 542 张，Leitner 间隔重复 |
 | 错题本 | 完成 | 按最近一次作答聚合，可整组/单题重做 |
 | 学习进度 | 完成 | 阅读、正确率、薄弱概念、到期卡片；IndexedDB 本地保存 |
-| 生成图 | 完成 | 52 张 Matplotlib SVG（8 页首 + 44 内联）；SVG 覆盖 51/81，加 Mermaid 共 56/81 |
+| 生成图 | 完成 | 62 张图（Matplotlib SVG + Mermaid）；M11 架构扩展新增 6 张，构图见 `figures/manifest.yaml` |
 | 质量门禁 | 完成 | `pnpm build`、`pnpm check`、`check-quiz.mjs`、`check-site-links.mjs`、`check-render.mjs`、13 项 Playwright E2E |
 | 子路径部署 | 完成 | `BASE_PATH=/Linear-Algebra-to-LLM/` 构建验证；tag 触发 GitHub Pages workflow |
 
 ```bash
 cd web && pnpm dev --port 4321   # http://127.0.0.1:4321/
-cd web && pnpm build             # 174 页，输出 web/dist
+cd web && pnpm build             # 175 页，输出 web/dist
 cd web && pnpm build && pnpm links && node scripts/e2e.mjs   # 0 断链 / 13 checks
 ```
 
@@ -72,7 +72,7 @@ cd web && pnpm build && pnpm links && node scripts/e2e.mjs   # 0 断链 / 13 che
 
 ## 已知问题 / 待复核
 
-- 无阻塞问题。全仓 `check.py` 93 篇 0 error/0 warning，`check_refs.py` 306 条文献 0 error（31 条延伸阅读未在正文链接，允许），`check_links.py` 155 个 Markdown 0 断链，12 个 lab 全部 exit 0。
+- 无阻塞问题。全仓 `check.py` 93 篇 0 error/0 warning，`check_refs.py` 306 条文献 0 error（31 条延伸阅读未在正文链接，允许），`check_links.py` 156 个 Markdown 0 断链，12 个 lab 全部 exit 0。
 - 已知非阻塞偏差：叙事增强后多数文档 280–360 行，超过模板建议的 220 行上限；为容纳现场、反事实与场景闭环保留，未强行压缩。
 - 已知非阻塞偏差：部分场景数字是「按带宽/算力/价格估算」的设定值，文中均标「按…估」，不是实测 benchmark；`docs/概念-现实对应表.md` 的「量级」列同此口径。
 - 已修复：`11-大模型专题/10-MoE路由.md` 的 `id: 11.10` 加引号，避免 YAML 解析成浮点 `11.1`；`scripts/check.py` 同步支持带引号的 id。
@@ -116,3 +116,4 @@ cd web && pnpm build && pnpm links && node scripts/e2e.mjs   # 0 断链 / 13 che
 | 2026-10-31 | 新增 13.2 模型格式与量化、m13 补充习题/题库；更新 M13 学习顺序与课程统计 | f1b5bc8 |
 | 2026-10-31 | 完成 13.3 引擎解剖、13.4 调度与并发、13.5 选型与部署、13.6 诊断实验；M13 六课全部上线 | 43a381b |
 | 2026-10-31 | 完成 M11 架构扩展 11.13–11.18：架构全景、Mamba/SSM、RWKV/线性、混合、长上下文、选型；补习题/题库 | 3456cbb |
+| 2026-10-31 | 新增 M11 六张架构图与 M11↔M13 交叉索引；Web/README/学习地图互通 | 待补 |

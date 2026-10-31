@@ -4,7 +4,7 @@
 
 ## 技术栈
 
-- **Astro 7**：静态生成 174 个页面，正文默认零 JS。
+- **Astro 7**：静态生成 175 个页面，正文默认零 JS。
 - **React islands**：只有题目、卡片、进度这些交互组件按需 hydrate。
 - **KaTeX + remark-math**：构建时渲染数学公式。
 - **Mermaid**：把 Markdown 里的流程图转成 SVG。
@@ -45,7 +45,7 @@ pnpm preview    # 预览 dist
 | `pnpm build` | sync + 静态构建 |
 | `pnpm check` | sync + `astro check`（TypeScript/Astro 类型检查） |
 | `node scripts/e2e.mjs` | 用本机 Chrome 跑 13 项端到端检查 |
-| `pnpm links` | 检查构建后 174 页的站内链接与锚点 |
+| `pnpm links` | 检查构建后 175 页的站内链接与锚点 |
 | `node scripts/check-quiz.mjs` | 校验题库字段、概念 id、source 与锚点 |
 
 ## 内容管线

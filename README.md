@@ -7,7 +7,7 @@
 
 **一句话简介**：用几何直觉 + 场景化例子，把线性代数从「考试公式」还原成「描述高维世界的语言」，并一路讲到 Attention、LoRA、KV Cache、量化背后的矩阵运算。
 
-**规模**：14 个模块 · 93 篇概念文档 · 14 组习题 · 12 个可运行 lab · 2 份速查表 · 406 道可判分题 · 56 张图。
+**规模**：14 个模块 · 93 篇概念文档 · 14 组习题 · 12 个可运行 lab · 2 份速查表 · 406 道可判分题 · 62 张图。
 
 ---
 
@@ -110,7 +110,7 @@ flowchart LR
 | [M12](12-进阶/README.md) | 进阶与全景 | 下一步读什么、研究什么？ | 推理研究路线 |
 | [M13](13-推理服务/README.md) | 推理服务与运行时 | 模型如何变成可调用、可并发、省显存的服务？ | 引擎、量化、KV、调度、选型、诊断 |
 
-详细到每一节的清单见 [`curriculum/syllabus.md`](curriculum/syllabus.md)，依赖关系与三种学习路线见 [`docs/学习地图.md`](docs/学习地图.md)。如果要组班/开课，见 [`docs/开课计划.md`](docs/开课计划.md)。
+详细到每一节的清单见 [`curriculum/syllabus.md`](curriculum/syllabus.md)，依赖关系与三种学习路线见 [`docs/学习地图.md`](docs/学习地图.md)。M11 与 M13 的交叉学习见 [`docs/M11-M13交叉索引.md`](docs/M11-M13交叉索引.md)；如果要组班/开课，见 [`docs/开课计划.md`](docs/开课计划.md)。
 
 ---
 
@@ -177,7 +177,7 @@ flowchart LR
 ```bash
 python3 scripts/check.py        # 93 篇概念文档：0 error / 0 warning
 python3 scripts/check_refs.py    # 93 篇文献与页内锚点：0 error
-python3 scripts/check_links.py  # 155 个 Markdown：0 断链
+python3 scripts/check_links.py  # 156 个 Markdown：0 断链
 ```
 
 逐模块状态与变更记录见 [`PROGRESS.md`](PROGRESS.md)。

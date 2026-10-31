@@ -126,3 +126,5 @@ $$
 下一篇 → [11.1 Token、Embedding 与隐藏状态](01-Token与Embedding.md)
 
 下一步 → [M13 推理服务与运行时](../13-推理服务/README.md)
+
+交叉索引 → [M11 ↔ M13：从架构到服务](../docs/M11-M13交叉索引.md)

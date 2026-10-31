@@ -1,4 +1,34 @@
 figures:
+  - id: m11-mixer-complexity
+    file: m11-mixer-complexity.svg
+    concepts: ["11.13"]
+    caption: "不同 token mixer 的每层计算量随上下文长度的增长；虚线标出 T≈2D 的交叉点。示意，非实测。"
+    alt: "全 attention、SWA、线性 attention、SSM 的计算量随上下文长度变化"
+  - id: m11-mamba-state
+    file: m11-mamba-state.svg
+    concepts: ["11.14"]
+    caption: "选择性 SSM 的写/忘/读：Δ、B、C 由输入决定，状态固定，不需要 KV Cache。"
+    alt: "Mamba 的选择性状态更新流程图"
+  - id: m11-linear-attention
+    file: m11-linear-attention.svg
+    concepts: ["11.15"]
+    caption: "左：softmax attention 的 T×T 分数矩阵；右：线性 attention 先累加 D×D 状态，再用 query 读。"
+    alt: "softmax attention 与线性 attention 的状态累加对比"
+  - id: m11-hybrid-layers
+    file: m11-hybrid-layers.svg
+    concepts: ["11.16"]
+    caption: "LFM3 的 24 层预算：13 层 shortconv、5 层 SWA、6 层 global；分组示意，不表示真实层序。"
+    alt: "LFM3 的短卷积、SWA、全局注意力层数占比"
+  - id: m11-long-context
+    file: m11-long-context.svg
+    concepts: ["11.17"]
+    caption: "7B 模型 KV/状态随上下文长度的增长：全 attention 线性增长，SWA/SSM 近似常数。示意值。"
+    alt: "全 attention、SWA、SSM 的 KV 或状态显存随上下文长度变化"
+  - id: m11-arch-tradeoff
+    file: m11-arch-tradeoff.svg
+    concepts: ["11.18"]
+    caption: "128k 下的显存与计算量级对比：全 attention 最贵，SWA/线性/SSM/混合各有取舍。示意值，非实测。"
+    alt: "五种架构在 128k 上下文下的显存与计算量对比"
   - id: projection
     file: projection.svg
     concepts: ["1.6"]

@@ -238,6 +238,7 @@ $$
 - 后续：[11.16 混合架构](16-混合架构.md) —— 线性/RNN + attention。
 - 易混：[11.14 Mamba](14-Mamba与SSM.md) —— SSM 是状态空间，线性 attention 是核化 attention；都在做“固定状态”。
 
+- 服务侧：[13.4 调度与并发](../13-推理服务/04-调度与并发.md)、[13.5 选型与部署](../13-推理服务/05-选型与部署.md) —— 常数状态、边缘部署。
 ## 8. 通往大模型
 
 **出现位置**：RWKV/RetNet/GLA/DeltaNet 模型、边缘推理、长流式应用；Qwen3.8-Flash-Next 的 GatedDeltaNet 属于这一类线性/递归 mixer。

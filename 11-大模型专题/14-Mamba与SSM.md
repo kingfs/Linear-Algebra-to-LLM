@@ -233,6 +233,7 @@ Jamba 交错 Mamba 层、attention 层和 MoE：Mamba 处理长流，attention �
 - 后续：[11.16 混合架构](16-混合架构.md) —— Mamba + attention。
 - 易混：[11.4 Attention](04-Attention-下-softmax与多头.md) —— attention 是内容寻址，SSM 是状态压缩。
 
+- 服务侧：[13.3 引擎解剖](../13-推理服务/03-引擎解剖.md)、[13.4 调度与并发](../13-推理服务/04-调度与并发.md) —— 固定状态、无 KV、scan kernel。
 ## 8. 通往大模型
 
 **出现位置**：Mamba/Mamba-2 模型、Jamba 的 Mamba 层、llama.cpp 的 Mamba 支持、长流式推理。
