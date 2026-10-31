@@ -97,6 +97,8 @@ flowchart TD
 | [BitNet](https://github.com/microsoft/BitNet) | 41.4k | 1-bit 推理 | Linux/Windows；基于 llama.cpp 的 1-bit/ternary 分支 |
 | [MNN](https://github.com/alibaba/MNN) | 16.3k | 端侧推理 | Android/iOS/桌面；阿里，移动端通用 |
 
+**其他绑定/周边**：[LLamaSharp](https://github.com/SciSharp/LLamaSharp)、[Ramalama](https://github.com/containers/ramalama)、[node-llama-cpp](https://github.com/withcatai/node-llama-cpp)、[wllama](https://github.com/ngxson/wllama)、[cactus](https://github.com/cactus-compute/cactus)、[lemonade](https://github.com/lemonade-sdk/lemonade)、[shimmy](https://github.com/Michael-A-Kuykendall/shimmy)。
+
 **怎么选**：
 
 - 想要“一条命令跑起来” → Ollama / LM Studio。
@@ -127,6 +129,8 @@ flowchart TD
 | [KTransformers](https://github.com/kvcache-ai/ktransformers) | 19.6k | DeepSeek/Qwen 等 MoE | Linux | CPU+GPU 异构 MoE 卸载 |
 | [PowerInfer](https://github.com/Tiiny-AI/PowerInfer) | 9.9k | 稀疏模型 | Linux | 热/冷神经元分离、稀疏激活 |
 | [AirLLM](https://github.com/lyogavin/airllm) | 41.4k | 通用 Hugging Face 模型 | Linux/Windows/macOS | 逐层加载，4 GB 显存也能跑 |
+
+**其他单点优化**：[Infernix](https://github.com/Wallawalla47/Infernix)、[basalt](https://github.com/jesdga95/basalt)、[halogen-flash-server](https://github.com/peonist-ai/halogen-flash-server)、[slotstream](https://github.com/carloslfu/slotstream)、[project-maya](https://github.com/mw00/project-maya)、[BigMoeOnEdge](https://github.com/Helldez/BigMoeOnEdge)。
 
 ### 4.2 六个值得单独看的项目
 
@@ -200,6 +204,8 @@ flowchart TD
 | [llm-d](https://github.com/llm-d/llm-d) | 5.1k | Kubernetes 分布式 | K8s | vLLM 之上的生产编排 |
 | [GPUStack](https://github.com/gpustack/gpustack) | 5.9k | GPU 集群管理 | Linux | 多机多卡、vLLM/SGLang 部署 |
 
+**其他服务/编排**：[DeepSpeed-MII](https://github.com/deepspeedai/DeepSpeed-MII)、[OpenLLM](https://github.com/bentoml/OpenLLM)、[Xinference](https://github.com/xorbitsai/inference)、[LightLLM](https://github.com/ModelTC/LightLLM)、[Chitu](https://github.com/thu-pacman/chitu)、[xLLM](https://github.com/xLLM-AI/xllm)、[RTP-LLM](https://github.com/alibaba/rtp-llm)、[TokenSpeed](https://github.com/lightseekorg/tokenspeed)、[TileRT](https://github.com/tile-ai/TileRT)、[Lucebox](https://github.com/Luce-Org/lucebox)、[vLLM-Ascend](https://github.com/vllm-project/vllm-ascend)。
+
 **怎么选**：
 
 - 多用户、RAG、OpenAI API → vLLM；共享前缀多 → SGLang；固定模型 + H100/B200 → TensorRT-LLM。
@@ -227,6 +233,8 @@ flowchart TD
 | [mlx-lm](https://github.com/ml-explore/mlx-lm) | 7.5k | MLX LLM | macOS | Apple Silicon 推理/微调 |
 | [oMLX](https://github.com/jundot/omlx) | 23.2k | Apple 服务端 | macOS | 连续批处理、分层 KV cache、菜单栏管理 |
 | [ExLlamaV2](https://github.com/turboderp-org/exllamav2) / [V3](https://github.com/turboderp-org/exllamav3) | 4.6k / 1.8k | EXL2 量化 | Linux/Windows | 单用户 GPU 高速，非 GGUF |
+
+**其他运行时**：[Rapid-MLX](https://github.com/raullenchai/Rapid-MLX)、[mlx-serve](https://github.com/ddalcu/mlx-serve)、[vllm-mlx](https://github.com/waybarrios/vllm-mlx)、[Klee](https://github.com/signerlabs/Klee)、[TensorFold](https://github.com/ashhart/TensorFold)、[mistral.rs](https://github.com/EricLBuehler/mistral.rs)、[candle](https://github.com/huggingface/candle)、[burn](https://github.com/tracel-ai/burn)、[Ratchet](https://github.com/huggingface/ratchet)、[Jlama](https://github.com/tjake/Jlama)、[llama3.java](https://github.com/mukel/llama3.java)、[TensorSharp](https://github.com/zhongkaifu/TensorSharp)。
 
 **怎么选**：
 
