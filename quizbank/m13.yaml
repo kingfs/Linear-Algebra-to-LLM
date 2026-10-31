@@ -1,0 +1,56 @@
+module: M13
+questions:
+  - id: q-13.1-001
+    concept: "13.1"
+    section: 2
+    type: single_choice
+    difficulty: 1
+    stem: '7B 模型在 decode 阶段的主要瓶颈通常是？'
+    options:
+      - '算力（FLOPs）'
+      - '显存带宽（bytes/s）'
+      - '网络带宽'
+      - '磁盘 IO'
+    answer: [1]
+    explanation: 'decode 每步只处理 1 个 token，算术强度很低；每生成一个 token 都要读权重和 KV，所以瓶颈在显存带宽，而不是算力。'
+    source: "13-推理服务/01-推理的数学.md#2-定义"
+    tags: [decode, 带宽, roofline]
+
+  - id: q-13.1-002
+    concept: "13.1"
+    section: 4
+    type: true_false
+    difficulty: 2
+    stem: '把 KV Cache 量化到 int8（约 2× 压缩），端到端解码速度一定提升 2×。'
+    answer: false
+    explanation: '量化只减少字节，不减少 FLOPs；收益上限是“省下的字节 ÷ 总读取字节”。短上下文时权重占大头，KV 量化收益很小；长上下文时才接近 2×。'
+    source: "13-推理服务/01-推理的数学.md#4-性质与推导"
+    tags: [量化, KV Cache, 收益边界]
+
+  - id: q-13.1-003
+    concept: "13.1"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: '7B 模型 fp16 权重约 14 GB，HBM 带宽 2 TB/s。忽略 KV 与其他开销，decode 每 token 的理论下限是多少毫秒？'
+    answer: 7
+    tolerance: 0.1
+    explanation: '$14\ \text{GB}/2000\ \text{GB/s}=0.007\ \text{s}=7\ \text{ms}$；对应单请求上限约 143 token/s。'
+    source: "13-推理服务/01-推理的数学.md#5-例子"
+    tags: [decode, 带宽, 估算]
+
+  - id: q-13.1-004
+    concept: "13.1"
+    section: 4
+    type: multiple_choice
+    difficulty: 2
+    stem: '下列哪些做法会降低 decode 阶段“每 token 需要读取的字节数”？'
+    options:
+      - '把权重从 fp16 量化到 int8'
+      - '把 KV Cache 量化到 int8'
+      - '使用 GQA，减少 KV 头数'
+      - '增大 batch size'
+    answer: [0, 1, 2]
+    explanation: '权重/ KV 量化直接减少字节；GQA 减少 KV 头数，也减少 KV 字节。增大 batch 会摊薄权重读取、提高总吞吐，但不会降低“每 token 读取的字节数”这个单请求指标。'
+    source: "13-推理服务/01-推理的数学.md#4-性质与推导"
+    tags: [量化, GQA, batching]

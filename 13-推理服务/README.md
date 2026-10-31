@@ -4,7 +4,7 @@
 >
 > 它把 [M10 的 GEMM 与 Roofline](../10-数值线性代数/03-BLAS与GEMM.md)、[M11 的 KV Cache](../11-大模型专题/07-KVCache.md)、[量化](../11-大模型专题/09-量化.md)、[MoE](../11-大模型专题/10-MoE路由.md) 和 [M12 的研究路线](../12-进阶/04-研究路线.md)，接到真实的引擎、服务和部署上。
 >
-> **性质**：专题手册（seminar），不设概念页与习题。正文即导览；读完后用文末自测检验。后续可拆成 13.1–13.6 的教学单元（见 §17）。
+> **性质**：专题手册 + 第一课 [13.1 推理的数学](01-推理的数学.md)。正文是六族系与选型导览；13.2–13.6 继续拆分（见 §17）。
 
 ---
 
@@ -29,6 +29,16 @@ llama.cpp、Ollama、vLLM、SGLang、TensorRT-LLM、Strata、NInfer、MLX、MLC�
 **问题**：这些项目到底在解决哪一层的问题？它们的“快”分别快在什么负载、什么硬件、什么阶段？
 
 ---
+
+## 1.1 学习顺序
+
+| 顺序 | 内容 | 时间 | 读完你应该能…… |
+| --- | --- | --- | --- |
+| 1 | [13.1 推理的数学](01-推理的数学.md) | 45 min | 估算 TTFT/TPOT/显存，解释 32k 复读 |
+| 2 | 本手册 §3–§11 | 60 min | 说出六个族系的差别，做一次选型 |
+| 3 | 本手册 §13 | 30 min | 用日志和命令诊断一次上下文问题 |
+
+13.1 的习题见 [m13-习题](../exercises/m13-习题.md)，题库见 [quizbank/m13.yaml](https://github.com/kingfs/Linear-Algebra-to-LLM/blob/main/quizbank/m13.yaml)。
 
 ## 1. 这个模块在课程里的位置
 
@@ -509,16 +519,16 @@ LFM3-1.7B 是 24 层 tri-hybrid：13 层 shortconv + 5 层 sliding-window attent
 
 ## 17. 下一步
 
-这个模块目前是“专题手册”。后续可以拆成六个教学单元：
+这个模块目前是“专题手册 + 13.1 第一课”。后续继续拆成六个教学单元：
 
-1. **13.1 推理的数学**：Roofline、prefill/decode、batching、KV、量化的收益边界。
+1. **13.1 推理的数学（已上线）**：[Roofline、prefill/decode、batching、KV、量化的收益边界](01-推理的数学.md)。
 2. **13.2 模型格式与量化**：GGUF K-quants/IQ、EXL2、NVFP4、FP8 KV、MLX 4-bit。
 3. **13.3 引擎解剖**：llama.cpp 的 `llama-server`、vLLM 的 PagedAttention、Strata 的专家缓存。
 4. **13.4 调度与并发**：continuous batching、prefix cache、公平性、SLA。
 5. **13.5 选型与部署**：单机/多机/边缘、API 网关、鉴权、监控。
 6. **13.6 诊断实验**：32k 复读、OOM、吞吐上不去、质量回归。
 
-**现在就能做的三件事**：
+**现在就能做的三件事**（也见 [开课计划](../docs/开课计划.md)）：
 
 - 用 `ollama ps` + 日志复现一次 32k 复读，记录 `context_length`、`num_keep`、`done_reason`。
 - 用同一份 GGUF 在 llama.cpp 和 Ollama 上各跑一次 64k，比较输出。
