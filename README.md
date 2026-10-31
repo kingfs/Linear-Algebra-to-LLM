@@ -7,7 +7,7 @@
 
 **一句话简介**：用几何直觉 + 场景化例子，把线性代数从「考试公式」还原成「描述高维世界的语言」，并一路讲到 Attention、LoRA、KV Cache、量化背后的矩阵运算。
 
-**规模**：14 个模块 · 83 篇概念文档 · 14 组习题 · 12 个可运行 lab · 2 份速查表 · 366 道可判分题 · 56 张图。
+**规模**：14 个模块 · 87 篇概念文档 · 14 组习题 · 12 个可运行 lab · 2 份速查表 · 382 道可判分题 · 56 张图。
 
 ---
 
@@ -15,8 +15,8 @@
 
 除了读 Markdown，现在还可以在浏览器里学习、做题、翻卡和看生成图：
 
-- 阅读：83 篇概念页，带目录、上下篇、KaTeX 公式、Mermaid 图、Python 生成的 SVG 图，以及可跳转的「参考文献与致谢」。
-- 练习：366 道单选/多选/判断/数值题，即时判分、解析回链原文、错题本。
+- 阅读：87 篇概念页，带目录、上下篇、KaTeX 公式、Mermaid 图、Python 生成的 SVG 图，以及可跳转的「参考文献与致谢」。
+- 练习：382 道单选/多选/判断/数值题，即时判分、解析回链原文、错题本。
 - 复习：「一页速记」自动转成 479 张知识卡，按间隔重复排期。
 - 进度：阅读、正确率、薄弱概念、到期卡片，全部存在本机 IndexedDB，无需登录。
 
@@ -108,7 +108,7 @@ flowchart LR
 | [M10](10-数值线性代数/README.md) | 数值线性代数 | 为什么数学上可逆、计算机里会炸？ | 精度、显存、GEMM |
 | [M11](11-大模型专题/README.md) | 大模型专题 | 把前面所有概念串成一次 forward | Attention、RoPE、量化 |
 | [M12](12-进阶/README.md) | 进阶与全景 | 下一步读什么、研究什么？ | 推理研究路线 |
-| [M13](13-推理服务/README.md) | 推理服务与运行时 | 模型如何变成可调用、可并发、省显存的服务？ | 引擎、量化、KV、调度、选型 |
+| [M13](13-推理服务/README.md) | 推理服务与运行时 | 模型如何变成可调用、可并发、省显存的服务？ | 引擎、量化、KV、调度、选型、诊断 |
 
 详细到每一节的清单见 [`curriculum/syllabus.md`](curriculum/syllabus.md)，依赖关系与三种学习路线见 [`docs/学习地图.md`](docs/学习地图.md)。如果要组班/开课，见 [`docs/开课计划.md`](docs/开课计划.md)。
 
@@ -172,12 +172,12 @@ flowchart LR
 
 ## 当前进度
 
-课程已完整建成：14 个模块、83 篇概念文档、14 组习题、12 个 lab。全仓通过：
+课程已完整建成：14 个模块、87 篇概念文档、14 组习题、12 个 lab。全仓通过：
 
 ```bash
-python3 scripts/check.py        # 83 篇概念文档：0 error / 0 warning
-python3 scripts/check_refs.py    # 83 篇文献与页内锚点：0 error
-python3 scripts/check_links.py  # 145 个 Markdown：0 断链
+python3 scripts/check.py        # 87 篇概念文档：0 error / 0 warning
+python3 scripts/check_refs.py    # 87 篇文献与页内锚点：0 error
+python3 scripts/check_links.py  # 149 个 Markdown：0 断链
 ```
 
 逐模块状态与变更记录见 [`PROGRESS.md`](PROGRESS.md)。

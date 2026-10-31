@@ -4,7 +4,7 @@
 >
 > 它把 [M10 的 GEMM 与 Roofline](../10-数值线性代数/03-BLAS与GEMM.md)、[M11 的 KV Cache](../11-大模型专题/07-KVCache.md)、[量化](../11-大模型专题/09-量化.md)、[MoE](../11-大模型专题/10-MoE路由.md) 和 [M12 的研究路线](../12-进阶/04-研究路线.md)，接到真实的引擎、服务和部署上。
 >
-> **性质**：专题手册 + 课程 [13.1 推理的数学](01-推理的数学.md)、[13.2 模型格式与量化](02-模型格式与量化.md)。正文是六族系与选型导览；13.3–13.6 继续拆分（见 §17）。
+> **性质**：专题手册 + 课程 13.1–13.6 [推理的数学](01-推理的数学.md)、[模型格式与量化](02-模型格式与量化.md)、[引擎解剖](03-引擎解剖.md)、[调度与并发](04-调度与并发.md)、[选型与部署](05-选型与部署.md)、[诊断实验](06-诊断实验.md)。正文是六族系与选型导览。
 
 ---
 
@@ -49,10 +49,13 @@ llama.cpp、Ollama、vLLM、SGLang、TensorRT-LLM、Strata、NInfer、MLX、MLC�
 | --- | --- | --- | --- |
 | 1 | [13.1 推理的数学](01-推理的数学.md) | 45 min | 估算 TTFT/TPOT/显存，解释 32k 复读 |
 | 2 | [13.2 模型格式与量化](02-模型格式与量化.md) | 50 min | 分清容器/权重精度/KV 精度，选对格式 |
-| 3 | 本手册 §3–§11 | 60 min | 说出六个族系的差别，做一次选型 |
-| 4 | 本手册 §13 | 30 min | 用日志和命令诊断一次上下文问题 |
+| 3 | [13.3 引擎解剖](03-引擎解剖.md) | 50 min | 说清 llama.cpp/vLLM/Strata 的请求路径 |
+| 4 | [13.4 调度与并发](04-调度与并发.md) | 50 min | 算 KV 预算、batch、Little 定律与 SLA |
+| 5 | [13.5 选型与部署](05-选型与部署.md) | 45 min | 做容量/成本/网关/回滚方案 |
+| 6 | [13.6 诊断实验](06-诊断实验.md) | 50 min | 诊断复读/OOM/吞吐/质量回退 |
+| 7 | 本手册 §3–§11 | 60 min | 说出六个族系的差别，做一次选型 |
 
-13.1/13.2 的习题见 [m13-习题](../exercises/m13-习题.md)，题库见 [quizbank/m13.yaml](https://github.com/kingfs/Linear-Algebra-to-LLM/blob/main/quizbank/m13.yaml)。
+13.1–13.6 的习题见 [m13-习题](../exercises/m13-习题.md)，题库见 [quizbank/m13.yaml](https://github.com/kingfs/Linear-Algebra-to-LLM/blob/main/quizbank/m13.yaml)。
 
 ---
 
@@ -520,14 +523,14 @@ LFM3-1.7B 是 24 层 tri-hybrid：13 层 shortconv + 5 层 sliding-window attent
 
 ## 17. 下一步
 
-这个模块目前是“专题手册 + 13.1/13.2 两课”。后续继续拆成六个教学单元：
+这个模块目前是“专题手册 + 13.1–13.6 六课”。六个教学单元已全部上线：
 
 1. **13.1 推理的数学（已上线）**：[Roofline、prefill/decode、batching、KV、量化的收益边界](01-推理的数学.md)。
 2. **13.2 模型格式与量化（已上线）**：[GGUF K-quants/IQ、EXL2、NVFP4、FP8 KV、MLX 4-bit](02-模型格式与量化.md)。
-3. **13.3 引擎解剖**：llama.cpp 的 `llama-server`、vLLM 的 PagedAttention、Strata 的专家缓存。
-4. **13.4 调度与并发**：continuous batching、prefix cache、公平性、SLA。
-5. **13.5 选型与部署**：单机/多机/边缘、API 网关、鉴权、监控。
-6. **13.6 诊断实验**：32k 复读、OOM、吞吐上不去、质量回归。
+3. **13.3 引擎解剖（已上线）**：[llama.cpp 的 `llama-server`、vLLM 的 PagedAttention、Strata 的专家缓存](03-引擎解剖.md)。
+4. **13.4 调度与并发（已上线）**：[continuous batching、prefix cache、公平性、SLA](04-调度与并发.md)。
+5. **13.5 选型与部署（已上线）**：[单机/多机/边缘、API 网关、鉴权、监控](05-选型与部署.md)。
+6. **13.6 诊断实验（已上线）**：[32k 复读、OOM、吞吐上不去、质量回归](06-诊断实验.md)。
 
 **现在就能做的三件事**（也见 [开课计划](../docs/开课计划.md)）：
 
