@@ -543,6 +543,7 @@ LFM3-1.7B 是 24 层 tri-hybrid：13 层 shortconv + 5 层 sliding-window attent
 **延伸阅读**：
 
 - [M11 ↔ M13 交叉索引](../docs/M11-M13交叉索引.md)
+- [M14 模型评测](../14-模型评测/README.md)：发布表怎么读、版本怎么比、上线前怎么自测
 
 - [M10.3 BLAS 与 GEMM](../10-数值线性代数/03-BLAS与GEMM.md)
 - [M11.7 KV Cache](../11-大模型专题/07-KVCache.md)

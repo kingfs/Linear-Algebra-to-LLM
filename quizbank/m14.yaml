@@ -1,0 +1,382 @@
+module: M14
+questions:
+  - id: q-14.1-001
+    concept: "14.1"
+    section: 4
+    type: single_choice
+    difficulty: 1
+    stem: '两个模型各跑 500 题，A 得 71.2、B 得 69.8。以下哪个结论最稳妥？'
+    options:
+      - 'A 显著强于 B'
+      - '差距落在抽样误差内，需要更多题或配对比较'
+      - 'B 显著强于 A'
+      - '无法计算，只能重新训练模型'
+    answer: [1]
+    explanation: '500 题、$p\approx0.7$ 时标准误约 2.9 个百分点，差值的 95% 区间约 ±5.7；1.4 分的差距在噪声内。'
+    source: "14-模型评测/01-评测的数学.md#4-性质与推导"
+    tags: [置信区间, 抽样误差]
+
+  - id: q-14.1-002
+    concept: "14.1"
+    section: 4
+    type: numeric
+    difficulty: 2
+    stem: '500 题、答对 350 题，95% 置信区间的半宽约为多少个百分点？'
+    answer: 4.0
+    tolerance: 0.2
+    explanation: '$\hat p=0.7$，$\mathrm{SE}=\sqrt{0.7\times0.3/500}\approx2.05$ 个百分点，$1.96\times2.05\approx4.0$。'
+    source: "14-模型评测/01-评测的数学.md#5-例子"
+    tags: [置信区间, 手算]
+
+  - id: q-14.1-003
+    concept: "14.1"
+    section: 2
+    type: true_false
+    difficulty: 2
+    stem: 'pass@8 很高，说明产品单次调用也很稳。'
+    answer: false
+    explanation: 'pass@8 只说明“多试几次能做出来”；产品通常只调用一次，应看 pass@1 或 pass^k。'
+    source: "14-模型评测/01-评测的数学.md#2-定义"
+    tags: [pass@k, 产品指标]
+
+  - id: q-14.1-004
+    concept: "14.1"
+    section: 4
+    type: numeric
+    difficulty: 3
+    stem: '$n=10$ 个样本中 $c=3$ 个正确，pass@4 约为多少百分比？'
+    answer: 83.3
+    tolerance: 0.5
+    explanation: '$1-\binom{7}{4}/\binom{10}{4}=1-35/210\approx83.3\%$。'
+    source: "14-模型评测/01-评测的数学.md#4-性质与推导"
+    tags: [pass@k, 组合数]
+
+  - id: q-14.2-001
+    concept: "14.2"
+    section: 3
+    type: single_choice
+    difficulty: 1
+    stem: '2026 年前沿模型卡普遍不再报 MMLU，最主要的原因是？'
+    options:
+      - 'MMLU 题目太少，只有 100 题'
+      - 'MMLU 已饱和且存在污染，区分度不足'
+      - 'MMLU 只能测中文'
+      - 'MMLU 需要人工评分，成本太高'
+    answer: [1]
+    explanation: '前沿模型普遍 88–90 分，题目公开多年并进入训练语料；换更难的 GPQA/HLE 是为了恢复区分度。'
+    source: "14-模型评测/02-知识与推理.md#3-为什么这样定义"
+    tags: [MMLU, 饱和, 污染]
+
+  - id: q-14.2-002
+    concept: "14.2"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: 'HLE 只有 30 分，说明这个模型的知识能力很差。'
+    answer: false
+    explanation: 'HLE 是专家级前沿题，30 分在 2026 年属于第一梯队；要同题集比较，不能看绝对分。'
+    source: "14-模型评测/02-知识与推理.md#6-常见误区"
+    tags: [HLE, 难度]
+
+  - id: q-14.2-003
+    concept: "14.2"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: 'GPQA Diamond 共 198 题，模型答对 176 题，准确率约为多少百分比？'
+    answer: 88.9
+    tolerance: 0.2
+    explanation: '$176/198\approx0.8889$，即 88.9%。'
+    source: "14-模型评测/02-知识与推理.md#5-例子"
+    tags: [GPQA, 手算]
+
+  - id: q-14.2-004
+    concept: "14.2"
+    section: 3
+    type: single_choice
+    difficulty: 1
+    stem: 'MMLU-Pro 相对 MMLU 的关键变化是？'
+    options:
+      - '把题目翻译成中文'
+      - '把选项从 4 个扩到 10 个，并要求思维链'
+      - '把题目数量减少到 100 题'
+      - '改成人工评分'
+    answer: [1]
+    explanation: 'MMLU-Pro 用十选项降低猜对概率，并要求 CoT，从而提高难度与区分度。'
+    source: "14-模型评测/02-知识与推理.md#3-为什么这样定义"
+    tags: [MMLU-Pro, 版本]
+
+  - id: q-14.3-001
+    concept: "14.3"
+    section: 0
+    type: single_choice
+    difficulty: 2
+    stem: '以下哪组分数最适合直接比较？'
+    options:
+      - 'Qwen 的 Terminal-Bench 2.1（Terminus）73.0 与 LFM3 的 2.1（OpenCode）12.92'
+      - 'Qwen 的 SWE-bench Pro 61.7 与 LFM3 的 SWE-bench Verified 43.40'
+      - '两个模型在 LiveCodeBench v6 上的 90.3 与 73.46'
+      - 'DeepSeek 的 Terminal-Bench 4.0 42.3 与 Qwen 的 2.1 73.0'
+    answer: [2]
+    explanation: '只有 LiveCodeBench v6 是同题集、同版本、判分一致；其余都跨了 harness、benchmark 或版本。'
+    source: "14-模型评测/03-代码与软件工程.md#0-场景引入"
+    tags: [可比性, harness, 版本]
+
+  - id: q-14.3-002
+    concept: "14.3"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: 'Terminal-Bench 2.1 共 89 题，模型通过 62 题，准确率约为多少百分比？'
+    answer: 69.7
+    tolerance: 0.2
+    explanation: '$62/89\approx0.6966$，即 69.7%。'
+    source: "14-模型评测/03-代码与软件工程.md#5-例子"
+    tags: [Terminal-Bench, 手算]
+
+  - id: q-14.3-003
+    concept: "14.3"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: 'SWE-bench Verified 分数高，就说明模型能独立从零建一个仓库。'
+    answer: false
+    explanation: 'Verified 考“修一个已定位的 issue”；从零建仓库要看 NL2Repo-Bench、ProgramBench 这类基准。'
+    source: "14-模型评测/03-代码与软件工程.md#6-常见误区"
+    tags: [SWE-bench, 能力边界]
+
+  - id: q-14.3-004
+    concept: "14.3"
+    section: 2
+    type: single_choice
+    difficulty: 1
+    stem: '“给一份规格文档和空工作区，产出可安装的 Python 库，用上游 pytest 判分”描述的是？'
+    options:
+      - 'HumanEval'
+      - 'NL2Repo-Bench'
+      - 'LiveCodeBench'
+      - 'SWE-bench Verified'
+    answer: [1]
+    explanation: 'NL2Repo-Bench 的核心就是从自然语言规格从零生成完整仓库，并用上游测试验证。'
+    source: "14-模型评测/03-代码与软件工程.md#2-定义"
+    tags: [NL2Repo, 仓库生成]
+
+  - id: q-14.4-001
+    concept: "14.4"
+    section: 2
+    type: single_choice
+    difficulty: 1
+    stem: 'BFCL 主要测什么？'
+    options:
+      - '多轮对话的情感'
+      - '函数/工具的选择与参数填写'
+      - '桌面软件的点击'
+      - '长文档检索'
+    answer: [1]
+    explanation: 'BFCL 以函数调用为核心，早期用 AST 匹配函数名与参数，后续扩展到多轮与 Agentic。'
+    source: "14-模型评测/04-Agent与工具.md#2-定义"
+    tags: [BFCL, 工具调用]
+
+  - id: q-14.4-002
+    concept: "14.4"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: '单次任务成功率 85%，独立同分布假设下 pass^3 约为多少百分比？'
+    answer: 61.4
+    tolerance: 0.5
+    explanation: '$0.85^3\approx0.614$，即 61.4%；实际通常更低，因为试验间不独立。'
+    source: "14-模型评测/04-Agent与工具.md#5-例子"
+    tags: [pass^k, 可靠性]
+
+  - id: q-14.4-003
+    concept: "14.4"
+    section: 2
+    type: true_false
+    difficulty: 1
+    stem: 'τ-bench 主要看最终回复文本写得好不好。'
+    answer: false
+    explanation: 'τ-bench 判的是后端数据库状态是否被正确修改；话术漂亮但状态不对就是失败。'
+    source: "14-模型评测/04-Agent与工具.md#2-定义"
+    tags: [τ-bench, 状态判分]
+
+  - id: q-14.4-004
+    concept: "14.4"
+    section: 4
+    type: single_choice
+    difficulty: 2
+    stem: 'MCP-Atlas 的独特设计是？'
+    options:
+      - '只用模拟函数，不接真实服务'
+      - '在 36 个真实 MCP 服务器、220 个工具上做 claim-level 判分'
+      - '只考单轮问答'
+      - '由人类逐条打分'
+    answer: [1]
+    explanation: 'MCP-Atlas 用真实 MCP 服务器与工具，按原子事实 claim 判分，允许不同的工具调用轨迹。'
+    source: "14-模型评测/04-Agent与工具.md#4-性质与推导"
+    tags: [MCP-Atlas, MCP]
+
+  - id: q-14.5-001
+    concept: "14.5"
+    section: 4
+    type: numeric
+    difficulty: 2
+    stem: '4 个约束通过率为 0.95、0.9、0.85、0.8，假设独立，联合通过率约为多少百分比？'
+    answer: 58.1
+    tolerance: 0.5
+    explanation: '$0.95\times0.9\times0.85\times0.8\approx0.581$，即 58.1%。'
+    source: "14-模型评测/05-指令遵循与人类偏好.md#4-性质与推导"
+    tags: [联合约束, 手算]
+
+  - id: q-14.5-002
+    concept: "14.5"
+    section: 3
+    type: single_choice
+    difficulty: 1
+    stem: 'IFBench 相对 IFEval 的核心改进是？'
+    options:
+      - '题目更多'
+      - '用 58 个域外约束测泛化，抗“背题型”'
+      - '改由人类评分'
+      - '只考中文'
+    answer: [1]
+    explanation: 'IFBench 的约束是模型没见过的，专门测“遵守约束”能否泛化到新格式。'
+    source: "14-模型评测/05-指令遵循与人类偏好.md#3-为什么这样定义"
+    tags: [IFBench, 泛化]
+
+  - id: q-14.5-003
+    concept: "14.5"
+    section: 4
+    type: true_false
+    difficulty: 2
+    stem: 'LMArena 的 Elo 分数可以和其他榜单的 Elo 直接比较。'
+    answer: false
+    explanation: 'Elo 依赖对手池；不同池子的分数标尺不同，跨榜不可比。'
+    source: "14-模型评测/05-指令遵循与人类偏好.md#4-性质与推导"
+    tags: [Elo, 对手池]
+
+  - id: q-14.5-004
+    concept: "14.5"
+    section: 4
+    type: single_choice
+    difficulty: 1
+    stem: 'AlpacaEval 2.0 的“LC win rate”主要控制什么偏差？'
+    options:
+      - '位置偏差'
+      - '长度偏差'
+      - '语言偏差'
+      - '采样温度'
+    answer: [1]
+    explanation: 'LC 指 length-controlled：拟合长度与胜率的关系，再在固定长度上比较，压低“越长越赢”。'
+    source: "14-模型评测/05-指令遵循与人类偏好.md#4-性质与推导"
+    tags: [AlpacaEval, 长度偏差]
+
+  - id: q-14.6-001
+    concept: "14.6"
+    section: 4
+    type: numeric
+    difficulty: 3
+    stem: '一张 $1024\times1024$ 的图，按 $14\times14$ patch 切分、$2\times2$ 合并，视觉 token 约为多少个？'
+    answer: 1332
+    tolerance: 30
+    explanation: '$(1024/14)^2\approx73^2=5329$ 个 patch，$2\times2$ 合并后约 1332 个 token。'
+    source: "14-模型评测/06-多模态与长上下文.md#4-性质与推导"
+    tags: [视觉 token, 分辨率]
+
+  - id: q-14.6-002
+    concept: "14.6"
+    section: 2
+    type: single_choice
+    difficulty: 1
+    stem: '要衡量“有效上下文长度”，最直接的基准是？'
+    options:
+      - 'MMMU'
+      - 'RULER'
+      - 'HumanEval'
+      - 'BFCL'
+    answer: [1]
+    explanation: 'RULER 用检索、多跳、聚合、追踪等任务，测模型在长上下文上的准确率衰减。'
+    source: "14-模型评测/06-多模态与长上下文.md#2-定义"
+    tags: [RULER, 有效上下文]
+
+  - id: q-14.6-003
+    concept: "14.6"
+    section: 2
+    type: true_false
+    difficulty: 1
+    stem: '同一模型“with CI”与“without CI”的分数可以直接比较。'
+    answer: false
+    explanation: 'CI 是独立的评测设置，允许写代码/用工具会显著提高分数；必须成对报告、分开比较。'
+    source: "14-模型评测/06-多模态与长上下文.md#2-定义"
+    tags: [CI, 设置]
+
+  - id: q-14.6-004
+    concept: "14.6"
+    section: 3
+    type: single_choice
+    difficulty: 2
+    stem: 'Chartography 主要测什么？'
+    options:
+      - '手写 OCR'
+      - '职业场景中的专业图表理解'
+      - '视频时序推理'
+      - '手机 App 操作'
+    answer: [1]
+    explanation: 'Chartography 用 100 道职业图表题，覆盖标准图表基准少见的专业格式，最佳配置仅约 45%。'
+    source: "14-模型评测/06-多模态与长上下文.md#3-为什么这样定义"
+    tags: [Chartography, 图表]
+
+  - id: q-14.7-001
+    concept: "14.7"
+    section: 4
+    type: numeric
+    difficulty: 2
+    stem: '单次成本 0.03 美元、成功率 55%、平均 1.3 次尝试，每个成功任务成本约为多少美元？'
+    answer: 0.071
+    tolerance: 0.005
+    explanation: '$0.03\times1.3/0.55\approx0.0709$ 美元。'
+    source: "14-模型评测/07-读表与选型.md#4-性质与推导"
+    tags: [成本, 选型]
+
+  - id: q-14.7-002
+    concept: "14.7"
+    section: 2
+    type: single_choice
+    difficulty: 1
+    stem: '模型选型的第一步应该是？'
+    options:
+      - '看排行榜第一名'
+      - '明确场景与约束（任务、预算、延迟、合规）'
+      - '选参数量最大的'
+      - '选价格最便宜的'
+    answer: [1]
+    explanation: '选型像配眼镜，先验光（场景与约束），再看镜片（能力）与镜架（工程）。'
+    source: "14-模型评测/07-读表与选型.md#2-定义"
+    tags: [选型, 场景]
+
+  - id: q-14.7-003
+    concept: "14.7"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: '公开榜排名第一的模型，就是最适合上线的模型。'
+    answer: false
+    explanation: '公开榜是平均能力；上线还要看自建集、成本、延迟、许可与可控性。'
+    source: "14-模型评测/07-读表与选型.md#6-常见误区"
+    tags: [公开榜, 选型]
+
+  - id: q-14.7-004
+    concept: "14.7"
+    section: 4
+    type: single_choice
+    difficulty: 1
+    stem: '同一个 benchmark 上两个模型差 10 分，最先应该检查什么？'
+    options:
+      - '模型的参数量'
+      - 'harness、版本、采样与判分是否一致'
+      - '训练数据大小'
+      - 'GPU 型号'
+    answer: [1]
+    explanation: '同 benchmark 不同 harness/版本/采样/判分，分数不可比；先对齐协议，再谈差距。'
+    source: "14-模型评测/07-读表与选型.md#4-性质与推导"
+    tags: [读表, harness]
