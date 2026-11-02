@@ -331,10 +331,10 @@ questions:
     section: 4
     type: numeric
     difficulty: 2
-    stem: '单次成本 0.03 美元、成功率 55%、平均 1.3 次尝试，每个成功任务成本约为多少美元？'
-    answer: 0.071
-    tolerance: 0.005
-    explanation: '$0.03\times1.3/0.55\approx0.0709$ 美元。'
+    stem: '单次成本 0.03 美元、成功率 55%，失败后重试直到成功，每个成功任务成本约为多少美元？'
+    answer: 0.055
+    tolerance: 0.003
+    explanation: '$0.03/0.55\approx0.0545$ 美元；成功率越低，成本按倒数放大。'
     source: "14-模型评测/07-读表与选型.md#4-性质与推导"
     tags: [成本, 选型]
 

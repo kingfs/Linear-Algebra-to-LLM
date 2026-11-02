@@ -69,6 +69,20 @@ figures:
     concepts: ["11.7"]
     caption: "KV Cache 显存随序列长度线性增长；T=4096 时约 2 GB（示例配置）。"
     alt: "KV cache 显存随序列长度线性增长的折线图"
+  - id: m14-benchmark-timeline
+    file: m14-benchmark-timeline.svg
+    concepts: ["14.1"]
+    inline: true
+    caption: "2020–2026 主要评测家族与版本节点：点表示首次发布或关键改版，横条表示仍在使用的区间；位置为近似月份。"
+    alt: "按知识、数学、代码、Agent、指令偏好、多模态、长上下文分组的评测家族时间线"
+
+  - id: m14-passk
+    file: m14-passk.svg
+    concepts: ["14.1"]
+    inline: true
+    caption: "同一单次成功率下，pass@k 随尝试次数上升，pass^k 随尝试次数下降；k=4、p=0.5 时分别为 93.8% 与 6.25%。"
+    alt: "pass@k 与 pass^k 随 k 变化的曲线，蓝色 p=0.5，橙色 p=0.8"
+
   # 以下为正文内联图：inline: true，概念页不会自动插到页首。
   - id: transformer-pipeline
     file: transformer-pipeline.svg

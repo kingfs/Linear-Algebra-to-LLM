@@ -25,7 +25,7 @@ Qwen3.8-27B 的 Terminal-Bench 2.1 是 **73.0（Terminus）**；LFM3-1.7B 的同
 ### 现场二：MMLU 从发布表里消失了
 
 2024 年 DeepSeek-V3 的卡片：MMLU、MMLU-Pro、MMLU-Redux 全在。
-2026 年 Qwen3.8-27B 的卡片：**一个 MMLU 都没有**，只剩 GPQA Diamond 和 HLE。
+2026 年 Qwen3.8-27B 的卡片：**知识栏一个 MMLU 都没有**，只剩 GPQA Diamond 和 HLE。
 
 不是模型不考知识，而是 MMLU 饱和了：前沿 88–90 分、题目公开多年、还大量进了训练集。**尺子量不出差距，就换尺子。**
 
@@ -170,7 +170,7 @@ flowchart TD
 | HumanEval / MBPP | 函数级代码 | 2021 | 164 / 374 题 | 已饱和、易污染 |
 | LiveCodeBench | 竞赛代码 | v1–v6；Pro 2025 | 时间窗滚动、抗污染 | 看版本与题窗 |
 | SciCode | 科学计算代码 | 2024 | 80 主问题 | 看子问题通过率 |
-| SWE-bench | 真实 issue 修复 | 原版 → Verified → MM → Multilingual → Pro → Pro V2 | 难度/语言/防作弊 | 家族内也不可混 |
+| SWE-bench | 真实 issue 修复 | 原版 → Verified → Multimodal → Multilingual → Pro → Pro V2 | 难度/语言/防作弊 | 家族内也不可混 |
 | DeepSWE | 原创长程工程 | 2026 | 113 题、手写 verifier | 小样本、高信号 |
 | Terminal-Bench | 终端长程任务 | 1.0 → 2.0 → 2.1 → 3.0 → 4.0 | 语义化版本 | major 变必须重跑 |
 | NL2Repo-Bench | 从规格建仓库 | 2025 | 104 题、上游 pytest | 看 pass rate |
@@ -211,7 +211,7 @@ flowchart TD
 
 ## 6. 三年发布表的变化
 
-把三张真实卡片的“评测栏”抽出来，能看到一条清晰的迁移：
+把几张真实卡片的“评测栏”抽出来，能看到一条清晰的迁移：
 
 | 年份 | 代表卡片 | 知识 | 代码 | Agent | 多模态 |
 | --- | --- | --- | --- | --- | --- |
@@ -226,6 +226,10 @@ flowchart TD
 1. **从“知识考试”转向“工作样本”**：MMLU → SWE-bench → Terminal-Bench → ALE。
 2. **从“单模型”转向“模型 × harness”**：表头开始写 `(Terminus)`、`(OpenCode)`、`(Claude Code)`。
 3. **从“准确率”转向“可靠性 + 成本”**：pass^k、avg@n、cost per task 出现得越来越频繁。
+
+![评测家族时间线：2020–2026 主要基准的首次发布与关键版本节点](../figures/out/m14-benchmark-timeline.svg)
+
+> 图里的点只标“首次发布/关键改版”，不标每一次小修；横条表示这个家族到 2026 年仍在被使用。**看时间线的好处是：你会先问“这把尺子是哪一年造的”，再问“分数是多少”。**
 
 ---
 
@@ -320,7 +324,7 @@ flowchart TD
 <details>
 <summary>自测答案</summary>
 
-1. 模型规模/能力、harness（Terminus vs OpenCode）、版本（同为 2.1 但运行设置可能不同）、采样与步数预算、题目子集、噪声（89 题 ±10 分）。
+1. 模型规模/能力、harness（Terminus vs OpenCode）、采样与步数预算、题目子集、运行设置、噪声（89 题 ±10 分）。
 2. 饱和（前沿 88–90，区分度低）；污染（题目公开多年、进入训练集）；此外还有“新题更能讲故事”的传播因素。
 3. Verified 是 500 道人工确认可解的题；Pro 是 1,865 道更难、含私有/持份代码的题。题集、难度、判分环境都不同。
 4. $\binom{4}{2}/\binom{8}{2}=6/28\approx21.4\%$；衡量“两次都成功”的可靠性，而不是“至少一次”。

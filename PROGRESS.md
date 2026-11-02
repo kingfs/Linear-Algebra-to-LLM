@@ -36,7 +36,7 @@
 | 知识卡复习 | 完成 | 577 张，Leitner 间隔重复 |
 | 错题本 | 完成 | 按最近一次作答聚合，可整组/单题重做 |
 | 学习进度 | 完成 | 阅读、正确率、薄弱概念、到期卡片；IndexedDB 本地保存 |
-| 生成图 | 完成 | 62 张图（Matplotlib SVG + Mermaid）；M11 架构扩展新增 6 张，构图见 `figures/manifest.yaml` |
+| 生成图 | 完成 | 64 张图（Matplotlib SVG + Mermaid）；M14 新增评测家族时间线、pass@k/pass^k 两张，构图见 `figures/manifest.yaml` |
 | 质量门禁 | 完成 | `pnpm build`（186 页）、`pnpm check`、`check-quiz.mjs`、`check-site-links.mjs`、`check-render.mjs`、13 项 Playwright E2E |
 | 子路径部署 | 完成 | `BASE_PATH=/Linear-Algebra-to-LLM/` 构建验证；tag 触发 GitHub Pages workflow |
 
@@ -120,3 +120,4 @@ cd web && pnpm build && pnpm links && node scripts/e2e.mjs   # 0 断链 / 13 che
 | 2026-10-31 | 完成 M11 架构扩展 11.13–11.18：架构全景、Mamba/SSM、RWKV/线性、混合、长上下文、选型；补习题/题库 | 3456cbb |
 | 2026-10-31 | 新增 M11 六张架构图与 M11↔M13 交叉索引；Web/README/学习地图互通 | 7ed8463 |
 | 2026-11-02 | 新增 M14 模型评测专题：手册 + 14.1–14.7，版本谱系、读表七问、m14 习题与 28 题题库 | 384ac82 |
+| 2026-11-02 | 补 M14 两张生成图（评测家族时间线、pass@k/pass^k），并复核版本日期、成本公式、模型架构与引用表述 | 待补 |
