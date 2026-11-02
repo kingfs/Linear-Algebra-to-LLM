@@ -33,6 +33,7 @@ const MODULES = {
   M11: "大模型专题",
   M12: "进阶与全景",
   M13: "推理服务与运行时",
+  M14: "模型评测",
 };
 
 const warnings = [];
@@ -224,7 +225,9 @@ for (const doc of docs) {
     tags: doc.data.tags,
     llm_hooks: doc.data.llm_hooks,
     source: doc.rel,
-    moduleTitle: MODULES[doc.data.module] || "附录",
+    moduleTitle:
+      MODULES[doc.data.module] ||
+      (doc.data.module.startsWith("M") ? doc.moduleDir.replace(/^\d+-/, "") : "附录"),
   };
   const filename =
     doc.type === "concept"
@@ -236,7 +239,19 @@ for (const doc of docs) {
 
   if (doc.type === "concept" || doc.type === "module") {
     const m = doc.data.module;
-    if (!navModules.has(m)) navModules.set(m, { id: m, title: `${m} ${MODULES[m] || ""}`.trim(), route: `/modules/${m.toLowerCase()}/`, concepts: [] });
+    if (!navModules.has(m)) {
+      const moduleLabel =
+        MODULES[m] ||
+        docs.find((d) => d.type === "module" && d.data.module === m)?.moduleDir.replace(/^\d+-/, "") ||
+        "";
+      if (!MODULES[m]) warnings.push(`模块 ${m} 未在 MODULES 登记，导航标题回退为目录名「${moduleLabel}」`);
+      navModules.set(m, {
+        id: m,
+        title: `${m} ${moduleLabel}`.trim(),
+        route: `/modules/${m.toLowerCase()}/`,
+        concepts: [],
+      });
+    }
     if (doc.type === "concept") {
       navModules.get(m).concepts.push({
         id: doc.data.id,
