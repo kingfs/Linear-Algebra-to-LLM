@@ -57,7 +57,7 @@ llama.cpp、Ollama、vLLM、SGLang、TensorRT-LLM、Strata、NInfer、MLX、MLC�
 
 13.1–13.6 的习题见 [m13-习题](../exercises/m13-习题.md)，题库见 [quizbank/m13.yaml](https://github.com/kingfs/Linear-Algebra-to-LLM/blob/main/quizbank/m13.yaml)。
 
-## 分次阅读建议
+## 1.2 分次阅读建议
 
 <!-- reading-minutes: docs=290 extra=60 total=350 -->
 

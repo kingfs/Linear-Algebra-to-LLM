@@ -135,7 +135,7 @@ flowchart TD
 | [14.6](06-多模态与长上下文.md) | 从 MMMU 到 AA-LCR | 感知/图表/文档/行动，claimed vs effective |
 | [14.7](07-读表与选型.md) | 把榜单变成决策 | 七问、版本速查、成本/成功任务、自测 |
 
-## 分次阅读建议
+## 3.1 分次阅读建议
 
 <!-- reading-minutes: docs=340 extra=0 total=340 -->
 
