@@ -55,7 +55,7 @@ llama.cpp、Ollama、vLLM、SGLang、TensorRT-LLM、Strata、NInfer、MLX、MLC�
 | 6 | [13.6 诊断实验](06-诊断实验.md) | 50 min | 诊断复读/OOM/吞吐/质量回退 |
 | 7 | 本手册 §3–§11 | 60 min | 说出六个族系的差别，做一次选型 |
 
-13.1–13.6 的习题见 [m13-习题](../exercises/m13-习题.md)，题库见 [quizbank/m13.yaml](https://github.com/kingfs/Linear-Algebra-to-LLM/blob/main/quizbank/m13.yaml)。
+13.1–13.6 的习题见 [m13-习题](../exercises/m13-习题.md)，题库见 [quizbank/m13.yaml](https://github.com/kingfs/Linear-Algebra-to-LLM/blob/main/quizbank/m13.yaml)，实验见 [lab13 推理账本](../labs/lab13_推理账本.py)（KV 显存、算术强度、TPOT、量化上界、MoE 带宽）。
 
 ## 1.2 分次阅读建议
 

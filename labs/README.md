@@ -37,6 +37,7 @@ uv run --with numpy python lab01_相似度与投影.py
 | lab10 数值误差与 GEMM | 10.1–10.3 | 机器精度、条件数、矩阵乘耗时 |
 | lab11 Transformer 形状链 | 11.1–11.11 | embedding→attention→KV Cache→LoRA→采样 |
 | lab12 einsum 与随机矩阵 | 12.1–12.2 | einsum 等价性、谱范数、MP 律 |
+| lab13 推理账本 | 13.1–13.2 | KV 显存、算术强度、TPOT、量化上界、MoE 带宽 |
 
 ## 约定
 
