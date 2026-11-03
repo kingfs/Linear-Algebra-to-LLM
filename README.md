@@ -39,7 +39,7 @@ pnpm dev --port 4321
 task doctor      # 检查 python/node/pnpm/uv/Chrome
 task setup       # 安装 Web 与 Python 依赖
 task dev         # 启动 http://127.0.0.1:4321/
-task check       # 概念结构 / 文献 / 全仓链接
+task check       # 概念结构 / 文献 / 阅读时间 / 全仓链接
 task check:web   # 构建后查站内链接、锚点与渲染
 task e2e         # 13 项浏览器检查
 ```

@@ -80,10 +80,11 @@ tasks:
       - pnpm build
 
   check:
-    desc: 内容质量门禁（概念结构 / 文献 / 全仓链接）
+    desc: 内容质量门禁（概念结构 / 文献 / 阅读时间 / 全仓链接）
     cmds:
       - task: check:content
       - task: check:refs
+      - task: check:minutes
       - task: check:links
 
   check:content:
@@ -95,6 +96,11 @@ tasks:
     desc: 参考文献格式、条目数与页内锚点检查
     cmds:
       - '{{.PYTHON}} scripts/check_refs.py'
+
+  check:minutes:
+    desc: 模块 README 阅读时间与 front matter minutes 一致性
+    cmds:
+      - '{{.PYTHON}} scripts/check_minutes.py'
 
   check:links:
     desc: 全仓 Markdown 相对链接检查

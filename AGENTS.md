@@ -183,7 +183,7 @@ llm_hooks: [embedding, attention]
 提交前必须运行：
 
 ```bash
-task check                       # = check.py + check_refs.py + check_links.py
+task check                       # = check.py + check_refs.py + check_minutes.py + check_links.py
 task check:web                   # 构建后查站内链接、锚点与渲染
 task e2e                         # 13 项浏览器检查
 ```
@@ -193,6 +193,7 @@ task e2e                         # 13 项浏览器检查
 ```bash
 python3 scripts/check.py
 python3 scripts/check_refs.py    # 参考文献格式、锚点、外链可达性
+python3 scripts/check_minutes.py # 模块 README 阅读时间 vs front matter minutes
 python3 scripts/check_links.py   # 全仓 README/习题/速查表链接
 ```
 
@@ -204,7 +205,10 @@ python3 scripts/check_links.py   # 全仓 README/习题/速查表链接
 5. 无 `TODO` / `TBD` / `待补充` 占位符；
 6. 文件编码 UTF-8；
 7. `check_links.py` 扫描所有 Markdown，0 断链；
-8. `check_refs.py`：每页 2–5 条文献，页内 `#ref-*` 锚点全部可解析，外链可访问。
+8. `check_refs.py`：每页 2–5 条文献，页内 `#ref-*` 锚点全部可解析，外链可访问；
+9. `check_minutes.py`：模块 README「分次阅读建议」的 `<!-- reading-minutes -->` 标注与正文数字，须等于该模块各篇 front matter `minutes` 之和（可加 `extra`）。
+
+> **不要手写「大约多少分钟」**：阅读时间必须由 front matter 推出并写进 `<!-- reading-minutes: docs=… extra=… total=… -->`，否则会与逐篇数据漂移。`check_minutes.py` 会拦住这类不一致。
 
 不通过不允许 commit。若确需临时占位，在 `PROGRESS.md` 登记为「草稿」，且不得标记模块完成。
 
