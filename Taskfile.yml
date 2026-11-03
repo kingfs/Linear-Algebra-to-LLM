@@ -80,11 +80,12 @@ tasks:
       - pnpm build
 
   check:
-    desc: 内容质量门禁（概念结构 / 文献 / 阅读时间 / 全仓链接）
+    desc: 内容质量门禁（概念结构 / 文献 / 阅读时间 / 前沿追踪 / 全仓链接）
     cmds:
       - task: check:content
       - task: check:refs
       - task: check:minutes
+      - task: check:frontier
       - task: check:links
 
   check:content:
@@ -101,6 +102,18 @@ tasks:
     desc: 模块 README 阅读时间与 front matter minutes 一致性
     cmds:
       - '{{.PYTHON}} scripts/check_minutes.py'
+
+  check:frontier:
+    desc: 前沿追踪页表格结构、状态词与 arXiv 编号格式
+    cmds:
+      - '{{.PYTHON}} scripts/check_frontier.py'
+
+  # 发版前手动跑：会联网核对书目/标题，较慢，不进默认 check
+  check:online:
+    desc: 联网核对文献元数据与前沿追踪 arXiv 标题（发版前跑）
+    cmds:
+      - '{{.PYTHON}} scripts/check_refs.py --metadata'
+      - '{{.PYTHON}} scripts/check_frontier.py --online'
 
   check:links:
     desc: 全仓 Markdown 相对链接检查

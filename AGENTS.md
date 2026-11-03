@@ -192,10 +192,19 @@ task e2e                         # 13 项浏览器检查
 
 ```bash
 python3 scripts/check.py
-python3 scripts/check_refs.py    # 参考文献格式、锚点、外链可达性
-python3 scripts/check_minutes.py # 模块 README 阅读时间 vs front matter minutes
-python3 scripts/check_links.py   # 全仓 README/习题/速查表链接
+python3 scripts/check_refs.py     # 参考文献格式、锚点、外链可达性
+python3 scripts/check_minutes.py  # 模块 README 阅读时间 vs front matter minutes
+python3 scripts/check_frontier.py # 前沿追踪页表格结构、状态词、arXiv 编号
+python3 scripts/check_links.py    # 全仓 README/习题/速查表链接
 ```
+
+**发版前额外跑一次联网检查**（较慢，不进默认门禁）：
+
+```bash
+task check:online    # check_refs.py --metadata + check_frontier.py --online
+```
+
+它会用 Crossref/arXiv API 核对书目与标题。手写的 DOI/arXiv 编号**必然**会错位（v1.8.0 复核就发现 MoRA 指向了另一篇论文），只能靠它拦。
 
 检查内容：
 1. front matter 必填字段齐全、`id` 唯一；
@@ -206,9 +215,12 @@ python3 scripts/check_links.py   # 全仓 README/习题/速查表链接
 6. 文件编码 UTF-8；
 7. `check_links.py` 扫描所有 Markdown，0 断链；
 8. `check_refs.py`：每页 2–5 条文献，页内 `#ref-*` 锚点全部可解析，外链可访问；
-9. `check_minutes.py`：模块 README「分次阅读建议」的 `<!-- reading-minutes -->` 标注与正文数字，须等于该模块各篇 front matter `minutes` 之和（可加 `extra`）。
+9. `check_minutes.py`：模块 README「分次阅读建议」的 `<!-- reading-minutes -->` 标注与正文数字，须等于该模块各篇 front matter `minutes` 之和（可加 `extra`）；
+10. `check_frontier.py`：`docs/前沿追踪.md` 的表格有 5 列、状态取自固定五档、时间合法、arXiv 编号格式统一且不重复。
 
 > **不要手写「大约多少分钟」**：阅读时间必须由 front matter 推出并写进 `<!-- reading-minutes: docs=… extra=… total=… -->`，否则会与逐篇数据漂移。`check_minutes.py` 会拦住这类不一致。
+>
+> **不要手写「精确到编号的文献引用」而不核对**：`docs/前沿追踪.md` 新增 arXiv 条目后必须跑 `check_frontier.py --online`。
 
 不通过不允许 commit。若确需临时占位，在 `PROGRESS.md` 登记为「草稿」，且不得标记模块完成。
 
