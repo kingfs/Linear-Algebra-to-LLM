@@ -151,7 +151,7 @@ $$
 \|A\|_F^2=\operatorname{tr}(A^\top A)=\operatorname{tr}(V\Lambda V^\top)=\operatorname{tr}(\Lambda)=\sum_i\lambda_i=\sum_i\sigma_i^2
 $$
 
-第二、三步用到「迹在正交相似下不变」。这个式子说的是：**Frobenius 范数把所有奇异值平方加起来**，因此低秩近似的误差可以用被丢掉的那部分奇异值精确计算（第 7.3 节）。
+第二、三步用到「迹在正交相似下不变」。这个式子说的是：**Frobenius 范数把所有奇异值平方加起来**，因此低秩近似的误差可以用被丢掉的那部分奇异值精确计算（[第 7.3 节](03-低秩近似.md)）。
 
 ### 4.2 性质清单
 
@@ -242,7 +242,7 @@ $$
 2. **误区**：$\sigma_i=\lvert\lambda_i\rvert$ 总是成立。
    **纠正**：只对正规矩阵成立。$\begin{bmatrix}1&1\\0&1\end{bmatrix}$ 特征值双 1，奇异值是 $1.618$ 与 $0.618$（黄金比例）。
 3. **误区**：算出一个很小的奇异值就说明矩阵秩亏。
-   **纠正**：先看阈值。NumPy 的 `matrix_rank` 用 $\sigma_i>\max(m,n)\cdot\varepsilon\cdot\sigma_1$；低于阈值的才算 0（数值秩，第 7.4 节）。这个数值秩判据在 [Golub 与 Van Loan](#ref-golub-van-loan-2013) 里有系统讨论。
+   **纠正**：先看阈值。NumPy 的 `matrix_rank` 用 $\sigma_i>\max(m,n)\cdot\varepsilon\cdot\sigma_1$；低于阈值的才算 0（数值秩，[第 7.4 节](04-伪逆与数值秩.md)）。这个数值秩判据在 [Golub 与 Van Loan](#ref-golub-van-loan-2013) 里有系统讨论。
 4. **误区**：奇异值算得准，奇异向量也算得准。
    **纠正**：$\sigma_i\approx\sigma_{i+1}$ 时，对应子空间内的任意正交组合都是合法的奇异向量，单个向量的数值结果没有意义，只有**子空间**稳定。
 
@@ -303,8 +303,8 @@ print(s[0], s[-1], s[0] / s[-1])
 
 这一页的知识不是凭空来的。下面列出本页直接借用的原始工作与权威整理；正文中的人名、定理名已链接到对应条目。链接优先指向 DOI、arXiv 或可长期访问的原文存档。
 
-- <a id="ref-golub-kahan-1965"></a>**Golub 与 Kahan（Gene H. Golub & William Kahan, 1965）**：*Calculating the Singular Values and Pseudo-Inverse of a Matrix*。把 SVD 计算化成「Householder 双对角化 + QR 迭代」，全程不形成 $A^\top A$，因此不会把条件数平方；这就是本页第 2.3 节里 LAPACK `gesvd`/`gesdd` 的算法祖先。[SIAM J. Numer. Anal. 2(2)](https://doi.org/10.1137/0702016)
-- <a id="ref-golub-van-loan-2013"></a>**Golub 与 Van Loan（Gene H. Golub & Charles F. Van Loan, 2013）**：*Matrix Computations*（4th ed.）。对 SVD 的存在性、数值秩、条件数与最小二乘给出标准处理，本页第 4.2 节的性质清单与第 6 节的秩判据都可在此查证。[Johns Hopkins University Press](https://doi.org/10.56021/9781421407944)
+- <a id="ref-golub-kahan-1965"></a>**Golub 与 Kahan（Gene H. Golub & William Kahan, 1965）**：*Calculating the Singular Values and Pseudo-Inverse of a Matrix*。把 SVD 计算化成「Householder 双对角化 + QR 迭代」，全程不形成 $A^\top A$，因此不会把条件数平方；这就是本页[第 2.3 节](../02-向量空间/03-线性无关.md)里 LAPACK `gesvd`/`gesdd` 的算法祖先。[SIAM J. Numer. Anal. 2(2)](https://doi.org/10.1137/0702016)
+- <a id="ref-golub-van-loan-2013"></a>**Golub 与 Van Loan（Gene H. Golub & Charles F. Van Loan, 2013）**：*Matrix Computations*（4th ed.）。对 SVD 的存在性、数值秩、条件数与最小二乘给出标准处理，本页[第 4.2 节](../04-线性方程组/02-解的存在性与通解.md)的性质清单与第 6 节的秩判据都可在此查证。[Johns Hopkins University Press](https://doi.org/10.56021/9781421407944)
 
 ---
 

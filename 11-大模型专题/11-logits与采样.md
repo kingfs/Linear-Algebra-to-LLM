@@ -194,7 +194,7 @@ $$
 
 logits $\mathbf{z}=(2,1,0)$。
 
-$T=1$：$(0.665,0.245,0.090)$（见第 11.4 节）。
+$T=1$：$(0.665,0.245,0.090)$（见[第 11.4 节](04-Attention-下-softmax与多头.md)）。
 
 $T=0.7$：$\mathbf{z}/T=(2.857,1.429,0)$，
 
@@ -233,7 +233,7 @@ $$
 - 参数量 $4096\times128000=5.24\times10^{8}$，bf16 占 $1.05$ GB；
 - FLOP：$2\times4096\times128000\approx1.05\times10^{9}$ FLOP/token；
 - 带宽：每个 token 必须把这 $1.05$ GB 权重完整读一遍。HBM 2 TB/s 下单条请求 $1.05\ \text{GB}/2\ \text{TB/s}\approx0.52$ ms；
-- 算力：同样一次 GEMV 若跑出 100 TFLOP/s 只要 $10.5$ μs——**慢了 50 倍的那一侧是带宽，不是 FLOPs**（第 10.3 节的 Roofline）。
+- 算力：同样一次 GEMV 若跑出 100 TFLOP/s 只要 $10.5$ μs——**慢了 50 倍的那一侧是带宽，不是 FLOPs**（[第 10.3 节](../10-数值线性代数/03-BLAS与GEMM.md)的 Roofline）。
 
 注意这里有个容易算漏的摊销：32 条请求并发解码时，这 1.05 GB 权重**每步只读一次**，摊到每条请求是 $0.52/32\approx16$ μs/token。一天 $200\text{ 万}\times380=7.6\times10^{8}$ 个 token，串行跑是 $7.6\times10^{8}\times0.52\ \text{ms}\approx110$ GPU·h/天，32 并发批处理只要 $\approx3.5$ GPU·h/天——**差 32 倍，这就是批处理存在的理由**。（只核算 unembedding 这一层，全模型还要加 attention 与 KV cache 的访存。）
 

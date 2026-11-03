@@ -111,15 +111,15 @@ $$
 
 ### 2.6 投影与重建
 
-取前 $k$ 个主成分 $V_k\in\mathbb{R}^{D\times k}$，则 $\mathbf{z}=V_k^\top(\mathbf{x}-\hat{\boldsymbol\mu})\in\mathbb{R}^k$，重建 $\hat{\mathbf{x}}=V_k\mathbf{z}+\hat{\boldsymbol\mu}$。矩阵形式的重建是 $X_cV_kV_k^\top$；$V_kV_k^\top$ 是到前 $k$ 个主成分子空间的**正交投影矩阵（orthogonal projection matrix）**（第 1.6 节）。
+取前 $k$ 个主成分 $V_k\in\mathbb{R}^{D\times k}$，则 $\mathbf{z}=V_k^\top(\mathbf{x}-\hat{\boldsymbol\mu})\in\mathbb{R}^k$，重建 $\hat{\mathbf{x}}=V_k\mathbf{z}+\hat{\boldsymbol\mu}$。矩阵形式的重建是 $X_cV_kV_k^\top$；$V_kV_k^\top$ 是到前 $k$ 个主成分子空间的**正交投影矩阵（orthogonal projection matrix）**（[第 1.6 节](../01-向量与几何/06-正交与投影.md)）。
 
 ## 3. 为什么这样定义
 
 **为什么必须中心化？** 不中心化时，$\frac1nX^\top X$ 是二阶矩而不是协方差，第一主成分会偏向均值方向。极端例子：所有点都在 $\mathbf{1}$ 附近，第一主成分几乎就是均值方向，投影后看起来「方差很大」，其实只是整体偏移。
 
-**为什么特征向量就是最优方向？** 这是带约束的优化。用拉格朗日乘子（第 8.8 节）：$\mathcal{L}=\mathbf{v}^\top S\mathbf{v}-\lambda(\mathbf{v}^\top\mathbf{v}-1)$，对 $\mathbf{v}$ 求导得 $2S\mathbf{v}-2\lambda\mathbf{v}=0$，即 $S\mathbf{v}=\lambda\mathbf{v}$。代回目标，值正好是 $\lambda$。
+**为什么特征向量就是最优方向？** 这是带约束的优化。用拉格朗日乘子（[第 8.8 节](../08-微积分与优化/08-拉格朗日乘子.md)）：$\mathcal{L}=\mathbf{v}^\top S\mathbf{v}-\lambda(\mathbf{v}^\top\mathbf{v}-1)$，对 $\mathbf{v}$ 求导得 $2S\mathbf{v}-2\lambda\mathbf{v}=0$，即 $S\mathbf{v}=\lambda\mathbf{v}$。代回目标，值正好是 $\lambda$。
 
-**为什么主成分彼此正交？** $S$ 对称，由谱定理（第 6.4 节）存在一组标准正交特征向量。正交意味着得分之间协方差为 0：$Z^\top Z/n=\Lambda$ 是对角阵。
+**为什么主成分彼此正交？** $S$ 对称，由谱定理（[第 6.4 节](../06-特征值/04-对称矩阵与谱定理.md)）存在一组标准正交特征向量。正交意味着得分之间协方差为 0：$Z^\top Z/n=\Lambda$ 是对角阵。
 
 **为什么 SVD 与特征分解等价？** 因为 $S=X_c^\top X_c/n$，而 $X_c=U\Sigma V^\top$ 给出 $X_c^\top X_c=V\Sigma^2V^\top$。右奇异向量就是 $S$ 的特征向量，奇异值平方除以 $n$ 就是特征值。
 

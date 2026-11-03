@@ -116,7 +116,7 @@ $$
 
 **为什么不叫特征分解？** 特征分解（eigendecomposition）$A=P\Lambda P^{-1}$ 要求 $A$ 是方阵且可对角化，$\Lambda$ 可以是复数或负数。SVD 对**任意** $m\times n$ 矩阵存在，$\sigma_i$ 一定是非负实数。代价是 SVD 用**两组**基（$U$ 和 $V$），特征分解只用一组：SVD 描述的是「输入、输出各自换基后的对角形」，不是同一个空间里的换基。
 
-**它从哪里来？** 预告（第 7.2 节展开）：$A^\top A$ 是 $n\times n$ 对称半正定矩阵，谱定理保证它有正交特征基，特征值 $\lambda_i\ge0$；取 $\sigma_i=\sqrt{\lambda_i}$、$V$ 的列为特征向量，再由 $\mathbf{u}_i=A\mathbf{v}_i/\sigma_i$ 定义左奇异向量，就得到 SVD。
+**它从哪里来？** 预告（[第 7.2 节](02-SVD的计算与性质.md)展开）：$A^\top A$ 是 $n\times n$ 对称半正定矩阵，谱定理保证它有正交特征基，特征值 $\lambda_i\ge0$；取 $\sigma_i=\sqrt{\lambda_i}$、$V$ 的列为特征向量，再由 $\mathbf{u}_i=A\mathbf{v}_i/\sigma_i$ 定义左奇异向量，就得到 SVD。
 
 更早的历史线索是：Beltrami（1873）与 Jordan（1874）分别对实、复方阵给出了这种分解，之后才推广到长方形矩阵；[Stewart 的综述](#ref-stewart-1993) 把这段谱系考据得很清楚。
 
@@ -257,9 +257,9 @@ $$
 \|W\mathbf{x}-W\mathbf{x}'\|_2\le\sigma_1\|\mathbf{x}-\mathbf{x}'\|_2
 $$
 
-这个式子说的是：$\sigma_1$ 是「输入扰动被放大的最坏倍数」。它连乘多层后大于 1，激活会指数增长；小于 1 则逐层衰减。$\sigma_{\min}$ 接近 0 时这一层几乎不可逆，微调梯度会沿那些方向爆炸；第 7.4 节的条件数（condition number）$\kappa=\sigma_1/\sigma_{\min}$ 会量化这个放大。
+这个式子说的是：$\sigma_1$ 是「输入扰动被放大的最坏倍数」。它连乘多层后大于 1，激活会指数增长；小于 1 则逐层衰减。$\sigma_{\min}$ 接近 0 时这一层几乎不可逆，微调梯度会沿那些方向爆炸；[第 7.4 节](04-伪逆与数值秩.md)的条件数（condition number）$\kappa=\sigma_1/\sigma_{\min}$ 会量化这个放大。
 
-**LoRA 的形状**：$\Delta W=BA$，$B\in\mathbb{R}^{D\times r}$、$A\in\mathbb{R}^{r\times D}$，参数量 $2Dr$。$D=4096,r=16$ 时为 $131{,}072$，占全参数 $D^2=16{,}777{,}216$ 的 $0.78\%$。$\Delta W$ 至多有 $r$ 个非零奇异值，这就是「低秩更新」的几何解释（第 7.3 节）。
+**LoRA 的形状**：$\Delta W=BA$，$B\in\mathbb{R}^{D\times r}$、$A\in\mathbb{R}^{r\times D}$，参数量 $2Dr$。$D=4096,r=16$ 时为 $131{,}072$，占全参数 $D^2=16{,}777{,}216$ 的 $0.78\%$。$\Delta W$ 至多有 $r$ 个非零奇异值，这就是「低秩更新」的几何解释（[第 7.3 节](03-低秩近似.md)）。
 
 **可检验结论**：随机初始化的 $W$（元素方差 $1/D$）其奇异值落在 $[0,2]$ 区间、$\sigma_1\approx2$（Marchenko–Pastur 律），$\kappa$ 随 $D$ 增长而不是 1；若某层谱**快速衰减**（如 $\sigma_{50}/\sigma_1<0.01$），说明它高度冗余，可用秩 50 近似而几乎不损失能量。
 

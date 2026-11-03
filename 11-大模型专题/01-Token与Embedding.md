@@ -130,7 +130,7 @@ $$
 
 ### 3.1 反事实：不做查表、改用 one-hot 会坏在哪
 
-先破一个直觉：**参数量一点没省**。one-hot 喂进第一层，权重矩阵仍是 $V\times D=128000\times4096$，和 $E$ 是同一个矩阵（第 2.4 节的 $E^\top\mathbf{e}_k=E[k,:]$ 已经说明两条路算出同一个数）。差别全在**怎么算**。
+先破一个直觉：**参数量一点没省**。one-hot 喂进第一层，权重矩阵仍是 $V\times D=128000\times4096$，和 $E$ 是同一个矩阵（[第 2.4 节](../02-向量空间/04-基与维数.md)的 $E^\top\mathbf{e}_k=E[k,:]$ 已经说明两条路算出同一个数）。差别全在**怎么算**。
 
 取 $B=8$、$T=2048$，共 16384 个 token：
 
@@ -167,7 +167,7 @@ $$
 
 ### 4.3 位置信息
 
-纯 embedding 没有顺序感：「猫追狗」和「狗追猫」的 token 集合相同。因此要加位置编码（第 11.5 节）：
+纯 embedding 没有顺序感：「猫追狗」和「狗追猫」的 token 集合相同。因此要加位置编码（[第 11.5 节](05-位置编码与RoPE.md)）：
 
 $$
 H^{(0)}=E[T]+P
@@ -328,7 +328,7 @@ print(np.allclose(X[0, 0], E[1]))  # True
 
 - <a id="ref-mikolov-2013"></a>**Mikolov 等（2013）**：*Efficient Estimation of Word Representations in Vector Space*。用 word2vec 把词训练成稠密向量，让「语义相近 = 方向相近」第一次成为可学习的查表；本页的 $E\in\mathbb{R}^{V\times D}$ 与「向量可做相似度、可微」都建立在这个做法上。[arXiv:1301.3781](https://arxiv.org/abs/1301.3781)
 - <a id="ref-sennrich-2016"></a>**Sennrich 等（2016）**：*Neural Machine Translation of Rare Words with Subword Units*。把 BPE 用于子词切分，罕见词被拆成可复用的片段，词表 $V$ 因此可以固定下来——这就是本页「token 不一定是词」的出处。[arXiv:1508.07909](https://arxiv.org/abs/1508.07909)
-- <a id="ref-press-wolf-2017"></a>**Press 与 Wolf（2017）**：*Using the Output Embedding to Improve Language Models*。weight tying：让输出层的 unembedding 直接复用输入 embedding 的转置，省下 $V\times D$ 参数并改善小数据下的训练，对应本页第 4.2 节。[arXiv:1608.05859](https://arxiv.org/abs/1608.05859)
+- <a id="ref-press-wolf-2017"></a>**Press 与 Wolf（2017）**：*Using the Output Embedding to Improve Language Models*。weight tying：让输出层的 unembedding 直接复用输入 embedding 的转置，省下 $V\times D$ 参数并改善小数据下的训练，对应本页[第 4.2 节](../04-线性方程组/02-解的存在性与通解.md)。[arXiv:1608.05859](https://arxiv.org/abs/1608.05859)
 
 ---
 

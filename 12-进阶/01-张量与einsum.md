@@ -212,7 +212,7 @@ Y = np.einsum("bhtd,de->bhte", O.transpose(0,2,1,3).reshape(B,T,D), Wo)
 
 **计算**：`"bhid,bhjd->bhij"` 做 $2BHT^2d=2.75\times10^{11}$ FLOP，得到 2.15 GB 的 $S$；softmax 后 `"bhij,bhjd->bhid"` 再做 275 GFLOP，得到 134 MB 的 $O$。
 
-**输出决策**：这条路径当「参考实现」还是「上线实现」？如果 profile 显示 attention 超过总时间的 30%、且 HBM 读写占主导，就换 fused kernel（第 11.4 节），einsum 版降级为单测基准。
+**输出决策**：这条路径当「参考实现」还是「上线实现」？如果 profile 显示 attention 超过总时间的 30%、且 HBM 读写占主导，就换 fused kernel（[第 11.4 节](../11-大模型专题/04-Attention-下-softmax与多头.md)），einsum 版降级为单测基准。
 
 **成本**：单层前向要写 2.15 GB 的 $S$；反向若同时保留 $S$ 与 $A$ 是 4.3 GB；32 层全留 137 GB，80 GB 卡放不下，必须重算或分块。
 
@@ -254,7 +254,7 @@ $$
 
 - 简单的 `"bik,bkj->bij"` 用 `torch.bmm`/`@` 更快；
 - 大 einsum 用 `opt_einsum` 找最优收缩顺序；
-- 注意中间张量 $[B,H,T,T]$ 的显存（第 11.4 节）。
+- 注意中间张量 $[B,H,T,T]$ 的显存（[第 11.4 节](../11-大模型专题/04-Attention-下-softmax与多头.md)）。
 
 **可检验结论**：`"bhid,bhjd->bhij"` 的输出形状是 `[B,H,T,T]`；若你把 `d` 写进输出（`->bhijd`），会得到一个 5 阶张量，通常是 bug。
 

@@ -115,7 +115,7 @@ $$
 \operatorname{MultiHead}(X)=\operatorname{Concat}(\text{head}_1,\dots,\text{head}_H)W_O
 $$
 
-每个头有独立的 $W_Q^{(h)},W_K^{(h)},W_V^{(h)}$，在 $d_k=D/H$ 维子空间里做 attention，最后拼接再投影（第 11.4 节）。
+每个头有独立的 $W_Q^{(h)},W_K^{(h)},W_V^{(h)}$，在 $d_k=D/H$ 维子空间里做 attention，最后拼接再投影（[第 11.4 节](04-Attention-下-softmax与多头.md)）。
 
 ## 3. 为什么这样定义
 
@@ -176,7 +176,7 @@ $QK^\top$ 需要 $O(T^2d_k)$，$AV$ 需要 $O(T^2d_v)$，合计 $O(T^2d)$。这�
 
 ### 4.4 排列等变性（无位置编码时）
 
-若把输入 token 的顺序打乱，输出也会同样打乱——attention 本身不知道顺序。所以必须加位置编码（第 11.5 节）。
+若把输入 token 的顺序打乱，输出也会同样打乱——attention 本身不知道顺序。所以必须加位置编码（[第 11.5 节](05-位置编码与RoPE.md)）。
 
 ### 4.5 分数矩阵的秩
 
@@ -293,7 +293,7 @@ print(A.shape, A.sum(axis=-1)[0, 0])  # (2,2,5,5) [1. 1. 1. 1. 1.]
 
 **计算量**：$O(T^2d)$；$T=4096,d=4096$ 时约 $6.9\times10^{10}$ FLOPs/层（仅 $QK^\top$ 与 $AV$），是长上下文的主要开销。
 
-**KV Cache**：推理时缓存历史 $K,V$，每步只算新 token 的 Q，避免重复计算历史（第 11.7 节）。
+**KV Cache**：推理时缓存历史 $K,V$，每步只算新 token 的 Q，避免重复计算历史（[第 11.7 节](07-KVCache.md)）。
 
 **可检验结论**：因果 attention 的权重矩阵是下三角（$A_{ij}=0$ 对 $j>i$），且每行和为 1。若你的实现出现上三角非零，说明 mask 位置或 softmax 顺序错了。
 
@@ -338,7 +338,7 @@ print(A.shape, A.sum(axis=-1)[0, 0])  # (2,2,5,5) [1. 1. 1. 1. 1.]
 - <a id="ref-vaswani-2017"></a>**Vaswani 等（2017）**：*Attention Is All You Need*。本页的核心公式 $\operatorname{softmax}(QK^\top/\sqrt{d_k})V$、多头拼接与因果 mask 都出自这里；「除以 $\sqrt{d_k}$ 是为了控制点积方差」也是它给出的理由。[arXiv:1706.03762](https://arxiv.org/abs/1706.03762)
 - <a id="ref-bahdanau-2014"></a>**Bahdanau 等（2014）**：*Neural Machine Translation by Jointly Learning to Align and Translate*。让解码器对源句每个位置学一个权重再加权取信息，attention 作为「可微软对齐」从这一步开始；本页的软查表直觉就是它。[arXiv:1409.0473](https://arxiv.org/abs/1409.0473)
 - <a id="ref-luong-2015"></a>**Luong 等（2015）**：*Effective Approaches to Attention-based Neural Machine Translation*。系统比较乘性（点积）与加性两种打分函数，说明 $QK^\top$ 这种写法既便宜又够用——本页第 3 节「为什么用点积」的依据。[arXiv:1508.04025](https://arxiv.org/abs/1508.04025)
-- <a id="ref-dao-2022"></a>**Dao 等（2022）**：*FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness*。用分块与在线 softmax 避免把 $[T,T]$ 分数矩阵写回显存，显存从 $O(T^2)$ 降到 $O(T)$ 而计算量不变，对应本页第 4.3 节。[arXiv:2205.14135](https://arxiv.org/abs/2205.14135)
+- <a id="ref-dao-2022"></a>**Dao 等（2022）**：*FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness*。用分块与在线 softmax 避免把 $[T,T]$ 分数矩阵写回显存，显存从 $O(T^2)$ 降到 $O(T)$ 而计算量不变，对应本页[第 4.3 节](../04-线性方程组/03-齐次方程与零空间.md)。[arXiv:2205.14135](https://arxiv.org/abs/2205.14135)
 
 ---
 

@@ -291,8 +291,8 @@ $$
 这一页的知识不是凭空来的。下面列出本页直接借用的原始工作与权威整理；正文中的人名、定理名已链接到对应条目。链接优先指向 DOI、arXiv 或可长期访问的原文存档。
 
 - <a id="ref-horn-2012"></a>**Horn & Johnson（Roger A. Horn & Charles R. Johnson, 2012）**：*Matrix Analysis*（2nd ed.）。把伴随矩阵、$A\operatorname{adj}(A)=\det(A)I$ 与 $A^{-1}=\operatorname{adj}(A)/\det A$ 作为行列式的标准推论给出，本页第 2、3 节沿这条路线推导。[Cambridge University Press](https://doi.org/10.1017/CBO9781139020411)
-- <a id="ref-golub-2012"></a>**Golub & Van Loan（Gene H. Golub & Charles F. Van Loan, 2012）**：*Matrix Computations*（4th ed.）。带主元的 LU 解 $A\mathbf{x}=\mathbf{b}$ 只要 $O(n^3)$，并给出前向/后向误差与条件数的关系——本页第 4.2 节「Cramer 只作理论工具」的工程依据。[Johns Hopkins University Press](https://doi.org/10.56021/9781421407944)
-- <a id="ref-higham-2002"></a>**Higham（Nicholas J. Higham, 2002）**：*Accuracy and Stability of Numerical Algorithms*（2nd ed.）。系统分析了线性系统求解中的相消、上溢下溢与条件数放大，是第 4.2 节「误差被 $\operatorname{cond}(A)$ 放大」的定量版本。[SIAM](https://doi.org/10.1137/1.9780898718027)
+- <a id="ref-golub-2012"></a>**Golub & Van Loan（Gene H. Golub & Charles F. Van Loan, 2012）**：*Matrix Computations*（4th ed.）。带主元的 LU 解 $A\mathbf{x}=\mathbf{b}$ 只要 $O(n^3)$，并给出前向/后向误差与条件数的关系——本页[第 4.2 节](../04-线性方程组/02-解的存在性与通解.md)「Cramer 只作理论工具」的工程依据。[Johns Hopkins University Press](https://doi.org/10.56021/9781421407944)
+- <a id="ref-higham-2002"></a>**Higham（Nicholas J. Higham, 2002）**：*Accuracy and Stability of Numerical Algorithms*（2nd ed.）。系统分析了线性系统求解中的相消、上溢下溢与条件数放大，是[第 4.2 节](../04-线性方程组/02-解的存在性与通解.md)「误差被 $\operatorname{cond}(A)$ 放大」的定量版本。[SIAM](https://doi.org/10.1137/1.9780898718027)
 
 ---
 

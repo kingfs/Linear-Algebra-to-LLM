@@ -146,7 +146,7 @@ $$
 
 取 $B=\begin{bmatrix}1&1\\0&1\end{bmatrix}$、$A=I_2$，则 $\Delta W=B$。$B$ 的两列是 $(1,0)$ 和 $(1,1)$，**不正交**。如果把这两列当成 $\mathbf{u}_1,\mathbf{u}_2$、把 $A$ 的两行当成 $\sigma_i\mathbf{v}_i^\top$，你会读出 $\sigma=(1,1)$。
 
-但 $\Delta W$ 的真实奇异值是黄金比例 $1.618$ 和 $0.618$（第 7.2 节给出过同一个矩阵的奇异值）。再取 $B'=2B$、$A'=A/2$，乘积 $B'A'=BA$ 不变，因子却整体变了——**同一个 $\Delta W$ 有无穷多种分解**。SVD 的 $U,V$ 要求单位正交，所以只在符号和重奇异子空间内不唯一；LoRA 的 $A,B$ 没有这个约束，既不唯一，也不正交。
+但 $\Delta W$ 的真实奇异值是黄金比例 $1.618$ 和 $0.618$（[第 7.2 节](02-SVD的计算与性质.md)给出过同一个矩阵的奇异值）。再取 $B'=2B$、$A'=A/2$，乘积 $B'A'=BA$ 不变，因子却整体变了——**同一个 $\Delta W$ 有无穷多种分解**。SVD 的 $U,V$ 要求单位正交，所以只在符号和重奇异子空间内不唯一；LoRA 的 $A,B$ 没有这个约束，既不唯一，也不正交。
 
 结论：想读 $\Delta W$ 的谱，必须对训练后的 $\Delta W$ 再做一次 SVD；$A,B$ 只是「秩 $\le r$ 的参数化」，不是奇异向量，也不能直接把它们的元素当奇异值。
 
@@ -305,9 +305,9 @@ print((s[:32] ** 2).sum() / (s ** 2).sum())                # 前 32 维解释的
 
 这一页的知识不是凭空来的。下面列出本页直接借用的原始工作与权威整理；正文中的人名、定理名已链接到对应条目。链接优先指向 DOI、arXiv 或可长期访问的原文存档。
 
-- <a id="ref-pearson-1901"></a>**皮尔逊（Karl Pearson, 1901）**：*On Lines and Planes of Closest Fit to Systems of Points in Space*。用「最接近点云的直线与平面」提出主成分，本页第 2.1 节「减均值后取方差最大的方向」就是它的现代写法。[Philosophical Magazine 2(11)](https://doi.org/10.1080/14786440109462720)
-- <a id="ref-koren-2009"></a>**Koren 等（Yehuda Koren et al., 2009）**：*Matrix Factorization Techniques for Recommender Systems*。把评分矩阵写成 $R\approx PQ^\top$、只对观测项做正则化最小二乘并用 ALS/SGD 求解，本页第 2.2 节的推荐模型与第 3 节的「为什么不用精确 SVD」都以它为标准做法。[IEEE Computer 42(8)](https://doi.org/10.1109/MC.2009.263)
-- <a id="ref-hu-2021"></a>**Hu 等（Edward J. Hu et al., 2021）**：*LoRA: Low-Rank Adaptation of Large Language Models*。提出 $\Delta W=BA$ 的低秩适配，本页第 2.3 节的参数量 $2Dr$、$B=0$ 初始化与「更新秩远小于 $D$」的假设都出自这里。[arXiv:2106.09685](https://arxiv.org/abs/2106.09685)
+- <a id="ref-pearson-1901"></a>**皮尔逊（Karl Pearson, 1901）**：*On Lines and Planes of Closest Fit to Systems of Points in Space*。用「最接近点云的直线与平面」提出主成分，本页[第 2.1 节](../02-向量空间/01-向量空间公理.md)「减均值后取方差最大的方向」就是它的现代写法。[Philosophical Magazine 2(11)](https://doi.org/10.1080/14786440109462720)
+- <a id="ref-koren-2009"></a>**Koren 等（Yehuda Koren et al., 2009）**：*Matrix Factorization Techniques for Recommender Systems*。把评分矩阵写成 $R\approx PQ^\top$、只对观测项做正则化最小二乘并用 ALS/SGD 求解，本页[第 2.2 节](../02-向量空间/02-子空间与张成.md)的推荐模型与第 3 节的「为什么不用精确 SVD」都以它为标准做法。[IEEE Computer 42(8)](https://doi.org/10.1109/MC.2009.263)
+- <a id="ref-hu-2021"></a>**Hu 等（Edward J. Hu et al., 2021）**：*LoRA: Low-Rank Adaptation of Large Language Models*。提出 $\Delta W=BA$ 的低秩适配，本页[第 2.3 节](../02-向量空间/03-线性无关.md)的参数量 $2Dr$、$B=0$ 初始化与「更新秩远小于 $D$」的假设都出自这里。[arXiv:2106.09685](https://arxiv.org/abs/2106.09685)
 
 ---
 
