@@ -112,7 +112,7 @@ flowchart LR
 | [M13](13-推理服务/README.md) | 推理服务与运行时 | 模型如何变成可调用、可并发、省显存的服务？ | 引擎、量化、KV、调度、选型、诊断 |
 | [M14](14-模型评测/README.md) | 模型评测 | 发布表上的 MMLU、HLE、SWE-bench、Terminal-Bench 到底测什么？ | 基准、版本、harness、误差、选型 |
 
-详细到每一节的清单见 [`curriculum/syllabus.md`](curriculum/syllabus.md)，依赖关系与三种学习路线见 [`docs/学习地图.md`](docs/学习地图.md)。M11 与 M13 的交叉学习见 [`docs/M11-M13交叉索引.md`](docs/M11-M13交叉索引.md)；模型评测见 [M14](14-模型评测/README.md)；如果要组班/开课，见 [`docs/开课计划.md`](docs/开课计划.md)。
+详细到每一节的清单见 [`curriculum/syllabus.md`](curriculum/syllabus.md)，依赖关系与三种学习路线见 [`docs/学习地图.md`](docs/学习地图.md)。M11 与 M13 的交叉学习见 [`docs/M11-M13交叉索引.md`](docs/M11-M13交叉索引.md)；模型评测见 [M14](14-模型评测/README.md)；**会快速变化的方法层收在 [`docs/前沿追踪.md`](docs/前沿追踪.md)**（RoPE 外推、量化格式、MoE、LoRA 变体、推理系统、新基准，按季度复核）；如果要组班/开课，见 [`docs/开课计划.md`](docs/开课计划.md)。
 
 ---
 
@@ -152,7 +152,7 @@ flowchart LR
 ├── AGENTS.md          # agent/贡献者协作规范（写作模板、检查、提交）
 ├── PROGRESS.md        # 模块进度与任务队列
 ├── Taskfile.yml       # go-task 本地工作流
-├── docs/              # 学习地图、符号表、概念-现实对应表、叙事增强规范、图示规划
+├── docs/              # 学习地图、符号表、概念-现实对应表、叙事增强规范、图示规划、前沿追踪
 ├── curriculum/        # 完整大纲、周计划
 ├── 00-准备/ … 14-模型评测/ # 课程正文（每篇一个概念；M13/M14 为专题手册）
 ├── exercises/         # 每模块习题 + 答案
