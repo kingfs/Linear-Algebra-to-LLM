@@ -56,6 +56,34 @@ questions:
     source: "06-特征值/01-特征值与特征向量.md#8-通往大模型稳定性由谱半径决定"
     tags: [谱半径, 大模型, 稳定性]
 
+  - id: q-6.1-005
+    concept: "6.1"
+    section: 9
+    type: numeric
+    difficulty: 2
+    stem: '两自由度人行桥的 $M^{-1}K$ 特征值为 $\lambda_1=1.28\times10^{2}$、$\lambda_2=1.15\times10^{3}$（单位 $\mathrm{s^{-2}}$）。一阶固有频率约为多少 Hz？保留两位小数。'
+    answer: 1.80
+    tolerance: 0.02
+    explanation: '$f=\sqrt{\lambda}/(2\pi)$，故 $f_1=\sqrt{128}/(2\pi)\approx11.31/6.283\approx1.80$ Hz；二阶为 $\sqrt{1150}/(2\pi)\approx5.40$ Hz。'
+    source: "06-特征值/01-特征值与特征向量.md#9-练习"
+    tags: [固有频率, 特征值, 手算]
+
+  - id: q-6.1-006
+    concept: "6.1"
+    section: 9
+    type: single_choice
+    difficulty: 3
+    stem: '同上，若把桥的刚度整体提高 20%（$K\to1.2K$，质量不变），行人步频 2.0 Hz 下的共振风险会怎样变化？'
+    options:
+      - '风险下降，因为结构更刚、更不容易振'
+      - '风险上升，因为一阶频率从 1.80 Hz 升到约 1.97 Hz，更接近步频 2.0 Hz'
+      - '风险不变，频率只与质量有关'
+      - '无法判断，需要看二阶频率'
+    answer: [1]
+    explanation: '$M^{-1}K\to1.2M^{-1}K$，特征值同乘 1.2，频率乘以 $\sqrt{1.2}\approx1.095$：$f_1\approx1.97$ Hz、$f_2\approx5.92$ Hz。一阶反而更靠近 2.0 Hz，所以单纯加刚度可能加剧共振；工程上更常用 TMD 直接提高阻尼比。'
+    source: "06-特征值/01-特征值与特征向量.md#9-练习"
+    tags: [固有频率, 刚度, 共振, 反直觉]
+
   # ---------- 6.2 特征多项式、迹与行列式 ----------
   - id: q-6.2-001
     concept: "6.2"

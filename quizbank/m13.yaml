@@ -55,6 +55,34 @@ questions:
     source: "13-推理服务/01-推理的数学.md#4-性质与推导"
     tags: [量化, GQA, batching]
 
+  - id: q-13.1-005
+    concept: "13.1"
+    section: 2
+    type: numeric
+    difficulty: 2
+    stem: 'fp16 模型 decode：每个参数一次乘加（2 FLOP），每参数占 2 B。只看权重，算术强度是多少 FLOP/B？'
+    answer: 1
+    tolerance: 0.01
+    explanation: '$2N\ \text{FLOP} / 2N\ \text{B}=1$ FLOP/B。fp32 是约 0.5，int4 约 4——精度越低，读同样参数用的字节越少，算术强度反而升高。H100 屋脊点约几百 FLOP/B，所以 decode 必然带宽受限。'
+    source: "13-推理服务/01-推理的数学.md#2-定义"
+    tags: [算术强度, roofline, decode]
+
+  - id: q-13.1-006
+    concept: "13.1"
+    section: 3
+    type: single_choice
+    difficulty: 2
+    stem: '为什么 prefill 是算力受限、decode 是带宽受限？'
+    options:
+      - 'prefill 的权重更小，decode 的权重更大'
+      - 'prefill 一次处理 $T$ 个 token，算术强度约 $T$ FLOP/B；decode 每次 1 个 token，算术强度约 1 FLOP/B'
+      - 'prefill 用 CPU，decode 用 GPU'
+      - 'decode 的 FLOPs 比 prefill 高一个数量级'
+    answer: [1]
+    explanation: '同一份权重，喂 $T$ 个 token 就摊薄 $T$ 次：fp16 下 prefill 的算术强度约 $T$ FLOP/B（$T=1024$ 时约 $10^3$），落在屋脊点右侧；decode 约 1 FLOP/B，落在左侧。每 token 的 FLOPs 其实差不多，差别在“一份权重喂多少 token”。'
+    source: "13-推理服务/01-推理的数学.md#3-为什么这样定义"
+    tags: [prefill, decode, 算术强度]
+
   - id: q-13.2-001
     concept: "13.2"
     section: 2
