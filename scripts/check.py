@@ -39,6 +39,10 @@ HEADINGS = [
 ]
 # 0. 场景引入 / 1. 直觉 / ... / 10. 一页速记 / 11. 参考文献与致谢
 EXPECTED_NUMBERS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+# 篇幅上限（行）。模板最初建议 220 行，但叙事增强（现场/现实对应/反事实/场景闭环）
+# 之后 99/100 篇都超过它；这里按实测分布（中位 304、p90 340、最大 389）把硬上限
+# 定在 400 行，超出即报错，提示拆分「案例附录」而不是继续堆叠。
+MAX_LINES = 400
 PLACEHOLDER_RE = re.compile(r"\b(TODO|TBD|FIXME|XXX)\b|待补充|此处占位|placeholder", re.I)
 LINK_RE = re.compile(r"\[[^\]]*\]\(([^)\s]+)\)")
 
@@ -152,6 +156,13 @@ def check_doc(path: Path, all_ids: dict[str, Path], errors: list[str], warnings:
     body = "\n".join(text.splitlines()[body_start:])
     if PLACEHOLDER_RE.search(body):
         errors.append(f"{rel}: 含 TODO/待补充 等占位符")
+
+    total_lines = len(text.splitlines())
+    if total_lines > MAX_LINES:
+        errors.append(
+            f"{rel}: {total_lines} 行，超过单篇上限 {MAX_LINES} 行；"
+            "请把案例/推导移到附录或拆篇，而不是继续加长"
+        )
 
     # 小节检查
     headings = [(int(m.group(1)), m.group(2), m.start())

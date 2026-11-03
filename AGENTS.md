@@ -123,6 +123,8 @@ llm_hooks: [embedding, attention]
 
 允许在各节内使用小标题（`###`），但**不要新增顶级 `##`**。
 
+**篇幅**：单篇不超过 **400 行**（`check.py` 硬校验）。叙事增强后实测中位数约 300 行、p90 约 340 行，因此旧稿里「220 行」的建议已不适用。超过 400 行时，把案例、完整推导或失败复盘移到附录/独立篇，不要继续在同一页堆叠。
+
 ---
 
 ## 5. 写作风格（重要）
@@ -183,7 +185,7 @@ llm_hooks: [embedding, attention]
 提交前必须运行：
 
 ```bash
-task check                       # = check.py + check_refs.py + check_minutes.py + check_links.py
+task check                       # = 结构 + 文献 + 阅读时间 + 前沿追踪 + 规模统计 + 链接
 task check:web                   # 构建后查站内链接、锚点与渲染
 task e2e                         # 13 项浏览器检查
 ```
@@ -195,6 +197,7 @@ python3 scripts/check.py
 python3 scripts/check_refs.py     # 参考文献格式、锚点、外链可达性
 python3 scripts/check_minutes.py  # 模块 README 阅读时间 vs front matter minutes
 python3 scripts/check_frontier.py # 前沿追踪页表格结构、状态词、arXiv 编号
+python3 scripts/check_stats.py    # README 规模统计 vs 实际数量
 python3 scripts/check_links.py    # 全仓 README/习题/速查表链接
 ```
 
@@ -216,11 +219,14 @@ task check:online    # check_refs.py --metadata + check_frontier.py --online
 7. `check_links.py` 扫描所有 Markdown，0 断链；
 8. `check_refs.py`：每页 2–5 条文献，页内 `#ref-*` 锚点全部可解析，外链可访问；
 9. `check_minutes.py`：模块 README「分次阅读建议」的 `<!-- reading-minutes -->` 标注与正文数字，须等于该模块各篇 front matter `minutes` 之和（可加 `extra`）；
-10. `check_frontier.py`：`docs/前沿追踪.md` 的表格有 5 列、状态取自固定五档、时间合法、arXiv 编号格式统一且不重复。
+10. `check_frontier.py`：`docs/前沿追踪.md` 的表格有 5 列、状态取自固定五档、时间合法、arXiv 编号格式统一且不重复；
+11. `check_stats.py`：README 首页的「N 个模块 / N 篇概念 / N 组习题 / N 个 lab / N 道题 / N 张图」须等于磁盘实际数量。
 
 > **不要手写「大约多少分钟」**：阅读时间必须由 front matter 推出并写进 `<!-- reading-minutes: docs=… extra=… total=… -->`，否则会与逐篇数据漂移。`check_minutes.py` 会拦住这类不一致。
 >
 > **不要手写「精确到编号的文献引用」而不核对**：`docs/前沿追踪.md` 新增 arXiv 条目后必须跑 `check_frontier.py --online`。
+>
+> **不要手写仓库规模**：增删概念文档、lab、题库题目或图之后，`check_stats.py` 会指出 README 里哪些数字过期，按提示同步即可。
 
 不通过不允许 commit。若确需临时占位，在 `PROGRESS.md` 登记为「草稿」，且不得标记模块完成。
 

@@ -80,12 +80,13 @@ tasks:
       - pnpm build
 
   check:
-    desc: 内容质量门禁（概念结构 / 文献 / 阅读时间 / 前沿追踪 / 全仓链接）
+    desc: 内容质量门禁（结构 / 文献 / 阅读时间 / 前沿 / 规模统计 / 链接）
     cmds:
       - task: check:content
       - task: check:refs
       - task: check:minutes
       - task: check:frontier
+      - task: check:stats
       - task: check:links
 
   check:content:
@@ -107,6 +108,11 @@ tasks:
     desc: 前沿追踪页表格结构、状态词与 arXiv 编号格式
     cmds:
       - '{{.PYTHON}} scripts/check_frontier.py'
+
+  check:stats:
+    desc: README 规模统计与仓库实际数量一致
+    cmds:
+      - '{{.PYTHON}} scripts/check_stats.py'
 
   # 发版前手动跑：会联网核对书目/标题，较慢，不进默认 check
   check:online:

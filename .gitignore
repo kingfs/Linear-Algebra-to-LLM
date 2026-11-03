@@ -22,3 +22,6 @@ web/public/search.json
 
 # pnpm local store (sandbox fallback)
 .pnpm-store/
+
+# uv 本地缓存（离线沙箱用）
+.uvcache/
