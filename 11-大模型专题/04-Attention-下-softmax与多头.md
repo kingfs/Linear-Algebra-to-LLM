@@ -22,7 +22,7 @@ llm_hooks: [multi-head, gqa, flash-attention]
 
 工程师要拍板：把 12.8 万 token 一次性喂进去，还是切成 8 段 1.6 万 token 分别摘要再合并？这正是[多头注意力](#ref-vaswani-2017)落地时要算的账。两种做法都得在 80 GB 卡上跑，差别不只是快慢，而是能不能看见整份文档。
 
-先算显存。GQA-8 每个 token 的 KV Cache 是 $2\times40\times8\times128\times2\ \text{B}=163{,}840\ \text{B}$，12.8 万 token 约 21 GB；若每个头独立存 K/V（MHA），立刻变成 105 GB，一张卡直接 OOM。打分矩阵若真被物化，$40\times128{,}000^2\times2\ \text{B}\approx1.3\ \text{TB}$，根本存不下，所以必须让 FlashAttention 分块。
+先算显存。GQA-8 每个 token 的 KV Cache 是 $2\times L\times H_{kv}\times d_k\times2\ \text{B}=2\times40\text{ 层}\times8\times128\times2=163{,}840\ \text{B}$，12.8 万 token 约 21 GB；若每个头独立存 K/V（MHA），立刻变成 105 GB，一张卡直接 OOM。打分矩阵若真被物化，$40\times128{,}000^2\times2\ \text{B}\approx1.3\ \text{TB}$，根本存不下，所以必须让 FlashAttention 分块。
 
 再算时间。全量 attention 约 $4T^2DL\approx1.3\times10^{16}$ FLOP，按有效 100 TFLOPS 估算要 134 秒；切 8 段只要约 1/8。但切段会丢掉「第 3 章定义的违约金适用于第 7 章」这类跨段指代，律师得再花 30 分钟人工核对。
 

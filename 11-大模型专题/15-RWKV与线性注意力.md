@@ -175,7 +175,7 @@ $S_t=\sum \phi(k_s)v_s^\top$：$\phi(k_s)\in\mathbb{R}^{d_k}$，$v_s\in\mathbb{R
 ### 5.1 128k 的账
 
 标准 attention 7B、32 层、$H_{kv}=32,d_k=128$：128k KV 约 64 GiB。  
-线性 attention/RWKV：每层状态 $d_k\times d_v$（例如 $128\times128$），32 层约几 MiB，与 $T$ 无关。
+线性 attention/RWKV：每头状态 $d_k\times d_v$（例如 $128\times128$ 元素、fp16 约 32 KiB），32 个头每层约 1 MiB，32 层约 32 MiB，与 $T$ 无关。
 
 ### 5.2 RWKV 的 token shift
 

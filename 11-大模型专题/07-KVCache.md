@@ -18,7 +18,7 @@ llm_hooks: [decode, prefill, paged-attention]
 
 ## 0. 场景引入
 
-你维护一家电商的多轮客服机器人：基座 8B，fp16 权重约 15 GB，独占一张 80 GB 的卡（可用约 74 GiB），剩下约 59 GiB 留给 KV Cache。
+你维护一家电商的多轮客服机器人：基座 8B，fp16 权重约 15 GB（$\approx14$ GiB），独占一张 80 GB 的卡（$\approx74.5$ GiB），扣去权重与运行时开销后剩下约 59 GiB 留给 KV Cache。
 
 客服对话的特点是多轮、话长：一次会话平均 30 轮、累计 6000 token，高峰期要同时服务 24 个会话。
 

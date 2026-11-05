@@ -127,7 +127,7 @@ $$
 \mathbf{v}=\sum_i\langle\mathbf{v},\mathbf{q}_i\rangle\mathbf{q}_i
 $$
 
-**证明**：两边与 $\mathbf{q}_j$ 做内积，由正交性只剩 $j$ 项，得 $\langle\mathbf{v},\mathbf{q}_j\rangle=\langle\mathbf{v},\mathbf{q}_j\rangle$。
+**证明**：设 $\mathbf{v}$ 在 $\operatorname{span}\{\mathbf{q}_i\}$ 中，则它可唯一写成 $\mathbf{v}=\sum_i c_i\mathbf{q}_i$（系数存在性：$\mathbf{q}_i$ 线性无关且张成该空间）。两边与 $\mathbf{q}_j$ 做内积，由正交性 $\langle\mathbf{q}_i,\mathbf{q}_j\rangle=\delta_{ij}$ 只剩 $j$ 项，得 $c_j=\langle\mathbf{v},\mathbf{q}_j\rangle$。
 
 这把「解方程」降级为「做点积」，是数值线性代数偏爱正交基的根本原因。正交矩阵还保范数、保内积，误差不会被放大（[第 10.2 节](../10-数值线性代数/02-矩阵范数与条件数.md)）。
 
