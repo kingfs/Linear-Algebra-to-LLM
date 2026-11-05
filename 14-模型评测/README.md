@@ -1,14 +1,14 @@
 # M14 · 模型评测：从榜单到决策
 
-> **这一模块回答**：模型发布表上那些名字——MMLU、GPQA、HLE、SWE-bench Pro、Terminal-Bench 2.1、IFBench、τ³、MMMU-Pro——**分别测什么、为什么有版本、分数该怎么读**？
+> **这一模块回答**：模型发布表上那些名字——MMLU、GPQA、HLE、SWE-bench Pro、Terminal-Bench 2.1、IFBench、τ³、MMMU-Pro、FORTRESS——**分别测什么、为什么有版本、分数该怎么读**？
 >
 > 它接在 [M11 大模型专题](../11-大模型专题/README.md) 与 [M13 推理服务](../13-推理服务/README.md) 之后：M11 讲模型内部，M13 讲模型怎么跑起来，M14 讲**怎么判断它到底行不行**。
 >
-> **性质**：专题手册 + 课程 14.1–14.7。手册给全景、版本谱系与读表法；七课分别深入数学、知识、代码、Agent、指令偏好、多模态与选型。
+> **性质**：专题手册 + 课程 14.1–14.8。手册给全景、版本谱系与读表法；八课分别深入数学、知识、代码、Agent、指令偏好、多模态、选型与安全。
 
 ---
 
-## 0. 三个现场
+## 0. 四个现场
 
 ### 现场一：同一个基准，两个分数差 60
 
@@ -43,6 +43,14 @@ LFM3 的 SWE-bench Verified 是 **43.40**；Qwen3.8 的 SWE-bench Pro 是 **61.7
 
 **问题**：一张发布表里，哪些数字可以横向比，哪些只能纵向看？
 
+### 现场四：三个安全分都高，读法却可能相反
+
+Ripple-65B 的卡上，Safety 一栏是 FORTRESS 对抗 **83.8**、FORTRESS 良性 **95.5**、StrongREJECT **97.5**。
+
+同一张表里，Beam 501B 是 **92.1 / 86.4**：更会拒绝，也更爱误伤。
+
+**问题**：三个都“很高”的分数，为什么不能合成一句“更安全”？“该拒没拒”和“该答没答”，哪个代价更高？
+
 ---
 
 ## 1. 评测到底是什么
@@ -75,6 +83,7 @@ flowchart TD
     A --> G[多模态]
     A --> H[长上下文]
     A --> I[综合指数与榜单]
+    A --> J[安全与鲁棒性]
 
     B --> B1[MMLU / MMLU-Pro / MMLU-Redux]
     B --> B2[GPQA Diamond]
@@ -106,9 +115,12 @@ flowchart TD
 
     I --> I1[AA Intelligence Index]
     I --> I2[LMArena / Open LLM Leaderboard]
+
+    J --> J1[FORTRESS 对抗 / 良性]
+    J --> J2[StrongREJECT / XSTest / HarmBench]
 ```
 
-### 八类能力，一张表
+### 九类能力，一张表
 
 | 大类 | 核心问题 | 代表基准 | 什么时候看 |
 | --- | --- | --- | --- |
@@ -119,11 +131,12 @@ flowchart TD
 | 指令遵循与偏好 | 听不听话、人喜不喜欢 | IFEval、IFBench、Arena-Hard | 结构化输出、对话产品 |
 | 多模态 | 看不看得懂、能不能操作 | MMMU、CharXiv、OmniDocBench | 文档、图表、UI |
 | 长上下文 | 装下之后能不能用 | RULER、LongBench v2、AA-LCR | 长文档、代码库 |
+| 安全与鲁棒性 | 会不会被越狱、会不会过度拒答 | FORTRESS、StrongREJECT、XSTest | 面向公众、受监管行业 |
 | 综合指数 | 加权平均 | AA Index、LMArena | 初筛、看趋势 |
 
 ---
 
-## 3. 七课在讲什么
+## 3. 八课在讲什么
 
 | 课 | 主题 | 你会得到 |
 | --- | --- | --- |
@@ -134,17 +147,21 @@ flowchart TD
 | [14.5](05-指令遵循与人类偏好.md) | IFEval、IFBench 与 Arena | 可验证约束 vs 主观偏好、judge 偏差 |
 | [14.6](06-多模态与长上下文.md) | 从 MMMU 到 AA-LCR | 感知/图表/文档/行动，claimed vs effective |
 | [14.7](07-读表与选型.md) | 把榜单变成决策 | 七问、版本速查、成本/成功任务、自测 |
+| [14.8](08-安全与鲁棒性.md) | 从 FORTRESS 到 StrongREJECT | 安全/有用性权衡、ASR 的分母、过度拒答 |
+
+> **阅读顺序**：14.1–14.6 按编号读；14.8 可以放在 14.5 之后、14.7 之前读（它接着 14.5 的 judge 与偏好评测，再回到 14.7 的选型）。
 
 ## 3.1 分次阅读建议
 
-<!-- reading-minutes: docs=340 extra=0 total=340 -->
+<!-- reading-minutes: docs=385 extra=0 total=385 -->
 
-> **预计阅读时间（含练习）**：340 分钟（各篇 `minutes` 之和；`minutes` 已含练习）
+> **预计阅读时间（含练习）**：385 分钟（各篇 `minutes` 之和；`minutes` 已含练习）
 >
-> 建议分 2 次完成：
+> 建议分 3 次完成：
 >
 > - **第 1 次（205 分钟）**：阅读 14.1–14.4（评测数学、知识/推理、代码、Agent/工具），建立「分数有误差」「benchmark 会饱和」「Agent 评测更接近真实工作」的核心判断。
 > - **第 2 次（135 分钟）**：阅读 14.5–14.7（指令遵循、多模态/长上下文、读表选型），把榜单变成可落地的选型决策；配合本手册 §4–§11（版本谱系、读表七问、常见误读）一起读。
+> - **第 3 次（45 分钟）**：阅读 14.8（安全与鲁棒性），补上「安全/有用性权衡」「ASR 的分母」「过度拒答」这一条此前缺失的线。
 
 ## 4. 版本命名的五种套路
 
@@ -173,12 +190,13 @@ flowchart TD
 | HLE | 前沿专家题 | 2025 原版 → text-only / tools 子集 | 规则差异大 | 必须同设置 |
 | SuperGPQA | 大规模学科推理 | 2025 | 285 学科 | 覆盖广、区分度中等 |
 | AIME | 竞赛数学 | 2024 / 2025 / 2026 | 每年换题 | 污染 + 题少；看 avg@n |
+| HMMT | 竞赛数学 | Feb / Nov，按年 | 2 月场奥赛难度；赛后即测 | 写清月份年份；报 avg@n |
 | MATH-500 / GSM8K | 中学/竞赛数学 | 2021–2024 | 已饱和 | 只适合小模型/回归 |
 | SimpleQA | 短事实可靠性 | 2024 | 4,326 题 | 看幻觉与拒答 |
 | AA-Omniscience | 跨域知识可靠性 | 2025 | 准确率 − 幻觉惩罚 | 可为负 |
 | HumanEval / MBPP | 函数级代码 | 2021 | 164 / 374 题 | 已饱和、易污染 |
 | LiveCodeBench | 竞赛代码 | v1–v6；Pro 2025 | 时间窗滚动、抗污染 | 看版本与题窗 |
-| SciCode | 科学计算代码 | 2024 | 80 主问题 | 看子问题通过率 |
+| SciCode | 科学计算代码 | 2024 | 80 主问题 / 338 子问题 | 看子问题断点；括号里是 harness |
 | SWE-bench | 真实 issue 修复 | 原版 → Verified → Multimodal → Multilingual → Pro → Pro V2 | 难度/语言/防作弊 | 家族内也不可混 |
 | DeepSWE | 原创长程工程 | 2026 | 113 题、手写 verifier | 小样本、高信号 |
 | Terminal-Bench | 终端长程任务 | 1.0 → 2.0 → 2.1 → 3.0 → 4.0 | 语义化版本 | major 变必须重跑 |
@@ -212,6 +230,9 @@ flowchart TD
 | RULER | 有效上下文 | 2024 | 13 类合成任务 | 看长度曲线 |
 | LongBench v2 | 真实长文 | 2024 | 503 题、8k–2M 词 | 看任务类型 |
 | AA-LCR | 长文推理 | 2025 | 约 100k token | 看文档类型 |
+| FORTRESS | 国家安全与公共安全 | 2025 | 500 条公开对抗 + 每条 benign | 成对读；注意 ARS 越低越好 |
+| StrongREJECT | 越狱有效性 | 2024 | 提示集 + 0–1 judge | 防“空越狱”虚高 |
+| XSTest | 夸张安全（过度拒答） | 2023 | 250 条安全 + 200 条对照 | 专测“该答也拒” |
 | AA Index | 综合指数 | v1–v5 | 权重会变 | 只看趋势 |
 
 > **表的使用方式**：先在“家族”列找到名字，再看“版本线”确认你读到的是哪一代，最后用“读法”判断能不能横向比。**任何跨家族、跨版本的分数，默认不可比。**
@@ -222,19 +243,21 @@ flowchart TD
 
 把几张真实卡片的“评测栏”抽出来，能看到一条清晰的迁移：
 
-| 年份 | 代表卡片 | 知识 | 代码 | Agent | 多模态 |
-| --- | --- | --- | --- | --- | --- |
-| 2024 | DeepSeek-V3 | MMLU、MMLU-Pro、Redux、GPQA、DROP、BBH | HumanEval、MBPP、LiveCodeBench | — | — |
-| 2025 | Kimi-K2 | MMLU、MMLU-Pro、GPQA、SimpleQA | SWE-bench Verified/Multilingual、LCB v6 | — | — |
-| 2026 | Qwen3.8-27B | GPQA、HLE | SWE-bench Pro、DeepSWE、NL2Repo、TB 2.1 | OSWorld、WebArena、AndroidWorld | MathVision、CharXiv、OmniDocBench |
-| 2026 | LFM3-1.7B | GPQA、HLE、AA-Omniscience | SWE-bench Verified、LCB v6/Pro、TB 2.1 | BFCL、τ³、MCP-Atlas、Claw-Eval | — |
-| 2026 | DeepSeek-V4.1 | HLE | DeepSWE、ProgramBench、NL2Repo、TB 4.0 | ALE、AutomationBench、APEX | Chartography、BabyVision、ZeroBench |
+| 年份 | 代表卡片 | 知识 | 代码 | Agent | 多模态 | 安全 |
+| --- | --- | --- | --- | --- | --- | --- |
+| 2024 | DeepSeek-V3 | MMLU、MMLU-Pro、Redux、GPQA、DROP、BBH | HumanEval、MBPP、LiveCodeBench | — | — | — |
+| 2025 | Kimi-K2 | MMLU、MMLU-Pro、GPQA、SimpleQA | SWE-bench Verified/Multilingual、LCB v6 | — | — | — |
+| 2026 | Qwen3.8-27B | GPQA、HLE | SWE-bench Pro、DeepSWE、NL2Repo、TB 2.1 | OSWorld、WebArena、AndroidWorld | MathVision、CharXiv、OmniDocBench | — |
+| 2026 | LFM3-1.7B | GPQA、HLE、AA-Omniscience | SWE-bench Verified、LCB v6/Pro、TB 2.1 | BFCL、τ³、MCP-Atlas、Claw-Eval | — | — |
+| 2026 | DeepSeek-V4.1 | HLE | DeepSWE、ProgramBench、NL2Repo、TB 4.0 | ALE、AutomationBench、APEX | Chartography、BabyVision、ZeroBench | — |
+| 2026 | Ripple-65B | MMLU、MMLU-Pro、GPQA、AIME 2024–2026、HMMT | SWE 家族、DeepSWE、SciCode、TB 2.1 | AutomationBench、MCP-Atlas、τ³ | — | FORTRESS、StrongREJECT |
 
-三个趋势：
+四个趋势：
 
 1. **从“知识考试”转向“工作样本”**：MMLU → SWE-bench → Terminal-Bench → ALE。
 2. **从“单模型”转向“模型 × harness”**：表头开始写 `(Terminus)`、`(OpenCode)`、`(Claude Code)`。
 3. **从“准确率”转向“可靠性 + 成本”**：pass^k、avg@n、cost per task 出现得越来越频繁。
+4. **从“只报能力”转向“能力 + 安全”**：2026 年才有卡把 FORTRESS、StrongREJECT 放进主表（见 [14.8](08-安全与鲁棒性.md)）。
 
 ![评测家族时间线：2020–2026 主要基准的首次发布与关键版本节点](../figures/out/m14-benchmark-timeline.svg)
 
@@ -266,7 +289,7 @@ flowchart TD
 
 ---
 
-## 8. 十条常见误读
+## 8. 十一条常见误读
 
 1. **把不同 benchmark 放一张表排名。** Verified 43 与 Pro 61 不可比。
 2. **把不同版本当同一考试。** TB 2.1 与 4.0 不可比。
@@ -278,12 +301,13 @@ flowchart TD
 8. **把 claimed context 当 effective context。** 看 RULER 曲线。
 9. **把 in-house 分数当公开证据。** 无法复现。
 10. **把榜单第一当“最适合”。** 权重是别人定的。
+11. **把“安全分高”当“更安全”。** 先看方向（ARS 越低越好，还是安全率越高越好），再看有没有良性对照；详见 [14.8](08-安全与鲁棒性.md)。
 
 ---
 
 ## 9. 组合评测
 
-一个负责任的模型评估，至少覆盖五个维度：
+一个负责任的模型评估，至少覆盖六个维度：
 
 | 维度 | 建议基准 | 题量 | 备注 |
 | --- | --- | --- | --- |
@@ -292,6 +316,7 @@ flowchart TD
 | Agent | BFCL + τ³ 或 OSWorld 子集 | 50–100 | 看 pass^k |
 | 指令遵循 | IFBench + 自建模板 | 100+ | 联合约束 |
 | 长上下文/多模态 | RULER + 你的文档 | 50–100 | 看有效长度 |
+| 安全/鲁棒性 | FORTRESS 对抗 + 良性，或 XSTest | 100–500 | 成对读，别只看一边 |
 
 **最小可行方案**：50–200 道真实题，双人标注，固定 harness，跑 3 次，报“均值 + CI + 成本 + p95 延迟”。
 
@@ -313,6 +338,11 @@ flowchart TD
 | saturation | 分数接近上限、失去区分度 |
 | reward hacking | 钻评测空子拿分 |
 | claimed / effective context | 声称 / 有效上下文 |
+| ASR | 攻击成功率：越狱提示中让模型给出有害回答的比例 |
+| ARS / ORS | FORTRESS 的平均风险分 / 过度拒答分（都是越低越好） |
+| over-refusal | 过度拒答：把良性请求当成攻击 |
+| benign counterpart | 与对抗题配对的合法问法 |
+| empty jailbreak | 空越狱：模型被打到胡言乱语，却被旧判分算作攻击成功 |
 | Elo / Bradley–Terry | 由两两胜负拟合的相对能力 |
 
 ---
@@ -329,6 +359,7 @@ flowchart TD
 8. 为什么 Agent 评测要报 pass^k，而不只报 pass@1？
 9. 一张发布表没写 harness，你该怎么处理？
 10. 公开榜 A 第一、B 第二，但你的自建集 B 更好。你选谁？为什么？
+11. FORTRESS 对抗 83.8、良性 95.5；另一个模型 92.1 / 86.4。哪个“更安全”？还需要什么信息？
 
 <details>
 <summary>自测答案</summary>
@@ -343,6 +374,7 @@ flowchart TD
 8. 生产要的是“每次都成”，不是“多试几次能成”；pass^k 直接度量稳定性与状态污染。
 9. 默认不可比；去官方仓库/论文找评测协议，或自己在同一 harness 下重跑。
 10. 选自建集更好的 B，但要检查：自建集是否覆盖高频/长尾、是否双人标注、CI 是否重叠、成本是否可接受；公开榜只作初筛。
+11. 不能说“哪个更安全”。两者的 $F_1$ 都约 0.89，差别在代价分布：Ripple 更少误伤、Beam 更能拦住。要按场景给两边加权（医疗偏安全侧，客服偏有用侧），还要看多轮攻击的 ASR 与判分口径。
 
 </details>
 
@@ -350,8 +382,8 @@ flowchart TD
 
 ## 12. 文件与延伸阅读
 
-- 课程：[14.1](01-评测的数学.md) · [14.2](02-知识与推理.md) · [14.3](03-代码与软件工程.md) · [14.4](04-Agent与工具.md) · [14.5](05-指令遵循与人类偏好.md) · [14.6](06-多模态与长上下文.md) · [14.7](07-读表与选型.md)
+- 课程：[14.1](01-评测的数学.md) · [14.2](02-知识与推理.md) · [14.3](03-代码与软件工程.md) · [14.4](04-Agent与工具.md) · [14.5](05-指令遵循与人类偏好.md) · [14.6](06-多模态与长上下文.md) · [14.7](07-读表与选型.md) · [14.8](08-安全与鲁棒性.md)
 - 习题：[m14-习题](../exercises/m14-习题.md) ｜ 答案：[m14-答案](../exercises/m14-答案.md)
 - 题库：[quizbank/m14.yaml](https://github.com/kingfs/Linear-Algebra-to-LLM/blob/main/quizbank/m14.yaml)
 - 相邻模块：[M11 大模型专题](../11-大模型专题/README.md)、[M13 推理服务](../13-推理服务/README.md)
-- 外部索引：[Terminal-Bench](https://www.tbench.ai/benchmarks)、[SWE-bench](https://www.swebench.com/)、[BFCL](https://gorilla.cs.berkeley.edu/leaderboard.html)、[τ-bench](https://taubench.com/)、[LMArena](https://lmarena.ai/)
+- 外部索引：[Terminal-Bench](https://www.tbench.ai/benchmarks)、[SWE-bench](https://www.swebench.com/)、[BFCL](https://gorilla.cs.berkeley.edu/leaderboard.html)、[τ-bench](https://taubench.com/)、[LMArena](https://lmarena.ai/)、[FORTRESS](https://labs.scale.com/leaderboard/fortress)

@@ -22,27 +22,27 @@
 | M11 | 大模型专题 | 18 | 18 | 完成 | m11 | lab11 |
 | M12 | 进阶与全景 | 4 | 4 | 完成 | m12 | lab12 |
 | M13 | 推理服务与运行时 | 7（专题 + 13.1–13.6） | 7 | 完成 | m13 | lab13 |
-| M14 | 模型评测：从榜单到决策 | 8（专题 + 14.1–14.7） | 8 | 完成 | m14 | — |
+| M14 | 模型评测：从榜单到决策 | 9（专题 + 14.1–14.8） | 9 | 完成 | m14 | — |
 | 附录 | 速查卡/术语表 | 2 | 2 | 完成 | — | — |
 
 ## Web 学习平台
 
 | 能力 | 状态 | 规模 / 验证 |
 |---|---|---|
-| 静态阅读站 | 完成 | Astro 7，186 个页面，100 篇概念 + 15 个模块 |
-| 文献与锚点 | 完成 | 100 篇概念页共 341 条文献、311 个正文锚点；`check_refs.py` 校验格式、锚点、DOI/arXiv 元数据 |
-| 随堂测 | 完成 | 438 题，覆盖 100/100 概念，每篇 3–7 题 |
+| 静态阅读站 | 完成 | Astro 7，188 个页面，101 篇概念 + 15 个模块 |
+| 文献与锚点 | 完成 | 101 篇概念页共 345 条文献、325 个正文锚点；`check_refs.py` 校验格式、锚点、DOI/arXiv 元数据 |
+| 随堂测 | 完成 | 444 题，覆盖 101/101 概念，每篇 3–7 题 |
 | 即时判分 | 完成 | 单选/多选/判断/数值；解析 + 回看原文 |
-| 知识卡复习 | 完成 | 577 张，Leitner 间隔重复 |
+| 知识卡复习 | 完成 | 584 张，Leitner 间隔重复 |
 | 错题本 | 完成 | 按最近一次作答聚合，可整组/单题重做 |
 | 学习进度 | 完成 | 阅读、正确率、薄弱概念、到期卡片；IndexedDB 本地保存 |
 | 生成图 | 完成 | 64 张图（Matplotlib SVG + Mermaid）；M14 新增评测家族时间线、pass@k/pass^k 两张，构图见 `figures/manifest.yaml` |
-| 质量门禁 | 完成 | `pnpm build`（186 页）、`pnpm check`、`check-quiz.mjs`、`check-site-links.mjs`、`check-render.mjs`、13 项 Playwright E2E |
+| 质量门禁 | 完成 | `pnpm build`（188 页）、`pnpm check`、`check-quiz.mjs`、`check-site-links.mjs`、`check-render.mjs`、13 项 Playwright E2E |
 | 子路径部署 | 完成 | `BASE_PATH=/Linear-Algebra-to-LLM/` 构建验证；tag 触发 GitHub Pages workflow |
 
 ```bash
 cd web && pnpm dev --port 4321   # http://127.0.0.1:4321/
-cd web && pnpm build             # 186 页，输出 web/dist
+cd web && pnpm build             # 188 页，输出 web/dist
 cd web && pnpm build && pnpm links && node scripts/e2e.mjs   # 0 断链 / 13 checks
 ```
 
@@ -62,12 +62,13 @@ cd web && pnpm build && pnpm links && node scripts/e2e.mjs   # 0 断链 / 13 che
 - [x] **F9 架构扩展**：新增 M11.13–11.18，覆盖 attention/SSM/线性/混合/长上下文/选型。
 - [x] **F10 评测专题**：新增 M14 手册与 14.1–14.7，覆盖评测数学、知识/代码/Agent/指令/多模态/长上下文与选型；配 m14 习题与 28 题题库。
 - [x] **F11 质量加固（v1.9.0）**：v1.8.0→HEAD 全量复核，修正 decode 算术强度、阅读时间漂移、`\top` 转义三处事实性问题；193 处交叉引用改为带链接；新增 `check_frontier.py`/`check_stats.py` 与 `task check:online`；题库 438 题、lab13、篇幅上限 400 行。
+- [x] **F12 评测补全**：新增 14.8《安全与鲁棒性》（FORTRESS/StrongREJECT/XSTest/HarmBench），14.2 补 HMMT、14.3 补 SciCode；M14 变为八课，题库 444 题。
 
 ## 后续可选维护（非阻塞）
 
 课程主体已完成，以下为增强项，不列入「未完成」：
 
-1. **题库精修**：438 题已覆盖全部概念，可继续补证明题、编程题与更细的干扰项。
+1. **题库精修**：444 题已覆盖全部概念，可继续补证明题、编程题与更细的干扰项。
 2. **交互组件**：在静态 SVG 之外，增加 2D 变换滑块、SVD 分步、KV Cache 计算器等 React island。
 3. **交叉索引**：按「大模型问题 → 数学概念」生成反查表。
 4. **版本记录**：若未来接入框架代码，新增「公式 → 源码位置」对照。
@@ -75,7 +76,7 @@ cd web && pnpm build && pnpm links && node scripts/e2e.mjs   # 0 断链 / 13 che
 
 ## 已知问题 / 待复核
 
-- 无阻塞问题。全仓 `check.py` 100 篇 0 error/0 warning，`check_refs.py` 341 条文献 0 error（31 条延伸阅读未在正文链接，允许），`check_minutes.py` 15 个模块 0 error，`check_links.py` 167 个 Markdown 0 断链，12 个 lab 全部 exit 0。
+- 无阻塞问题。全仓 `check.py` 101 篇 0 error/0 warning，`check_refs.py` 345 条文献 0 error（30 条延伸阅读未在正文链接，允许），`check_minutes.py` 15 个模块 0 error，`check_links.py` 168 个 Markdown 0 断链，12 个 lab 全部 exit 0。
 - 已定案：单篇篇幅上限从旧建议的 220 行调整为 **400 行**（实测中位 304、p90 340、最大 389），由 `check.py` 硬校验；超限要求拆附录而非继续加长。同时 15 个模块 README 的「分次阅读建议」给出两到四段拆分与由 front matter 推导的时长。
 - 已知非阻塞偏差：部分场景数字是「按带宽/算力/价格估算」的设定值，文中均标「按…估」，不是实测 benchmark；`docs/概念-现实对应表.md` 的「量级」列同此口径。
 - 已修复（v1.8.0 复核发现）：`01-向量与几何/03-点积.md` 第 11 节两条文献里的 `\top` 曾被写成制表符 + `op`，导致公式渲染成 `x^ op`；已改回 `\top`。这是全仓唯一一处此类缺陷。
@@ -134,3 +135,4 @@ cd web && pnpm build && pnpm links && node scripts/e2e.mjs   # 0 断链 / 13 che
 | 2026-11-03 | v1.8.0 复核修复：M13.1 decode 算术强度 0.5→1 FLOP/B（与 M10.3/M11.2/M11.7 对齐）；阅读时间改由 front matter 推导并修正 3 处总数、11 处分段；新增 `scripts/check_minutes.py` 门禁并接入 task check | f8e679c / 5bc3a32 |
 | 2026-11-03 | v1.8.0 复核：收敛 M06.1「加固」结论的适用范围与 M11.5 RoPE 频率的「幂律」表述，标注为设计直觉而非定理 | 6802ab7 |
 | 2026-11-03 | v1.9.0 完善：193 处「第 X.Y 节」改为带链接的交叉引用；新增 `check_frontier.py`（结构/状态词/arXiv 编号）与 `task check:online`；题库 +4 题（6.1 场景、13.1 算术强度）；m06/m13 习题与答案同步；新增 `lab13 推理账本` 与 lab06 固有频率小节；单篇篇幅上限定为 400 行并由 `check.py` 校验 | 55b977b / 3808110 / deea68d / 917afba / d32e710 |
+| 2026-11-05 | 评测补全：新增 14.8 安全与鲁棒性（FORTRESS/StrongREJECT/XSTest/HarmBench，安全-有用性权衡、ASR 分母、过度拒答）；14.2 补 HMMT（AIME 之后的下把尺子）、14.3 补 SciCode（80 主问题/338 子问题 + Inspect AI harness）；M14 变八课，题库 +6 题、习题/答案同步 | 待补 |

@@ -15,6 +15,7 @@ CATS = {
     "Instruction / preference": RED,
     "Multimodal": "#0369a1",
     "Long context": GRAY,
+    "Safety": "#4d7c0f",
 }
 
 # (family, [(x, label), ...]); label 为空表示只画点不写字。
@@ -66,6 +67,12 @@ ROWS = [
         ("RULER", [(2024.3, "")]),
         ("LongBench v2", [(2024.95, "")]),
         ("AA-LCR", [(2025.6, "")]),
+    ]),
+    ("Safety", [
+        ("XSTest", [(2023.62, "")]),
+        ("StrongREJECT", [(2024.15, "")]),
+        ("HarmBench", [(2024.28, "")]),
+        ("FORTRESS", [(2025.45, "")]),
     ]),
 ]
 

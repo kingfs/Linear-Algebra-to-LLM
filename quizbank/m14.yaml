@@ -380,3 +380,90 @@ questions:
     explanation: '同 benchmark 不同 harness/版本/采样/判分，分数不可比；先对齐协议，再谈差距。'
     source: "14-模型评测/07-读表与选型.md#4-性质与推导"
     tags: [读表, harness]
+
+  - id: q-14.2-005
+    concept: "14.2"
+    section: 3
+    type: single_choice
+    difficulty: 2
+    stem: 'AIME 已经接近饱和，模型卡上更难的竞赛数学基准通常是？'
+    options:
+      - 'MMLU-Pro'
+      - 'HMMT（2 月场，奥赛难度，赛后即测）'
+      - 'GSM8K'
+      - 'SimpleQA'
+    answer: [1]
+    explanation: 'HMMT 2 月场是奥林匹克难度、短答案、约 30 题；MathArena 在赛后数天内开测，抢在题目进入训练语料之前。'
+    source: "14-模型评测/02-知识与推理.md#3-为什么这样定义"
+    tags: [HMMT, 竞赛数学, 污染]
+
+  - id: q-14.3-005
+    concept: "14.3"
+    section: 4
+    type: single_choice
+    difficulty: 2
+    stem: 'SciCode 同时报“子问题通过率”和“主问题解决率”，主要因为？'
+    options:
+      - '两个数一定相等'
+      - '科学代码的失败常发生在某一步，子问题能定位断点'
+      - '主问题太少，不能单独报'
+      - '子问题不需要跑测试'
+    answer: [1]
+    explanation: '80 道主问题拆成 338 个子问题，逐个跑单元测试；子问题看断在哪一步，主问题看整条链是否跑通。'
+    source: "14-模型评测/03-代码与软件工程.md#4-性质与推导"
+    tags: [SciCode, 科学计算, 判分]
+
+  - id: q-14.8-001
+    concept: "14.8"
+    section: 3
+    type: single_choice
+    difficulty: 1
+    stem: '安全评测为什么必须同时报“对抗”和“良性”两组结果？'
+    options:
+      - '因为两组题量必须相同'
+      - '因为只报对抗会被“全部拒答”刷满分，只报良性会被“什么都答”刷满分'
+      - '因为良性题更难'
+      - '因为对抗题不计分'
+    answer: [1]
+    explanation: '单边指标必被刷：全拒答的模型漏放率为 0，什么都答的模型误拦率为 0；成对报才能同时约束两类错误。'
+    source: "14-模型评测/08-安全与鲁棒性.md#3-为什么这样定义"
+    tags: [安全, 过度拒答]
+
+  - id: q-14.8-002
+    concept: "14.8"
+    section: 5
+    type: numeric
+    difficulty: 3
+    stem: '某模型 FORTRESS 对抗 0.838、良性 0.955，按 $F_1=\frac{2ab}{a+b}$ 合成，结果约是多少？（保留三位小数）'
+    answer: 0.893
+    tolerance: 0.005
+    explanation: '$2\times0.838\times0.955/(0.838+0.955)=1.6006/1.793\approx0.893$。'
+    source: "14-模型评测/08-安全与鲁棒性.md#5-例子"
+    tags: [F1, 手算, 安全]
+
+  - id: q-14.8-003
+    concept: "14.8"
+    section: 6
+    type: true_false
+    difficulty: 1
+    stem: '一个模型对所有请求都回答“抱歉，我不能协助”，说明它最安全。'
+    answer: false
+    explanation: '误拦率 100%，产品不可用；FORTRESS 的 benign 半边就是防这个。安全必须与有用性成对看。'
+    source: "14-模型评测/08-安全与鲁棒性.md#6-常见误区"
+    tags: [过度拒答, 安全]
+
+  - id: q-14.8-004
+    concept: "14.8"
+    section: 2
+    type: single_choice
+    difficulty: 2
+    stem: '某模型 StrongREJECT 为 97.5，最稳妥的解读是？'
+    options:
+      - '模型无法被越狱'
+      - '在该提示集与 judge 下，很难拿到“有用的有害回答”；但不覆盖多轮攻击与误伤'
+      - '模型对所有攻击都免疫'
+      - '说明它的 GPQA 也很高'
+    answer: [1]
+    explanation: 'StrongREJECT 只量单轮、特定提示集与 judge 下“回答对攻击者多有用”，不配良性题，也不覆盖多轮攻击。'
+    source: "14-模型评测/08-安全与鲁棒性.md#2-定义"
+    tags: [StrongREJECT, 读表]
