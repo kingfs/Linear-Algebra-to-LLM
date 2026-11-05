@@ -93,10 +93,10 @@ $$
 对 batch：
 
 $$
-X=E[\mathbf{T}]\in\mathbb{R}^{B\times T\times D}
+X=E[\mathbf{ids}]\in\mathbb{R}^{B\times T\times D}
 $$
 
-其中粗体 $\mathbf{T}\in\mathbb{N}^{B\times T}$ 是 ID 矩阵（与序列长度 $T$ 区分：矩阵用粗体，长度用斜体）。
+其中 $\mathbf{ids}\in\mathbb{N}^{B\times T}$ 是 ID 矩阵（$T$ 在这里是序列长度，仅作为维度出现）。
 
 ### 2.3 隐藏状态
 
@@ -170,7 +170,7 @@ $$
 纯 embedding 没有顺序感：「猫追狗」和「狗追猫」的 token 集合相同。因此要加位置编码（[第 11.5 节](05-位置编码与RoPE.md)）：
 
 $$
-H^{(0)}=E[\mathbf{T}]+P
+H^{(0)}=E[\mathbf{ids}]+P
 $$
 
 其中 $P\in\mathbb{R}^{T\times D}$ 是位置编码（可学习或固定）。

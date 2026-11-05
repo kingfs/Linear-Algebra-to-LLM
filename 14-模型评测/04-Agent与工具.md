@@ -18,6 +18,8 @@ llm_hooks: [benchmark, agent, tool-use, mcp, computer-use]
 
 ## 0. 场景引入
 
+> **数据口径**：本页出现的 2026 年模型分数为教学示例、未独立核验，不得作为事实引用；以各模型官方卡片与基准官方榜单为准（见 [M14 口径说明](README.md)）。
+
 翻到 LFM3-1.7B 的评测表，同一个模型在“Agent / Tool use”一栏出现了十个数字：
 
 | 子类 | 基准 | 分数 |

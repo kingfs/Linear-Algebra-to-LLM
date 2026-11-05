@@ -75,6 +75,8 @@ llm_hooks: [change-of-variables, normalizing-flow, log-determinant]
 
 对 $f:\mathbb{R}^n\to\mathbb{R}^m$，$f(\mathbf{u})=(f_1(\mathbf{u}),\dots,f_m(\mathbf{u}))$，**[Jacobian 矩阵](#ref-jacobi-1841)** 是 $J_f(\mathbf{u})=\big[\partial f_i/\partial u_j\big]_{m\times n}\in\mathbb{R}^{m\times n}$，即第 $i$ 行第 $j$ 列是 $\partial f_i/\partial u_j$。当 $m=n$ 时，$\det J_f$ 有意义，称为 **Jacobian 行列式（Jacobian determinant）**。
 
+如果还没学偏导，先把 $J_f$ 理解成「$f$ 在 $\mathbf{u}$ 附近的局部线性近似矩阵」；偏导与 Jacobian 的正式定义见 [第 8.3 节](../08-微积分与优化/03-Jacobian.md)。
+
 ### 2.2 变量替换公式（change of variables）
 
 设 $g:U\to\mathbb{R}^n$ 连续可微、在 $U$ 上单射，且 $\det J_g$ 几乎处处不为零，则
@@ -272,7 +274,7 @@ $$
 
 这一页的知识不是凭空来的。下面列出本页直接借用的原始工作与权威整理；正文中的人名、定理名已链接到对应条目。链接优先指向 DOI、arXiv 或可长期访问的原文存档。
 
-- <a id="ref-jacobi-1841"></a>**Jacobi（Carl Gustav Jacob Jacobi, 1841）**：*De determinantibus functionalibus*。把 $n$ 个函数对 $n$ 个变量的偏导行列式作为独立对象研究，并给出复合时的乘法规则；「Jacobian 行列式」的名字由此而来，本页[第 2.1 节](../02-向量空间/01-向量空间公理.md)与第 4 节的链式法则都建立在这个对象上。[Journal für die reine und angewandte Mathematik](https://doi.org/10.1515/crll.1841.22.319)
+- <a id="ref-jacobi-1841"></a>**Jacobi（Carl Gustav Jacob Jacobi, 1841）**：*De determinantibus functionalibus*。把 $n$ 个函数对 $n$ 个变量的偏导行列式作为独立对象研究，并给出复合时的乘法规则；「Jacobian 行列式」的名字由此而来，本页第 2.1 节与第 4 节的链式法则都建立在这个对象上。[Journal für die reine und angewandte Mathematik](https://doi.org/10.1515/crll.1841.22.319)
 - <a id="ref-munkres-1991"></a>**Munkres（James R. Munkres, 1991；CRC 2018 重印）**：*Analysis on Manifolds*。给出变量替换定理的完整陈述与证明，包括 $C^1$、单射、$\det J_g$ 几乎处处非零这些条件各自的作用——本页[第 2.2 节](../02-向量空间/02-子空间与张成.md)的公式以它为准。[CRC Press](https://doi.org/10.1201/9780429494147)
 - <a id="ref-dinh-2016"></a>**Dinh 等（Laurent Dinh, Jascha Sohl-Dickstein & Samy Bengio, 2016）**：*Density estimation using Real NVP*。提出仿射 coupling 层 $x_2=z_2\odot s(z_1)+t(z_1)$，其块三角 Jacobian 让 $\log|\det J|$ 只需 $O(D)$；本页第 8 节的设计直接取自这篇。[arXiv:1605.08803](https://arxiv.org/abs/1605.08803)
 
