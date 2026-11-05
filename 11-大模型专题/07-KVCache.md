@@ -209,12 +209,12 @@ $$
 
 ### 5.4 场景闭环：把 §0 的客服服务算到底
 
-**输入**：$B=24$ 并发、$T=6000$、$L=32$、$d=H d_k=4096$、fp16、单卡 80 GB（可用 74 GiB，权重 15 GB）。
+**输入**：$B=24$ 并发、$T=6000$、$L=32$、$d=H d_k=4096$、fp16、单卡 80 GB（可用约 74.5 GiB，权重约 14 GiB）。
 
 **计算**：
 
-- 显存：$4dTL\cdot B=4\times4096\times6000\times32\times24$ 字节 $=7.5\times10^{10}$ B $\approx70$ GiB；加权重 15 GiB，共 85 GiB $>$ 74 GiB，**容量先崩**。
-- 带宽：一个 decode step 要把整批缓存读一遍，$85$ GiB 按 3 TB/s 估算约 30 ms/step；每步产出 24 个 token，合计约 800 token/s，折合每会话 33 token/s。
+- 显存：$4dTL\cdot B=4\times4096\times6000\times32\times24$ 字节 $=7.5\times10^{10}$ B $\approx70$ GiB；加权重约 14 GiB，共约 84 GiB $>$ 74.5 GiB，**容量先崩**。
+- 带宽：一个 decode step 要把整批缓存读一遍，$84$ GiB 按 3 TB/s 估算约 30 ms/step；每步产出 24 个 token，合计约 800 token/s，折合每会话 33 token/s。
 - 算力：一步 $4TdL\cdot B\approx7.5\times10^{10}$ FLOPs，按 $10^{15}$ FLOP/s 只要 0.075 ms——比搬数据便宜约 400 倍。
 
 **输出决策**：先压 $T$，不加卡。$T$ 从 6000 砍到 3000，单会话 1.5 GiB，24 会话 35 GiB，加权重 15 GiB 共 50 GiB，摘要再占 3.5 GiB，仍留约 20 GiB 给激活与碎片；把砍掉的历史压成 300 token 的滚动摘要（$300\times512$ KiB $\approx150$ MiB/会话）挂在窗口前面，订单号一类的信息还能捞回来。
