@@ -3,7 +3,7 @@ id: 5.4
 title: 行列式与 Jacobian：变量替换
 module: M05
 slug: determinant-jacobian
-prereq: [5.1, 8.3]
+prereq: [5.1]
 minutes: 35
 level: 进阶
 tags: [Jacobian, 变量替换, 极坐标, 归一化流]
@@ -12,7 +12,7 @@ llm_hooks: [change-of-variables, normalizing-flow, log-determinant]
 
 # 5.4 行列式与 Jacobian：变量替换
 
-> **本节位置**：模块 5 · 行列式 ｜ **前置**：[5.1](01-行列式几何.md)、[8.3 Jacobian](../08-微积分与优化/03-Jacobian.md) ｜ **预计**：35 分钟
+> **本节位置**：模块 5 · 行列式 ｜ **前置**：[5.1](01-行列式几何.md)（Jacobian 的微积分定义见后续 [8.3](../08-微积分与优化/03-Jacobian.md)，本节先用「局部线性近似的行列式」直觉） ｜ **预计**：35 分钟
 >
 > **一句话**：非线性变换没有全局的 $\det$，但在每一点有一个局部体积缩放因子——那就是 Jacobian 行列式。
 
