@@ -135,4 +135,4 @@ cd web && pnpm build && pnpm links && node scripts/e2e.mjs   # 0 断链 / 13 che
 | 2026-11-03 | v1.8.0 复核修复：M13.1 decode 算术强度 0.5→1 FLOP/B（与 M10.3/M11.2/M11.7 对齐）；阅读时间改由 front matter 推导并修正 3 处总数、11 处分段；新增 `scripts/check_minutes.py` 门禁并接入 task check | f8e679c / 5bc3a32 |
 | 2026-11-03 | v1.8.0 复核：收敛 M06.1「加固」结论的适用范围与 M11.5 RoPE 频率的「幂律」表述，标注为设计直觉而非定理 | 6802ab7 |
 | 2026-11-03 | v1.9.0 完善：193 处「第 X.Y 节」改为带链接的交叉引用；新增 `check_frontier.py`（结构/状态词/arXiv 编号）与 `task check:online`；题库 +4 题（6.1 场景、13.1 算术强度）；m06/m13 习题与答案同步；新增 `lab13 推理账本` 与 lab06 固有频率小节；单篇篇幅上限定为 400 行并由 `check.py` 校验 | 55b977b / 3808110 / deea68d / 917afba / d32e710 |
-| 2026-11-05 | 评测补全：新增 14.8 安全与鲁棒性（FORTRESS/StrongREJECT/XSTest/HarmBench，安全-有用性权衡、ASR 分母、过度拒答）；14.2 补 HMMT（AIME 之后的下把尺子）、14.3 补 SciCode（80 主问题/338 子问题 + Inspect AI harness）；M14 变八课，题库 +6 题、习题/答案同步 | 待补 |
+| 2026-11-05 | 评测补全：新增 14.8 安全与鲁棒性（FORTRESS/StrongREJECT/XSTest/HarmBench，安全-有用性权衡、ASR 分母、过度拒答）；14.2 补 HMMT（AIME 之后的下把尺子）、14.3 补 SciCode（80 主问题/338 子问题 + Inspect AI harness）；M14 变八课，题库 +6 题、习题/答案同步 | fbdc9b5 |
