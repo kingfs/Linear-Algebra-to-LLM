@@ -38,6 +38,7 @@ uv run --with numpy python lab01_相似度与投影.py
 | lab11 Transformer 形状链 | 11.1–11.11 | embedding→attention→KV Cache→LoRA→采样 |
 | lab12 einsum 与随机矩阵 | 12.1–12.2 | einsum 等价性、谱范数、MP 律 |
 | lab13 推理账本 | 13.1–13.2 | KV 显存、算术强度、TPOT、量化上界、MoE 带宽 |
+| lab14 GGUF 量化 | 13.7 | Q4_0/Q4_K 字节解码、异质性实验、bpw 家族地图 |
 
 ## 约定
 

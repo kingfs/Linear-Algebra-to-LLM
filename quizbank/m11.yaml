@@ -412,6 +412,18 @@ questions:
     source: '11-大模型专题/09-量化.md#6-常见误区'
     tags: [误区, 相对误差, outlier]
 
+  - id: q-11.9-004
+    concept: "11.9"
+    section: 4
+    type: numeric
+    difficulty: 2
+    stem: 'Q4_0 块 18 字节，含 32 个权重。块级 bpw 约为多少？'
+    answer: 4.5
+    tolerance: 0.05
+    explanation: 'bpw=18×8÷32=4.5；标称 4-bit，加上尺度摊销后约 4.5。整文件口径再加 metadata 与混合精度。'
+    source: '11-大模型专题/09-量化.md#4-性质与推导'
+    tags: [bpw, 块量化, 手算]
+
   - id: q-11.10-001
     concept: "11.10"
     section: 5

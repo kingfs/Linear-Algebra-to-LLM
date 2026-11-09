@@ -357,3 +357,54 @@ questions:
     explanation: '权重/KV 量化、模板都会影响质量；batch size 主要影响延迟/吞吐，不直接改变单请求质量。'
     source: "13-推理服务/06-诊断实验.md#4-性质与推导"
     tags: [质量回归, 量化, 模板]
+
+  - id: q-13.7-001
+    concept: "13.7"
+    section: 4
+    type: single_choice
+    difficulty: 2
+    stem: 'Q4_0 与 Q4_K 同为 4.5 bpw，为什么 Q4_K 通常能保留更多质量？'
+    options:
+      - 'Q4_K 的文件体积一定更小'
+      - 'Q4_K 用子块修正，缓解块内异质性的尺度失配'
+      - 'Q4_K 的码位宽更高'
+      - 'Q4_K 不需要缩放因子'
+    answer: [1]
+    explanation: '两者的 bpw 都是 4.5，只是尺子不同：Q4_0 每 32 值一个尺度，异质块里小值被大值撑粗；Q4_K 的 256 超级块加 8 个子块修正，把失配摊到各子块。'
+    source: "13-推理服务/07-块与超级块量化.md#4-性质与推导"
+    tags: [K-quants, bpw, 尺度失配]
+
+  - id: q-13.7-002
+    concept: "13.7"
+    section: 5
+    type: numeric
+    difficulty: 2
+    stem: '超级块 d=0.02、dmin=0.01，子块 (sc,m)=(10,5)，q=7。Q4_K 子块重建值 y 约为多少？'
+    answer: 1.35
+    tolerance: 0.01
+    explanation: 'y=d*sc*q-dmin*m=0.02*10*7-0.01*5=1.4-0.05=1.35；解码端直接乘整数，/63 已折进 d。'
+    source: "13-推理服务/07-块与超级块量化.md#5-例子"
+    tags: [K-quants, 手算, 归一化]
+
+  - id: q-13.7-003
+    concept: "13.7"
+    section: 6
+    type: true_false
+    difficulty: 2
+    stem: 'K-quants 解码时，要把 6-bit 子块尺度除以 63 再乘全局尺度。'
+    answer: false
+    explanation: '除法已在量化端折进 d/dmin（d=max_s/63），解码端只乘整数 sc/m；再除一次会把数值缩 63 倍。'
+    source: "13-推理服务/07-块与超级块量化.md#6-常见误区"
+    tags: [误区, 归一化, 6-bit]
+
+  - id: q-13.7-004
+    concept: "13.7"
+    section: 4
+    type: numeric
+    difficulty: 2
+    stem: 'Q6_K 块 210 字节，含 256 个权重。它的块级 bpw 约为多少？'
+    answer: 6.5625
+    tolerance: 0.01
+    explanation: 'bpw=210*8/256=6.5625；标称 6-bit，加上子块尺度摊销后约 6.56。'
+    source: "13-推理服务/07-块与超级块量化.md#4-性质与推导"
+    tags: [bpw, Q6_K, 手算]
