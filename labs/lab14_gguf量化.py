@@ -1,12 +1,13 @@
 """Lab14 · GGUF 块量化：Q4_0 与 Q4_K 的字节级解码
 
-对应章节：11.9 量化 / 13.2 模型格式与量化 / 13.7 块与超级块量化
+对应章节：11.9 量化 / 13.2 模型格式与量化 / 13.7 块与超级块量化 / 13.8 码本与三值
 
 验证：
 1. Q4_0（18 字节/32 值）与 Q4_K（144 字节/256 值）的反量化公式与打包位序；
 2. K-quants 的 6-bit 归一化：解码端只乘整数，/63 已折进 d/dmin；
 3. 块内异质性下子块修正为什么能减小误差；
-4. 各格式的块级 bpw 自算。
+4. 各格式的块级 bpw 自算；
+5. imatrix 加权误差与三值 base-3 打包。
 
 运行：python3 labs/lab14_gguf量化.py
 （仅标准库，无需 numpy。）
@@ -179,3 +180,25 @@ print("1) Q4_0: y=d*(q-8)，低半字节是前 16 个、高半字节是后 16 �
 print("2) Q4_K: y=d*sc*q-dmin*m，6-bit 只乘不除（/63 已折进 d）。")
 print("3) 子块修正治的是尺度失配：异质块里单尺子误差大一个量级。")
 print("\n思考题：把 y[0] 的 nibble 改成 15，结果变成多少？这对应为什么误差？")
+
+
+# ---------------------------------------------------------------- 6
+section("6. 加权误差与三值打包（13.8）")
+# 加权 MSE：激活越大的方向误差越贵
+def weighted_rmse(a, b, alphas):
+    return math.sqrt(sum(al * (x - y) ** 2 for x, y, al in zip(a, b, alphas)) / sum(alphas))
+
+w = [2.0, 0.1, -0.05, 0.02]
+alphas = [4.0, 0.5, 0.5, 0.5]
+w_hat = [1.9, 0.0, 0.0, 0.0]
+print(f"  加权 RMSE = {weighted_rmse(w, w_hat, alphas):.4f}")
+print(f"  均匀 RMSE = {math.sqrt(sum((x - y) ** 2 for x, y in zip(w, w_hat)) / len(w)):.4f}")
+check("加权误差可算", weighted_rmse(w, w_hat, alphas) > 0)
+# 三值 base-3：5 trit 打包进 1 字节（3^5=243<256）
+trits = [2, 0, 1, 1, 0]  # 2=+d, 0=0, 1=-d 的一种映射
+n_val = sum(t * (3 ** (4 - i)) for i, t in enumerate(trits))
+print(f"  trit {trits} -> N={n_val}（<256，打包 1 字节）")
+check("5 trit 打包", n_val == 174 and n_val < 256)
+# 阈值效应示意：同一加权误差下，推理任务对持续偏差更敏感（这里只算数字，不做任务评测）
+print(f"  log2(3)={math.log2(3):.4f} bit/值（理论下限）；5 trit/字节={8/5:.3f} bpw（真实，未含 d）")
+check("log2(3)≈1.585", abs(math.log2(3) - 1.585) < 0.001)

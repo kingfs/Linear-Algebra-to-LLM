@@ -408,3 +408,42 @@ questions:
     explanation: 'bpw=210*8/256=6.5625；标称 6-bit，加上子块尺度摊销后约 6.56。'
     source: "13-推理服务/07-块与超级块量化.md#4-性质与推导"
     tags: [bpw, Q6_K, 手算]
+
+  - id: q-13.8-001
+    concept: "13.8"
+    section: 2
+    type: single_choice
+    difficulty: 2
+    stem: 'IQ1_S 与 Q4_K 的量化误差来源有什么本质不同？'
+    options:
+      - 'IQ1_S 查码本最近邻，误差在索引选错与码本覆盖；Q4_K 乘尺度，误差在舍入与尺度失配'
+      - 'IQ1_S 只有尺度算错，Q4_K 只有查表错'
+      - '两者只差文件体积，数学相同'
+      - '三者都只差码位宽'
+    answer: [0]
+    explanation: 'IQ1_S 存索引、查 8 维码本行（2048 项），误差由最近邻选错决定；Q4_K 存整数码、乘 d·s_j，误差由舍入与失配决定。'
+    source: "13-推理服务/08-码本与三值.md#2-定义"
+    tags: [IQ, 码本, 误差]
+
+  - id: q-13.8-002
+    concept: "13.8"
+    section: 4
+    type: numeric
+    difficulty: 2
+    stem: 'IQ1_S 50 字节/256 值，块级 bpw 约为多少？'
+    answer: 1.5625
+    tolerance: 0.01
+    explanation: 'bpw=50*8/256=1.5625；标称约 1.56 bit，加上码本索引摊销后即此值。'
+    source: "13-推理服务/08-码本与三值.md#4-性质与推导"
+    tags: [bpw, IQ1_S, 手算]
+
+  - id: q-13.8-003
+    concept: "13.8"
+    section: 6
+    type: true_false
+    difficulty: 2
+    stem: 'TQ1_0 短问答和推理题的掉点会按同一条平滑曲线下降，所以可以互相外推。'
+    answer: false
+    explanation: '三值有阈值效应：短问答可能几乎不掉，推理题却断崖；平滑外推会漏掉任务断崖。'
+    source: "13-推理服务/08-码本与三值.md#6-常见误区"
+    tags: [误区, 三值, 阈值效应]

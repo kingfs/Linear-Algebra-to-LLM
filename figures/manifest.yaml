@@ -372,3 +372,15 @@ figures:
     inline: true
     caption: "X[T,D] 经 WQ/WK/WV 投到每头 d=D/H；QK^T 给出 [H,T,T] 分数，softmax 后乘 V 得到 [H,T,d]，拼接回 [T,D]。"
     alt: "QKV 投影、多头分数、softmax 与输出拼接的形状流"
+  - id: kquant-hierarchy
+    file: kquant-hierarchy.svg
+    concepts: ["13.7"]
+    inline: true
+    caption: "Q4_K 超级块的层次：256 值共享全局 d、dmin，8 个 32 值子块各自带一对 6-bit 尺度/最小值。"
+    alt: "超级块包含 8 个子块的层级结构图"
+  - id: bpw-bands
+    file: bpw-bands.svg
+    concepts: ["13.8"]
+    inline: true
+    caption: "主要 GGUF 格式的块级 bpw：仿射、K-quants、码本、三值四个家族的横带，按已含尺度/索引摊销的每权重比特排列。"
+    alt: "各量化格式每权重比特的横条图"

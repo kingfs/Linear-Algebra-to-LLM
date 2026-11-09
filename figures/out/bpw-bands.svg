@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="360" viewBox="0 0 800 360" font-family="sans-serif">
+<rect width="800" height="360" fill="#fffdf8"/>
+<text x="20" y="28" font-size="16" font-weight="bold" fill="#1f2933">每权重比特（bpw）家族带</text>
+<text x="20" y="48" font-size="12" fill="#52606d">块字节数 × 8 ÷ 每块权重数；已含尺度/索引的摊销</text>
+<line x1="110.0" y1="50" x2="110.0" y2="284" stroke="#e6e0d4" stroke-width="1"/>
+<text x="110.0" y="301" font-size="11" text-anchor="middle" fill="#52606d">0</text>
+<line x1="254.44444444444443" y1="50" x2="254.44444444444443" y2="284" stroke="#e6e0d4" stroke-width="1"/>
+<text x="254.44444444444443" y="301" font-size="11" text-anchor="middle" fill="#52606d">2</text>
+<line x1="398.88888888888886" y1="50" x2="398.88888888888886" y2="284" stroke="#e6e0d4" stroke-width="1"/>
+<text x="398.88888888888886" y="301" font-size="11" text-anchor="middle" fill="#52606d">4</text>
+<line x1="543.3333333333333" y1="50" x2="543.3333333333333" y2="284" stroke="#e6e0d4" stroke-width="1"/>
+<text x="543.3333333333333" y="301" font-size="11" text-anchor="middle" fill="#52606d">6</text>
+<line x1="687.7777777777777" y1="50" x2="687.7777777777777" y2="284" stroke="#e6e0d4" stroke-width="1"/>
+<text x="687.7777777777777" y="301" font-size="11" text-anchor="middle" fill="#52606d">8</text>
+<text x="10" y="70" font-size="12" fill="#1f2933">Q8_0</text>
+<rect x="110" y="55" width="613.9" height="18" rx="3" fill="#7b8794"/>
+<text x="729.9" y="69" font-size="11" fill="#1f2933">8.5</text>
+<text x="10" y="98" font-size="12" fill="#1f2933">Q6_K</text>
+<rect x="110" y="83" width="474.0" height="18" rx="3" fill="#4f46e5"/>
+<text x="590.0" y="97" font-size="11" fill="#1f2933">6.5625</text>
+<text x="10" y="126" font-size="12" fill="#1f2933">Q4_0</text>
+<rect x="110" y="111" width="325.0" height="18" rx="3" fill="#7b8794"/>
+<text x="441.0" y="125" font-size="11" fill="#1f2933">4.5</text>
+<text x="10" y="154" font-size="12" fill="#1f2933">Q4_K</text>
+<rect x="110" y="139" width="325.0" height="18" rx="3" fill="#4f46e5"/>
+<text x="441.0" y="153" font-size="11" fill="#1f2933">4.5</text>
+<text x="10" y="182" font-size="12" fill="#1f2933">IQ3_XXS</text>
+<rect x="110" y="167" width="221.2" height="18" rx="3" fill="#0f766e"/>
+<text x="337.2" y="181" font-size="11" fill="#1f2933">3.0625</text>
+<text x="10" y="210" font-size="12" fill="#1f2933">TQ2_0</text>
+<rect x="110" y="195" width="149.0" height="18" rx="3" fill="#d97706"/>
+<text x="265.0" y="209" font-size="11" fill="#1f2933">2.0625</text>
+<text x="10" y="238" font-size="12" fill="#1f2933">TQ1_0</text>
+<rect x="110" y="223" width="121.9" height="18" rx="3" fill="#d97706"/>
+<text x="237.9" y="237" font-size="11" fill="#1f2933">1.6875</text>
+<text x="10" y="266" font-size="12" fill="#1f2933">IQ1_S</text>
+<rect x="110" y="251" width="112.8" height="18" rx="3" fill="#0f766e"/>
+<text x="228.8" y="265" font-size="11" fill="#1f2933">1.5625</text>
+<rect x="20" y="312" width="14" height="14" fill="#7b8794"/>
+<text x="40" y="324" font-size="12" fill="#1f2933">affine</text>
+<rect x="170" y="312" width="14" height="14" fill="#4f46e5"/>
+<text x="190" y="324" font-size="12" fill="#1f2933">kquant</text>
+<rect x="320" y="312" width="14" height="14" fill="#0f766e"/>
+<text x="340" y="324" font-size="12" fill="#1f2933">codebook</text>
+<rect x="470" y="312" width="14" height="14" fill="#d97706"/>
+<text x="490" y="324" font-size="12" fill="#1f2933">ternary</text>
+</svg>
