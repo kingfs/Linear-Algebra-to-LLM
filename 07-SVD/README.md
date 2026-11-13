@@ -43,7 +43,7 @@ flowchart LR
 |---|---|---|---|
 | 1 | [7.1 SVD 的几何：旋转-拉伸-旋转](01-SVD的几何.md) | 35 min | 说清 $U,\Sigma,V$ 各自的几何角色，手算 $2\times2$ 的 SVD |
 | 2 | [7.2 SVD 的计算与性质](02-SVD的计算与性质.md) | 40 min | 由 $A^\top A$ 求 SVD，用 $\sigma_i$ 算秩/范数/条件数，解释与特征值的区别 |
-| 3 | [7.3 低秩近似与 Eckart–Young](03-低秩近似.md) | 40 min | 证明并应用 $\|A-A_k\|_F^2=\sum_{i>k}\sigma_i^2$，算压缩比与误差 |
+| 3 | [7.3 低秩近似与 Eckart–Young](03-低秩近似.md) | 40 min | 证明并应用 $`\Vert A-A_k\Vert_F^2=\sum_{i>k}\sigma_i^2`$，算压缩比与误差 |
 | 4 | [7.4 伪逆、数值秩与条件数](04-伪逆与数值秩.md) | 35 min | 用 $A^{+}=V\Sigma^{+}U^\top$ 统一超定/欠定，判断何时截断 |
 | 5 | [7.5 SVD 应用：PCA、推荐与 LoRA](05-SVD应用.md) | 40 min | 写清 PCA 的流水线，区分 SVD 与梯度训练的矩阵分解 |
 
