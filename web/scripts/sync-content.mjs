@@ -93,6 +93,34 @@ for (const f of ["README.md", "AGENTS.md", "PROGRESS.md", "quizbank/README.md", 
   if (fs.existsSync(abs)) sourceFiles.push({ abs, module: "附录", moduleDir: "", type: "page" });
 }
 
+// ---------------------------------------------------------------- GitHub 公式语法 → remark-math
+// 源码为了在 GitHub 上正确渲染，使用 $`...`$（行内）与 ```math 围栏（独立公式）：
+// GitHub 会对普通 $...$ 做反斜杠转义并与 _/* 强调配对，导致 \| \{ \\ 等丢失。
+// remark-math 不认这两种写法，这里还原成 $...$ 与 $$...$$；其他代码围栏原样保留。
+function normalizeMath(body) {
+  const out = [];
+  let fence = null;
+  for (const line of body.split("\n")) {
+    const fm = line.match(/^(\s*(?:(?:[-*+]|\d+[.)])\s+)?)(`{3,}|~{3,})(.*)$/);
+    if (fence) {
+      if (fm && fm[2][0] === fence.ch && fm[2].length >= fence.len && fm[3].trim() === "") {
+        out.push(fence.math ? `${fm[1]}$$` : line);
+        fence = null;
+      } else out.push(line);
+      continue;
+    }
+    if (fm) {
+      const math = fm[3].trim() === "math";
+      fence = { ch: fm[2][0], len: fm[2].length, math };
+      out.push(math ? `${fm[1]}$$` : line);
+      continue;
+    }
+    // 先匹配行内代码（原样保留），避免把 `$...$`，… `$$` 这类代码示例误当成公式
+    out.push(line.replace(/\$`([^`\n]+)`\$|(`+)[^`]*?\2/g, (m, tex) => (tex === undefined ? m : `$${tex}$`)));
+  }
+  return out.join("\n");
+}
+
 // ---------------------------------------------------------------- 解析与路由
 const docs = [];
 const routeBySource = new Map();
@@ -144,7 +172,7 @@ for (const src of sourceFiles) {
   docs.push({
     abs: src.abs,
     rel,
-    body: parsed.content,
+    body: normalizeMath(parsed.content),
     data: { ...data, id, title, module: src.module, slug, route, kind, order, minutes, level, tags, llm_hooks },
     moduleDir: src.moduleDir,
     type: src.type,

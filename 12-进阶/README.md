@@ -49,7 +49,7 @@ flowchart LR
 
 1. `"bhid,bhjd->bhij"` 的输出形状是什么？哪个字母被求和？
 2. 方差 $1/n$ 的 $n\times n$ 高斯矩阵，谱范数大约是多少？
-3. 用五条主线描述 $A=\begin{bmatrix}1&2\\2&4\end{bmatrix}$。
+3. 用五条主线描述 $`A=\begin{bmatrix}1&2\\2&4\end{bmatrix}`$。
 4. 为什么 decode 阶段是带宽受限？
 5. 如果只能保留一个概念读推理论文，你选什么？为什么？
 6. 一个优化「理论上省 2 倍显存」，端到端一定快 2 倍吗？
@@ -57,7 +57,7 @@ flowchart LR
 <details>
 <summary>自测答案</summary>
 
-1. `[B,H,T,T]`；$d$ 被求和。
+1. `[B,H,T,T]`； $d$ 被求和。
 2. 约 2（最大奇异值），而非 1。
 3. 秩 1；零空间一维；奇异；特征值 0,5；条件数无穷。
 4. 每 token 只做瘦矩阵乘，FLOPs/bytes 低，瓶颈在读取权重与 KV。
