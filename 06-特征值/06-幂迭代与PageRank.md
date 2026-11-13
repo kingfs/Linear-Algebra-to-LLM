@@ -149,7 +149,7 @@ A^k\mathbf{x}_0=\sum_i c_i\lambda_i^k\mathbf{v}_i
 
 ### 4.3 为什么 Rayleigh 商快一倍
 
-对对称矩阵，设 $\mathbf{x}_k$ 与 $\mathbf{v}_1$ 的夹角误差为 $`\theta_k=O(r^k)`$， $r=|\lambda_2/\lambda_1|$。Rayleigh 商是特征值的加权平均： $`\lambda^{(k)}=\sum_i\lambda_i y_i^2/\sum_i y_i^2=\lambda_1-\sum_{i\ge2}(\lambda_1-\lambda_i)y_i^2/\sum_i y_i^2`$。副方向权重 $y_i^2=O(r^{2k})$，所以 $\lambda^{(k)}-\lambda_1=O(r^{2k})$。误差平方级下降，这是对称矩阵的额外福利。
+对对称矩阵，设 $\mathbf{x}_k$ 与 $\mathbf{v}_1$ 的夹角误差为 $\theta_k=O(r^k)$， $r=|\lambda_2/\lambda_1|$。Rayleigh 商是特征值的加权平均： $\lambda^{(k)}=\sum_i\lambda_i y_i^2/\sum_i y_i^2=\lambda_1-\sum_{i\ge2}(\lambda_1-\lambda_i)y_i^2/\sum_i y_i^2$。副方向权重 $y_i^2=O(r^{2k})$，所以 $\lambda^{(k)}-\lambda_1=O(r^{2k})$。误差平方级下降，这是对称矩阵的额外福利。
 
 ### 4.4 归一化的选择
 

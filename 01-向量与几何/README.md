@@ -73,7 +73,7 @@ flowchart LR
 2. 两个向量相加，什么时候长度不变？什么时候变短？
 3. 点积为负说明什么？点积为零说明什么？
 4. 为什么把向量归一化后，点积就等于余弦相似度？
-5. 投影 $`\operatorname{proj}_{\mathbf{u}}\mathbf{x}`$ 与残差 $`\mathbf{x}-\operatorname{proj}_{\mathbf{u}}\mathbf{x}`$ 有什么关系？
+5. 投影 $\operatorname{proj}_{\mathbf{u}}\mathbf{x}$ 与残差 $\mathbf{x}-\operatorname{proj}_{\mathbf{u}}\mathbf{x}$ 有什么关系？
 
 <details>
 <summary>自测答案</summary>

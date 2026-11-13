@@ -272,7 +272,7 @@ f\approx 3+(2,4)\begin{bmatrix}0.1\\-0.1\end{bmatrix}
 2. $`H=\begin{bmatrix}2&4\\4&2\end{bmatrix}`$，特征值 $6$ 与 $-2$，不定，原点是鞍点。
 3. $f(1,1)=3$， $\nabla f=(4,2)$， $H=\operatorname{diag}(4,2)$；估计 $3+4(0.1)+2(-0.1)+\frac12(4\times0.01+2\times0.01)=3+0.4-0.2+0.03=3.23$。精确值 $2\times1.21+0.81=3.23$，一致。
 4. $H=X^\top X$ 的特征值为 $100,1,0.01$；条件数 $100/0.01=10^4$。沿最小奇异值方向曲率极小，梯度下降在该方向极慢；沿最大方向学习率受 $2/100=0.02$ 限制。
-5. 用幂迭代：随机 $`\mathbf{v}_0`$，反复 $`\mathbf{v}_{k+1}=H\mathbf{v}_k/\|H\mathbf{v}_k\|`$，则 $`\mathbf{v}_k^\top H\mathbf{v}_k`$ 收敛到 $\lambda_{\max}$（6.6 节）。每次迭代只需一次 HVP。
+5. 用幂迭代：随机 $\mathbf{v}_0$，反复 $`\mathbf{v}_{k+1}=H\mathbf{v}_k/\|H\mathbf{v}_k\|`$，则 $\mathbf{v}_k^\top H\mathbf{v}_k$ 收敛到 $\lambda_{\max}$（6.6 节）。每次迭代只需一次 HVP。
 
 </details>
 

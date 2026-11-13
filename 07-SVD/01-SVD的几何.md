@@ -146,8 +146,8 @@ A=\begin{bmatrix}0&1\\0&0\end{bmatrix}.
 
 | 性质 | 式子 | 读法 |
 |---|---|---|
-| 最大拉伸 | $`\Vert A\mathbf{x}\Vert_2\le\sigma_1\Vert\mathbf{x}\Vert_2`$ | 单位向量最多被拉 $\sigma_1$ 倍，取等当 $\mathbf{x}\parallel\mathbf{v}_1$ |
-| 最小拉伸 | $`\Vert A\mathbf{x}\Vert_2\ge\sigma_n\Vert\mathbf{x}\Vert_2`$ | 仅当 $A$ 可逆；最坏方向被压到 $\sigma_n$ |
+| 最大拉伸 | $\|A\mathbf{x}\|_2\le\sigma_1\|\mathbf{x}\|_2$ | 单位向量最多被拉 $\sigma_1$ 倍，取等当 $\mathbf{x}\parallel\mathbf{v}_1$ |
+| 最小拉伸 | $\|A\mathbf{x}\|_2\ge\sigma_n\|\mathbf{x}\|_2$ | 仅当 $A$ 可逆；最坏方向被压到 $\sigma_n$ |
 | 体积 | $\lvert\det A\rvert=\prod_i\sigma_i$ | 各方向拉伸倍数相乘（方阵） |
 | 秩 | $`\operatorname{rank}(A)=\#\{i:\sigma_i>0\}`$ | 零奇异值个数 = 被压没的维数 |
 | 转置 | $A^\top=V\Sigma^\top U^\top$ | $A$ 与 $A^\top$ 共享奇异值， $U,V$ 互换 |

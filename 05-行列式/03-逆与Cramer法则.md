@@ -74,7 +74,7 @@ Cramer 法则（Cramer's rule）则是逐分量的版本：要求 $x_i$，就把
 
 ### 2.2 伴随矩阵
 
-**伴随矩阵（adjugate）** 定义为代数余子式矩阵的转置： $`\operatorname{adj}(A)_{ij}=C_{ji}=(-1)^{i+j}M_{ji}`$。注意下标是 $ji$ 不是 $ij$：第 $i$ 行第 $j$ 列的元素，来自「删掉第 $j$ 行第 $i$ 列」的余子式。
+**伴随矩阵（adjugate）** 定义为代数余子式矩阵的转置： $\operatorname{adj}(A)_{ij}=C_{ji}=(-1)^{i+j}M_{ji}$。注意下标是 $ji$ 不是 $ij$：第 $i$ 行第 $j$ 列的元素，来自「删掉第 $j$ 行第 $i$ 列」的余子式。
 
 ### 2.3 逆矩阵公式
 
@@ -92,7 +92,7 @@ Cramer 法则（Cramer's rule）则是逐分量的版本：要求 $x_i$，就把
 
 ### 3.1 $A\operatorname{adj}(A)=\det(A)I$
 
-看第 $i$ 行与 $\operatorname{adj}(A)$ 第 $i$ 列的内积： $`\sum_k a_{ik}\operatorname{adj}(A)_{ki}=\sum_k a_{ik}C_{ik}=\det A`$，最后一步正是沿第 $i$ 行的余子式展开。
+看第 $i$ 行与 $\operatorname{adj}(A)$ 第 $i$ 列的内积： $\sum_k a_{ik}\operatorname{adj}(A)_{ki}=\sum_k a_{ik}C_{ik}=\det A$，最后一步正是沿第 $i$ 行的余子式展开。
 
 再看第 $i$ 行与第 $j$ 列（ $i\neq j$）的内积： $\sum_k a_{ik}C_{jk}$。这等于把 $A$ 的第 $j$ 行换成第 $i$ 行后的行列式；此时两行相同，值为 0。于是
 
@@ -104,7 +104,7 @@ A\operatorname{adj}(A)=\det(A)I_n.
 
 ### 3.2 Cramer 法则从哪来
 
-由 $\mathbf{x}=A^{-1}\mathbf{b}=\operatorname{adj}(A)\mathbf{b}/\det A$，第 $i$ 个分量为 $`x_i=\frac{1}{\det A}\sum_j\operatorname{adj}(A)_{ij}b_j=\frac{1}{\det A}\sum_j C_{ji}b_j`$。右边分子正好是 $A_i$ 沿第 $i$ 列的展开： $A_i$ 的第 $i$ 列是 $\mathbf{b}$，其余列与 $A$ 相同。这就是 Cramer 法则。
+由 $\mathbf{x}=A^{-1}\mathbf{b}=\operatorname{adj}(A)\mathbf{b}/\det A$，第 $i$ 个分量为 $x_i=\frac{1}{\det A}\sum_j\operatorname{adj}(A)_{ij}b_j=\frac{1}{\det A}\sum_j C_{ji}b_j$。右边分子正好是 $A_i$ 沿第 $i$ 列的展开： $A_i$ 的第 $i$ 列是 $\mathbf{b}$，其余列与 $A$ 相同。这就是 Cramer 法则。
 
 ### 3.3 反事实：伴随矩阵不转置会坏在哪
 
