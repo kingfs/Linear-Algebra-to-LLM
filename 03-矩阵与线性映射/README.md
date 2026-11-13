@@ -59,31 +59,31 @@ flowchart LR
 
 ## 本模块的大模型钩子
 
-- **线性层**： $XW^\top+\mathbf{b}$，逐 token 就是矩阵乘向量（3.2）
-- **QKV 投影**： $W_{QKV}\in\mathbb{R}^{3D\times D}$，一次乘出 $[\mathbf{q},\mathbf{k},\mathbf{v}]$（3.2）
-- **GEMM**： $[BT,D]@[D,4D]$ 是训练算力的基本计量单位，FLOPs $2mnp$（3.3）
+- **线性层**：$XW^\top+\mathbf{b}$，逐 token 就是矩阵乘向量（3.2）
+- **QKV 投影**：$W_{QKV}\in\mathbb{R}^{3D\times D}$，一次乘出 $[\mathbf{q},\mathbf{k},\mathbf{v}]$（3.2）
+- **GEMM**：$[BT,D]@[D,4D]$ 是训练算力的基本计量单位，FLOPs $2mnp$（3.3）
 - **条件数**：为什么权重矩阵「可逆」不代表能放心求逆（3.4）
 - **数值求解**：LU/Cholesky 藏在二阶优化、高斯过程与线性探针里（3.5）
-- **Attention**： $S=QK^\top$ 的形状是 $[B,H,T,T]$，多头拼接靠转置与 reshape（3.6）
+- **Attention**：$S=QK^\top$ 的形状是 $[B,H,T,T]$，多头拼接靠转置与 reshape（3.6）
 - **信息瓶颈**：权重与注意力的秩限制了每层能传递多少维信息（3.7）
-- **LoRA**： $\Delta W=BA$， $B\in\mathbb{R}^{D\times r}$、 $A\in\mathbb{R}^{r\times k}$，秩不超过 $r$（3.6–3.7）
+- **LoRA**：$\Delta W=BA$，$B\in\mathbb{R}^{D\times r}$、$A\in\mathbb{R}^{r\times k}$，秩不超过 $r$（3.6–3.7）
 
 ## 自测（读完再做）
 
-1. $A\in\mathbb{R}^{2\times3}$， $\mathbf{x}\in\mathbb{R}^3$， $A\mathbf{x}$ 是什么形状？ $A$ 有几列、每列多长？
+1. $A\in\mathbb{R}^{2\times3}$，$\mathbf{x}\in\mathbb{R}^3$，$A\mathbf{x}$ 是什么形状？$A$ 有几列、每列多长？
 2. 同一个 $W\in\mathbb{R}^{4\times3}$，分别用「数据表 / 线性映射 / 算子 / 列向量组」说一句话，哪个身份不成立？为什么？
-3. $`A=\begin{bmatrix}1&2\\3&4\end{bmatrix}`$、 $`B=\begin{bmatrix}2&0\\1&1\end{bmatrix}`$，求 $AB$ 与 $BA$，并说明这说明什么。
-4. $`A=\begin{bmatrix}3&1\\5&2\end{bmatrix}`$，求 $A^{-1}$，并解 $A\mathbf{x}=(1,1)^\top$。
+3. $A=\begin{bmatrix}1&2\\3&4\end{bmatrix}$、$B=\begin{bmatrix}2&0\\1&1\end{bmatrix}$，求 $AB$ 与 $BA$，并说明这说明什么。
+4. $A=\begin{bmatrix}3&1\\5&2\end{bmatrix}$，求 $A^{-1}$，并解 $A\mathbf{x}=(1,1)^\top$。
 5. 为什么 $A=LU$ 能省计算？换一个右端项时，哪一步不用重做？条件数在这里起什么作用？
-6. $A$ 是 $3\times4$ 矩阵、秩为 2。四个子空间分别在哪、维数多少？ $A\mathbf{x}=\mathbf{b}$ 有解与解唯一分别要求什么？
+6. $A$ 是 $3\times4$ 矩阵、秩为 2。四个子空间分别在哪、维数多少？$A\mathbf{x}=\mathbf{b}$ 有解与解唯一分别要求什么？
 
 <details>
 <summary>自测答案</summary>
 
-1. $A\mathbf{x}\in\mathbb{R}^2$； $A$ 有 3 列，每列长 2。形状 $(2\times3)(3\times1)=(2\times1)$。
-2. 数据表：4 个样本、3 个特征；线性映射： $\mathbb{R}^3\to\mathbb{R}^4$；列向量组：3 个 4 维列向量；算子不成立，因为 $4\neq3$，输入输出不是同一个空间。
-3. $`AB=\begin{bmatrix}4&2\\10&4\end{bmatrix}`$， $`BA=\begin{bmatrix}2&4\\4&6\end{bmatrix}`$，不相等；矩阵乘法一般不可交换，因为它表示不同的复合顺序。
-4. $\det=6-5=1$， $`A^{-1}=\begin{bmatrix}2&-1\\-5&3\end{bmatrix}`$， $\mathbf{x}=(1,-2)^\top$。
+1. $A\mathbf{x}\in\mathbb{R}^2$；$A$ 有 3 列，每列长 2。形状 $(2\times3)(3\times1)=(2\times1)$。
+2. 数据表：4 个样本、3 个特征；线性映射：$\mathbb{R}^3\to\mathbb{R}^4$；列向量组：3 个 4 维列向量；算子不成立，因为 $4\neq3$，输入输出不是同一个空间。
+3. $AB=\begin{bmatrix}4&2\\10&4\end{bmatrix}$，$BA=\begin{bmatrix}2&4\\4&6\end{bmatrix}$，不相等；矩阵乘法一般不可交换，因为它表示不同的复合顺序。
+4. $\det=6-5=1$，$A^{-1}=\begin{bmatrix}2&-1\\-5&3\end{bmatrix}$，$\mathbf{x}=(1,-2)^\top$。
 5. 消元 $O(n^3)$、三角求解每个右端项 $O(n^2)$；换 $\mathbf{b}$ 时 $L,U$ 不变，只做前代与回代。条件数决定问题本身对扰动的敏感度；主元过小会放大消元中的舍入误差，所以实际实现要部分主元。
 6. 列空间在 $\mathbb{R}^3$、维数 2；零空间在 $\mathbb{R}^4$、维数 $4-2=2$；行空间在 $\mathbb{R}^4$、维数 2；左零空间在 $\mathbb{R}^3$、维数 $3-2=1$。有解要求 $\mathbf{b}\in\operatorname{Col}(A)$；解唯一要求零空间只有零，即秩为 4，与秩 2 矛盾，所以这里解不唯一。
 

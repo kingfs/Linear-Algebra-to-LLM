@@ -76,7 +76,7 @@ flowchart LR
 | 钩子 | 出现在 | 对应章节 |
 |---|---|---|
 | 反向传播 | 每个 `loss.backward()`，梯度与参数同形 | 8.1、8.3、8.5 |
-| 优化器 | SGD/Adam 的逐元素更新， $\eta$ 与曲率 | 8.2、8.7 |
+| 优化器 | SGD/Adam 的逐元素更新，$\eta$ 与曲率 | 8.2、8.7 |
 | 损失曲面 | Hessian 特征值、锐利/平坦极小 | 8.4 |
 | 条件数 | 病态方向收敛慢，warmup 与归一化 | 8.7 |
 | 凸性 | 最后一层分类头、KL 正则；LLM 整体非凸 | 8.6 |
@@ -84,22 +84,22 @@ flowchart LR
 
 ## 自测（读完再做）
 
-1. 设 $L(\boldsymbol\theta)$ 是损失， $\boldsymbol\theta\in\mathbb{R}^{P}$。 $\nabla_{\boldsymbol\theta}L$ 是什么形状？如果某一层权重 $W\in\mathbb{R}^{4096\times4096}$，它的梯度是什么形状？
+1. 设 $L(\boldsymbol\theta)$ 是损失，$\boldsymbol\theta\in\mathbb{R}^{P}$。$\nabla_{\boldsymbol\theta}L$ 是什么形状？如果某一层权重 $W\in\mathbb{R}^{4096\times4096}$，它的梯度是什么形状？
 2. $f(x,y)=x^2+2y^2$，在 $(1,1)$ 处沿单位方向 $\mathbf{u}=(3/5,4/5)$ 的方向导数是多少？最陡上升方向的变化率是多少？
-3. $F:\mathbb{R}^4\to\mathbb{R}^2$ 的 Jacobian 是什么形状？若 $F(\mathbf{x})=A\mathbf{x}$， $A$ 是什么形状， $J_F$ 等于什么？
+3. $F:\mathbb{R}^4\to\mathbb{R}^2$ 的 Jacobian 是什么形状？若 $F(\mathbf{x})=A\mathbf{x}$，$A$ 是什么形状，$J_F$ 等于什么？
 4. $f(x,y)=x^2+3xy+y^2$ 在原点的 Hessian 特征值是什么？原点是极小、极大还是鞍点？
-5. 对 $f(\mathbf{x})=\frac12\mathbf{x}^\top A\mathbf{x}$， $A$ 的最大特征值为 8。梯度下降的学习率必须小于多少？取到上界会怎样？
+5. 对 $f(\mathbf{x})=\frac12\mathbf{x}^\top A\mathbf{x}$，$A$ 的最大特征值为 8。梯度下降的学习率必须小于多少？取到上界会怎样？
 6. 用拉格朗日乘子求 $\min x^2+y^2$ s.t. $x+y=1$，写出最优点、乘子与最优值。
 
 <details>
 <summary>自测答案</summary>
 
 1. 都是 $[P]$ 与 $[4096,4096]$，**与参数同形**。这是优化器能逐元素更新的前提。
-2. $\nabla f=(2,4)^\top$， $D_{\mathbf{u}}f=(2\cdot3+4\cdot4)/5=22/5=4.4$；最陡方向为 $(2,4)/\sqrt{20}$，变化率 $\sqrt{20}\approx4.472$。
-3. $[2,4]$； $A\in\mathbb{R}^{2\times4}$， $J_F=A$（线性映射是自身的导数）。
-4. $`H=\begin{bmatrix}2&3\\3&2\end{bmatrix}`$，特征值 $5$ 与 $-1$，一正一负，原点是鞍点。
+2. $\nabla f=(2,4)^\top$，$D_{\mathbf{u}}f=(2\cdot3+4\cdot4)/5=22/5=4.4$；最陡方向为 $(2,4)/\sqrt{20}$，变化率 $\sqrt{20}\approx4.472$。
+3. $[2,4]$；$A\in\mathbb{R}^{2\times4}$，$J_F=A$（线性映射是自身的导数）。
+4. $H=\begin{bmatrix}2&3\\3&2\end{bmatrix}$，特征值 $5$ 与 $-1$，一正一负，原点是鞍点。
 5. $\eta<2/8=0.25$。取到上界时，最大特征值方向每步乘 $-1$，误差不衰减，数值上会持续震荡。
-6. $2x=\lambda$、 $2y=\lambda$，所以 $x=y$；代入 $x+y=1$ 得 $(1/2,1/2)$， $\lambda=1$，最优值 $1/2$。
+6. $2x=\lambda$、$2y=\lambda$，所以 $x=y$；代入 $x+y=1$ 得 $(1/2,1/2)$，$\lambda=1$，最优值 $1/2$。
 
 </details>
 

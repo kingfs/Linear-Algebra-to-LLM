@@ -80,7 +80,7 @@ flowchart TD
 
 ## 一条主线
 
-```math
+$$
 \underbrace{[B,T]}_{\text{token id}}
 \xrightarrow{\text{查表}}
 \underbrace{[B,T,D]}_{X}
@@ -90,7 +90,7 @@ flowchart TD
 \underbrace{[B,T,V]}_{\text{logits}}
 \xrightarrow{\text{softmax}}
 \underbrace{[B,T,V]}_{\text{概率}}
-```
+$$
 
 **每一层都在做「矩阵乘 + 非线性 + 残差」；每个形状都来自第 0.3 节的轴观点。**
 
@@ -107,11 +107,11 @@ flowchart TD
 <summary>自测答案</summary>
 
 1. $128000\times4096=524{,}288{,}000$，约 5.24 亿。
-2. $W_Q,W_K,W_V,W_O$ 各 $D\times D$，共 $4D^2$；FFN $D\to4D\to D$， $4D^2+4D^2=8D^2$。
+2. $W_Q,W_K,W_V,W_O$ 各 $D\times D$，共 $4D^2$；FFN $D\to4D\to D$，$4D^2+4D^2=8D^2$。
 3. 点积方差随 $d_k$ 增大，softmax 会饱和、梯度变小；除以 $\sqrt{d_k}$ 把方差拉回 1。
 4. 旋转角度与位置成正比，两个位置的相对旋转只依赖位置差，内积因此只依赖相对距离。
 5. 缓存历史 token 的 K、V；避免重复计算，但需存储 $2BHTd_k$ 个元素。
-6. $\Delta W=BA$， $B\in\mathbb{R}^{D\times r}$、 $A\in\mathbb{R}^{r\times D}$，参数 $Dr+rD=2Dr$。
+6. $\Delta W=BA$，$B\in\mathbb{R}^{D\times r}$、$A\in\mathbb{R}^{r\times D}$，参数 $Dr+rD=2Dr$。
 
 </details>
 

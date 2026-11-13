@@ -17,23 +17,23 @@ llm_hooks: [gemm, prefill-decode, tensor-core, kv-cache-bandwidth]
 
 训练一个 7B 模型，一步要过 $4\times10^6$ 个 token。按 $6ND$ 估算，一步约
 
-```math
+$$
 6\times7\times10^9\times4\times10^6=1.7\times10^{17}\ \text{FLOPs}
-```
+$$
 
-按 **300 TFLOPS**（bf16 张量核量级）算，一步 $9.3$ 分钟；若 GEMM 只跑出峰值的 $`30\%`$，同样一步要 $31$ 分钟——一天差出 15 小时。
+按 **300 TFLOPS**（bf16 张量核量级）算，一步 $9.3$ 分钟；若 GEMM 只跑出峰值的 $30\%$，同样一步要 $31$ 分钟——一天差出 15 小时。
 
-同一块卡上，一层 FFN 的 GEMM 是 $[32768,4096]\times[4096,16384]$，算术强度约 $1500$– $3000$ FLOP/byte，远在拐点右侧；解码时 $M=1$ 的同一层只有约 $1$ FLOP/byte，被带宽卡死。
+同一块卡上，一层 FFN 的 GEMM 是 $[32768,4096]\times[4096,16384]$，算术强度约 $1500$–$3000$ FLOP/byte，远在拐点右侧；解码时 $M=1$ 的同一层只有约 $1$ FLOP/byte，被带宽卡死。
 
-这里的 300 TFLOPS 与 2 TB/s 都是 Roofline 的上界，不是实测值；估算的意义在于判断瓶颈落在哪一侧，而不是预测毫秒数。 $6ND$ 里的 $D$ 是训练 token 数、 $N$ 是参数量，系数 6 已把前向与反向都算进去。
+这里的 300 TFLOPS 与 2 TB/s 都是 Roofline 的上界，不是实测值；估算的意义在于判断瓶颈落在哪一侧，而不是预测毫秒数。$6ND$ 里的 $D$ 是训练 token 数、$N$ 是参数量，系数 6 已把前向与反向都算进去。
 
 **决定**：把 micro-batch 从 4 提到 16 换取更高算术强度，还是保持 4、用梯度累积？
 
-注意 $M$ 只占 FLOPs 的一个因子，却决定算术强度： $M$ 从 $32768$ 掉到 $32$，AI 从约 $3000$ 掉到约 $32$，跌破拐点，同一批 FLOPs 要多花几倍时间。
+注意 $M$ 只占 FLOPs 的一个因子，却决定算术强度：$M$ 从 $32768$ 掉到 $32$，AI 从约 $3000$ 掉到约 $32$，跌破拐点，同一批 FLOPs 要多花几倍时间。
 
 **代价**：显存只剩 18 GB 余量，提到 16 可能 OOM；降回去则 GPU 空转，机时按小时计费。
 
-**问题**：为什么同样一次矩阵乘， $M=4096$ 时算力受限、 $M=1$ 时带宽受限？分块到底在省什么？
+**问题**：为什么同样一次矩阵乘，$M=4096$ 时算力受限、$M=1$ 时带宽受限？分块到底在省什么？
 
 读完本节，你应该能回答三件事：
 
@@ -55,15 +55,15 @@ llm_hooks: [gemm, prefill-decode, tensor-core, kv-cache-bandwidth]
 ### 1.2 [Roofline](#ref-williams-2009)：两个天花板取较小者
 一个 kernel 的时间至少是
 
-```math
+$$
 T=\max\Big(\frac{\text{FLOPs}}{\text{峰值算力}},\ \frac{\text{Bytes}}{\text{带宽}}\Big)
-```
+$$
 
 把算术强度画在横轴、性能画在纵轴，就是**Roofline 模型**：低强度段是斜线（带宽决定），高强度段是平台（算力决定）。两条线的交点叫**拐点（ridge point）**，其横坐标是「峰值算力 / 带宽」。
 
 ![Roofline：带宽斜线与算力平台的交点](../figures/out/roofline.svg)
 
-<i>图：fp32（20 TFLOPS / 2 TB/s）与 bf16（300 TFLOPS / 2 TB/s）的两条 Roofline；拐点分别是 10 和 150 FLOP/byte。 $n=4096$ 的 GEMM 算术强度约 683，落在计算受限区。</i>
+*图：fp32（20 TFLOPS / 2 TB/s）与 bf16（300 TFLOPS / 2 TB/s）的两条 Roofline；拐点分别是 10 和 150 FLOP/byte。$n=4096$ 的 GEMM 算术强度约 683，落在计算受限区。*
 
 ### 1.3 它在现实世界里对应什么
 一次 GEMM 对应一座工厂的「每公斤原料的加工工时」：HBM 是原料仓库，带宽是叉车速度（字节/秒），寄存器与共享内存是工位旁的料箱，算术强度就是「每取 1 公斤原料，能加工多少工时」。
@@ -86,10 +86,10 @@ $n=4096$ 的方阵 GEMM 算术强度是 $n/6\approx683$，在两种拐点右侧�
 ### 2.1 GEMM 的形状
 **GEMM（general matrix multiply）** 是 BLAS 的 Level-3 原语：
 
-```math
+$$
 C\leftarrow \alpha AB+\beta C,\qquad
 A\in\mathbb{R}^{M\times K},\ B\in\mathbb{R}^{K\times N},\ C\in\mathbb{R}^{M\times N}
-```
+$$
 
 其中 $\alpha,\beta$ 是标量。形状记成 `[M, K] @ [K, N] -> [M, N]`；一次乘加算 2 个 FLOP（1 次乘、1 次加），所以总运算量是 $2MNK$。
 ### 2.2 BLAS 的三个层级
@@ -103,13 +103,13 @@ A\in\mathbb{R}^{M\times K},\ B\in\mathbb{R}^{K\times N},\ C\in\mathbb{R}^{M\time
 
 Level 3 的运算量按 $n^3$ 涨、数据量按 $n^2$ 涨，所以 $n$ 越大，每个字节被复用得越多。
 ### 2.3 算术强度
-对 GEMM，若只统计必须从显存读入的数据（ $A,B,C$ 各一遍）：
+对 GEMM，若只统计必须从显存读入的数据（$A,B,C$ 各一遍）：
 
-```math
+$$
 \text{AI}=\frac{2MNK}{4(MK+KN+MN)}\ \text{FLOP/byte}
-```
+$$
 
-$M=N=K=n$ 时 $\text{AI}=n/6$。 $n=4096$ 时是 $683$ FLOP/byte。这个数远大于拐点，所以大 GEMM 是计算受限。
+$M=N=K=n$ 时 $\text{AI}=n/6$。$n=4096$ 时是 $683$ FLOP/byte。这个数远大于拐点，所以大 GEMM 是计算受限。
 ### 2.4 内存层次
 GPU 的存储不是一块，而是一套层次：
 
@@ -128,105 +128,105 @@ GPU 的存储不是一块，而是一套层次：
 
 **为什么列主序会出现？** BLAS 源自 Fortran，按列连续存储；NumPy 默认行主序，调用 cuBLAS 时会用转置标志适配。这解释了为什么同一个矩阵在不同库里的「连续维度」可能不同。
 
-**为什么不用一个「万能 kernel」？** 形状差异太大： $M=1$ 的 GEMV 与 $M=N=K=4096$ 的 GEMM 瓶颈完全不同，前者访存受限、后者计算受限，必须用不同策略。
+**为什么不用一个「万能 kernel」？** 形状差异太大：$M=1$ 的 GEMV 与 $M=N=K=4096$ 的 GEMM 瓶颈完全不同，前者访存受限、后者计算受限，必须用不同策略。
 ### 3.1 反事实：换一种乘法顺序会坏在哪
 矩阵乘法在实数上满足结合律，**在代价上完全不满足**。取
 
-```math
+$$
 A\in\mathbb{R}^{4096\times64},\quad B\in\mathbb{R}^{64\times4096},\quad \mathbf{c}\in\mathbb{R}^{4096}
-```
+$$
 
 要算 $AB\mathbf{c}$（一个 $4096$ 维向量）：
 
-- $(AB)\mathbf{c}$：先算 $AB$， $2\times4096\times64\times4096=2.15\times10^9$ FLOPs，还要存一个 $4096\times4096$ 的中间矩阵（fp32 $67$ MB），再乘 $\mathbf{c}$ 花 $3.4\times10^7$；
-- $A(B\mathbf{c})$：先算 $B\mathbf{c}$， $2\times64\times4096=5.2\times10^5$ FLOPs，再乘 $A$ 花 $5.2\times10^5$。
+- $(AB)\mathbf{c}$：先算 $AB$，$2\times4096\times64\times4096=2.15\times10^9$ FLOPs，还要存一个 $4096\times4096$ 的中间矩阵（fp32 $67$ MB），再乘 $\mathbf{c}$ 花 $3.4\times10^7$；
+- $A(B\mathbf{c})$：先算 $B\mathbf{c}$，$2\times64\times4096=5.2\times10^5$ FLOPs，再乘 $A$ 花 $5.2\times10^5$。
 
 **$2.18\times10^9$ 对 $1.05\times10^6$，差 2000 倍。** 精确算术下两个结果相等；工程上一个要 $67$ MB 显存，另一个只要 $512$ KB。Transformer 推理里 $W_2\sigma(W_1\mathbf{x})$ 的顺序、LoRA 的 $BA\mathbf{x}$ 与 $(BA)\mathbf{x}$，选的都是便宜的那个。
 
-第二个反事实：**把 GEMM 拆成 $N$ 次 GEMV**。 $C$ 的每一列都可以看成一次 Level-2 的 GEMV， $n=4096$ 时每列都要把整个 $A$ 读一遍（ $4096^2\times4=67$ MB），4096 列共 $275$ GB 流量；按 $2$ TB/s 是 $137$ ms，而分块 GEMM 只要 $4.3$ GB、 $2.15$ ms。**同样的 FLOPs，换个组织方式差 60 倍**——这正是 BLAS 分层的意义。
+第二个反事实：**把 GEMM 拆成 $N$ 次 GEMV**。$C$ 的每一列都可以看成一次 Level-2 的 GEMV，$n=4096$ 时每列都要把整个 $A$ 读一遍（$4096^2\times4=67$ MB），4096 列共 $275$ GB 流量；按 $2$ TB/s 是 $137$ ms，而分块 GEMM 只要 $4.3$ GB、$2.15$ ms。**同样的 FLOPs，换个组织方式差 60 倍**——这正是 BLAS 分层的意义。
 
-第三个反事实：**换循环顺序**。三重循环 `i,k,j` 里 $B$ 的一整行能在寄存器与缓存里被复用；换成 `i,j,k` 后， $B$ 的访问步长是 $N\times4=16$ KB，每读一个元素就换一条 cache line。一条 64 B 的 line 只装 16 个连续 $j$，如果 $j$ 方向不做 16 的分块，同一行的下次复用要等「下一轮 $j$」——中间隔着 $K=4096$ 次访问、约 $256$ KB 的 line 集，超过 L1，只能指望 L2。按经验，这会让同一个 kernel 慢 2–5 倍。
+第三个反事实：**换循环顺序**。三重循环 `i,k,j` 里 $B$ 的一整行能在寄存器与缓存里被复用；换成 `i,j,k` 后，$B$ 的访问步长是 $N\times4=16$ KB，每读一个元素就换一条 cache line。一条 64 B 的 line 只装 16 个连续 $j$，如果 $j$ 方向不做 16 的分块，同一行的下次复用要等「下一轮 $j$」——中间隔着 $K=4096$ 次访问、约 $256$ KB 的 line 集，超过 L1，只能指望 L2。按经验，这会让同一个 kernel 慢 2–5 倍。
 
 ## 4. 性质与推导
 ### 4.1 FLOPs 与访存量
 GEMM 有 $MN$ 个输出元素，每个元素要做 $K$ 次乘加，所以
 
-```math
+$$
 \text{FLOPs}=2MNK
-```
+$$
 
-按 $C=\alpha AB$（ $\beta=0$）计， $A,B$ 各读一次、 $C$ 写一次，访存量是 $4(MK+KN+MN)$ 字节（fp32）。 $M=N=K=4096$ 时：
+按 $C=\alpha AB$（$\beta=0$）计，$A,B$ 各读一次、$C$ 写一次，访存量是 $4(MK+KN+MN)$ 字节（fp32）。$M=N=K=4096$ 时：
 
-```math
+$$
 \text{FLOPs}=1.374\times10^{11},\qquad \text{Bytes}=4\times3\times4096^2=2.013\times10^{8}
-```
+$$
 ### 4.2 不分块时为什么慢
-最朴素的三重循环，每做一次乘加都要取 $a_{ik}$ 与 $b_{kj}$ 各 4 字节，即 8 字节换 2 FLOP，算术强度只有 $0.25$。若完全不靠缓存， $1.37\times10^{11}$ FLOP 要搬 $5.5\times10^{11}$ 字节——按 $2$ TB/s 需要 $0.275$ s。
+最朴素的三重循环，每做一次乘加都要取 $a_{ik}$ 与 $b_{kj}$ 各 4 字节，即 8 字节换 2 FLOP，算术强度只有 $0.25$。若完全不靠缓存，$1.37\times10^{11}$ FLOP 要搬 $5.5\times10^{11}$ 字节——按 $2$ TB/s 需要 $0.275$ s。
 
 真实硬件有缓存，不会这么惨；但这个极端说明：**不复用就必然访存受限**。
 ### 4.3 分块把强度提高 $b/4$
 把输出切成 $b\times b$ 的 tile。每个 tile 需要 $A$ 的一条 $b\times K$ 面板和 $B$ 的一条 $K\times b$ 面板，共 $2bK$ 个元素；tile 的个数是 $MN/b^2$。因此总访存量是
 
-```math
+$$
 4\times\frac{2bKMN}{b^2}=\frac{8MNK}{b}\ \text{字节}
-```
+$$
 
 与 §4.1 的 FLOPs 相除，得
 
-```math
+$$
 \text{AI}=\frac{2MNK}{8MNK/b}=\frac{b}{4}
-```
+$$
 
-读作：**tile 越大，每个字节被复用得越多**。 $b=128$ 时 AI 为 $32$； $b=256$ 时为 $64$。当然，tile 不能无限大——它必须塞进共享内存/寄存器，且要留够并行度。
+读作：**tile 越大，每个字节被复用得越多**。$b=128$ 时 AI 为 $32$；$b=256$ 时为 $64$。当然，tile 不能无限大——它必须塞进共享内存/寄存器，且要留够并行度。
 ### 4.4 Roofline 的判据
-以 A100 量级为例：fp32 峰值约 $20$ TFLOPS、显存带宽约 $2$ TB/s，拐点约 $10$ FLOP/byte。 $n=4096$ 的 GEMM AI 约 $683$，远在拐点右侧，计算受限； $M=1$ 的 GEMV AI 约 $1$（bf16 权重、忽略输出读写），远在左侧，访存受限。
+以 A100 量级为例：fp32 峰值约 $20$ TFLOPS、显存带宽约 $2$ TB/s，拐点约 $10$ FLOP/byte。$n=4096$ 的 GEMM AI 约 $683$，远在拐点右侧，计算受限；$M=1$ 的 GEMV AI 约 $1$（bf16 权重、忽略输出读写），远在左侧，访存受限。
 ## 5. 例子
-### 5.1 手算： $M=N=K=4096$ 的 GEMM
-```math
+### 5.1 手算：$M=N=K=4096$ 的 GEMM
+$$
 \text{FLOPs}=2\times4096^3=1.374\times10^{11}
-```
+$$
 
-按 $300$ TFLOPS（bf16 张量核量级）算： $1.374\times10^{11}/3\times10^{14}=0.458$ ms。按 $2$ TB/s 搬 $201$ MB： $2.013\times10^{8}/2\times10^{12}=0.101$ ms。**计算时间是访存时间的 4.5 倍**，所以优化重点是让张量核别闲着。
+按 $300$ TFLOPS（bf16 张量核量级）算：$1.374\times10^{11}/3\times10^{14}=0.458$ ms。按 $2$ TB/s 搬 $201$ MB：$2.013\times10^{8}/2\times10^{12}=0.101$ ms。**计算时间是访存时间的 4.5 倍**，所以优化重点是让张量核别闲着。
 
 若不分块、按 $0.25$ FLOP/byte 估算，访存时间会变成约 $0.275$ s；分块 $b=128$ 后访存量降到 $4.3$ GB，时间约 $2.15$ ms——仍然比「理想一遍」的 $0.101$ ms 大，但已经从「百毫秒级」回到「毫秒级」。
 ### 5.2 手算：batch=1 时为什么反过来
-解码时一次只处理一个 token： $M=1$、 $N=K=4096$。此时
+解码时一次只处理一个 token：$M=1$、$N=K=4096$。此时
 
-```math
+$$
 \text{FLOPs}=2\times1\times4096\times4096=3.355\times10^{7}
-```
+$$
 
 权重 $W\in\mathbb{R}^{4096\times4096}$ 用 bf16 存是 $4096^2\times2=33.55$ MB。忽略 $\mathbf{x}$ 与输出 $\mathbf{y}$ 的读写，算术强度约
 
-```math
+$$
 \frac{3.355\times10^{7}}{3.355\times10^{7}}\approx1\ \text{FLOP/byte}
-```
+$$
 
 按 $2$ TB/s 读权重需要 $16.8$ µs；按 $300$ TFLOPS 算只要 $0.11$ µs。**访存是瓶颈，差了两个数量级**。把 batch 提到 $64$，FLOPs 变 $64$ 倍、权重仍读一遍，AI 升到约 $64$，依然在拐点左侧；直到 batch 足够大，才会重新变成计算受限。
 ### 5.3 场景：cuBLAS 在做什么
 `cublasSgemm` 不会只跑一个 kernel。它根据 $M,N,K$、数据类型、转置标志选择：
 
 - **tile 尺寸与线程块形状**：如 $128\times128\times32$，匹配共享内存与寄存器预算；
-- **split-K**： $K$ 很大而 $M,N$ 很小时，把 $K$ 切给多个 block 并行，再原子累加；
+- **split-K**：$K$ 很大而 $M,N$ 很小时，把 $K$ 切给多个 block 并行，再原子累加；
 - **stream-K**：把 tile 工作重新分配到固定数量的 CTA，减少尾效应；
 - **张量核指令**：bf16/fp16 输入、fp32 累加，一条 MMA 指令完成一个小矩阵块。
 
 CUTLASS 把这些策略写成模板；cuBLAS 则是闭源的高度调优版本。FlashAttention 的思路类似：把 $T\times T$ 的注意力矩阵切块，在片上完成 softmax，避免把中间矩阵写回显存。
 
 ### 5.4 场景闭环：一步训练怎么被 GEMM 决定
-**输入**：7B 模型、 $D=4096$，micro-batch 取 $B\cdot T=32768$ 个 token，bf16 权重、fp32 累加。
+**输入**：7B 模型、$D=4096$，micro-batch 取 $B\cdot T=32768$ 个 token，bf16 权重、fp32 累加。
 
-**计算**（只数一层 FFN， $D\to4D\to D$）：
+**计算**（只数一层 FFN，$D\to4D\to D$）：
 
-```math
+$$
 \text{FLOPs}=2\times32768\times4096\times16384\times2\approx8.8\times10^{12}
-```
+$$
 
 两个 GEMM 各 $4.4\times10^{12}$。算术强度按 bf16 计约 $3000$ FLOP/byte，远在拐点 $150$ 右侧，所以「算」是瓶颈：按 $300$ TFLOPS 约 $29$ ms。
 
 **输出**：这一层的吞吐约 $32768/0.029\approx1.1\times10^6$ token/s。全模型每 token 约 $6N$ FLOPs，量级相同，这里不展开。
 
-**成本**：显存大头是激活： $32768\times16384$ 的中间张量 bf16 就是 $1.07$ GB，每个 FFN 都要留一份给反向。micro-batch 翻倍，激活翻倍——这就是 80 GB 卡上「只能开 4 个 micro-batch」的算术来源。
+**成本**：显存大头是激活：$32768\times16384$ 的中间张量 bf16 就是 $1.07$ GB，每个 FFN 都要留一份给反向。micro-batch 翻倍，激活翻倍——这就是 80 GB 卡上「只能开 4 个 micro-batch」的算术来源。
 
 **失败条件**：若某个 micro-batch 只剩 $32$ 个 token（不整除的尾批），同一层 GEMM 的算术强度掉到约 $32$，跌破拐点 $150$，同样的 FLOPs 要付带宽时间。兜底是让 micro-batch 整除、或把尾批 pad 到固定形状。
 ## 6. 常见误区
@@ -246,23 +246,23 @@ CUTLASS 把这些策略写成模板；cuBLAS 则是闭源的高度调优版本�
 - 关联：[11.7 KV Cache](../11-大模型专题/07-KVCache.md) —— 解码的瓶颈从算力转向带宽。
 - 关联：[11.4 Attention](../11-大模型专题/04-Attention-下-softmax与多头.md) —— $QK^\top$ 与 $PV$ 是 batched GEMM。
 ## 8. 通往大模型：prefill 与 decode 是两种负载
-**出现位置一：线性层。** 一个 token 的隐藏状态是 $\mathbf{x}\in\mathbb{R}^{D}$，一层 FFN 是 $W_1\in\mathbb{R}^{4D\times D}$、 $W_2\in\mathbb{R}^{D\times 4D}$。把 $BT$ 个 token 堆成 $X\in\mathbb{R}^{BT\times D}$，就是两次 GEMM： $XW_1^\top$ 与 $(\cdot)W_2^\top$。 $D=4096$、 $BT=16384$ 时，单次 GEMM 的 FLOPs 是 $2\times16384\times4096\times16384\approx2.2\times10^{12}$。
+**出现位置一：线性层。** 一个 token 的隐藏状态是 $\mathbf{x}\in\mathbb{R}^{D}$，一层 FFN 是 $W_1\in\mathbb{R}^{4D\times D}$、$W_2\in\mathbb{R}^{D\times 4D}$。把 $BT$ 个 token 堆成 $X\in\mathbb{R}^{BT\times D}$，就是两次 GEMM：$XW_1^\top$ 与 $(\cdot)W_2^\top$。$D=4096$、$BT=16384$ 时，单次 GEMM 的 FLOPs 是 $2\times16384\times4096\times16384\approx2.2\times10^{12}$。
 
-**出现位置二：prefill 是计算受限。** $B=8$、 $T=2048$、 $D=4096$ 时 $BT=16384$，矩阵足够「胖」，AI 远高于拐点，GPU 能跑满张量核。这时提升吞吐靠更大的 batch、更快的卡、更低的精度（bf16/fp8）。
+**出现位置二：prefill 是计算受限。** $B=8$、$T=2048$、$D=4096$ 时 $BT=16384$，矩阵足够「胖」，AI 远高于拐点，GPU 能跑满张量核。这时提升吞吐靠更大的 batch、更快的卡、更低的精度（bf16/fp8）。
 
-**出现位置三：decode 是访存受限。** 每生成一个 token， $M=1$，要读完整层权重。7B 模型 bf16 约 $14$ GB，按 $2$ TB/s 读一遍是 $7$ ms，理论上限约 $143$ token/s；按 $1$ TB/s 则约 $71$ token/s。**这就是「decode 速度 ≈ 带宽 / 模型字节数」的由来。** KV Cache 也要读： $L=32$、 $H=32$、 $T=4096$、 $d_k=128$ 时每 token 的 KV 约 $512$ KB，长上下文下它甚至超过权重流量。
+**出现位置三：decode 是访存受限。** 每生成一个 token，$M=1$，要读完整层权重。7B 模型 bf16 约 $14$ GB，按 $2$ TB/s 读一遍是 $7$ ms，理论上限约 $143$ token/s；按 $1$ TB/s 则约 $71$ token/s。**这就是「decode 速度 ≈ 带宽 / 模型字节数」的由来。** KV Cache 也要读：$L=32$、$H=32$、$T=4096$、$d_k=128$ 时每 token 的 KV 约 $512$ KB，长上下文下它甚至超过权重流量。
 
 **出现位置四：张量核与精度。** bf16/fp16 的 MMA 指令以 fp32 累加，吞吐通常是 fp32 CUDA 核心的数倍到十几倍。代价是输入先被舍入（[第 10.1 节](01-浮点数与误差.md)）；若某层 $\kappa$ 很大，低精度的误差会被放大（[第 10.2 节](02-矩阵范数与条件数.md)）。这就是混合精度要保留 fp32 主权重的原因。
 
-**可检验结论**：对固定模型，decode 的 token/s 上界近似为「显存带宽 ÷ 每步需读字节数」，与峰值 FLOPs 基本无关；prefill 的吞吐则随 $BT$ 增大而上升，直到计算受限。你可以在 lab10 里用不同 $M$ 的 GEMM 计时看到这条曲线： $M$ 从 1 增到 1024，GFLOPS 从「带宽限制」爬升到「算力平台」。
+**可检验结论**：对固定模型，decode 的 token/s 上界近似为「显存带宽 ÷ 每步需读字节数」，与峰值 FLOPs 基本无关；prefill 的吞吐则随 $BT$ 增大而上升，直到计算受限。你可以在 lab10 里用不同 $M$ 的 GEMM 计时看到这条曲线：$M$ 从 1 增到 1024，GFLOPS 从「带宽限制」爬升到「算力平台」。
 
 **如果这一步算错，用户会看到什么。** 训练侧：GPU 利用率忽高忽低（同一个 step 有时跑满张量核、有时只有峰值的一小部分），扩 batch 后吞吐不升反降，或者 OOM 出现在「形状不能被 tile 整除」的最后一个 micro-batch。推理侧：首 token 延迟正常（prefill 计算受限），但每秒 token 数远低于「带宽 ÷ 模型字节数」的估算，说明 decode 被切成了太多小 kernel，或 KV Cache 的读写没有合并。这些都是形状与分块的问题，不是「GPU 不够快」。
 
 ## 9. 练习
 1. **概念**：为什么 BLAS Level 3 比 Level 2 更容易跑满峰值？用算术强度解释。
-2. **计算**： $M=N=K=1024$ 的 fp32 GEMM，FLOPs、最小访存字节数、算术强度各是多少？在 $20$ TFLOPS/$2$ TB/s 的机器上，理论时间是算力还是带宽决定？
-3. **计算**：解码时 $M=1$、 $N=K=4096$，权重 bf16。算术强度约多少？若带宽 $2$ TB/s，读一遍权重最少多少时间？
-4. **场景**： $B=8$、 $T=2048$、 $D=4096$ 的一层 FFN（ $D\to4D\to D$），两次 GEMM 共多少 FLOPs？若 GPU 峰值 $300$ TFLOPS，理论最短时间是多少？
+2. **计算**：$M=N=K=1024$ 的 fp32 GEMM，FLOPs、最小访存字节数、算术强度各是多少？在 $20$ TFLOPS/$2$ TB/s 的机器上，理论时间是算力还是带宽决定？
+3. **计算**：解码时 $M=1$、$N=K=4096$，权重 bf16。算术强度约多少？若带宽 $2$ TB/s，读一遍权重最少多少时间？
+4. **场景**：$B=8$、$T=2048$、$D=4096$ 的一层 FFN（$D\to4D\to D$），两次 GEMM 共多少 FLOPs？若 GPU 峰值 $300$ TFLOPS，理论最短时间是多少？
 5. **开放**：分块尺寸 $b$ 越大，AI 越高，但为什么不能一直增大？列出至少三个限制，并说明它们如何影响实际 kernel。
 
 <details>
@@ -277,10 +277,10 @@ CUTLASS 把这些策略写成模板；cuBLAS 则是闭源的高度调优版本�
 </details>
 
 ## 10. 一页速记
-- GEMM： $C=\alpha AB+\beta C$， $A:[M,K]$、 $B:[K,N]$、 $C:[M,N]$，FLOPs $=2MNK$。
+- GEMM：$C=\alpha AB+\beta C$，$A:[M,K]$、$B:[K,N]$、$C:[M,N]$，FLOPs $=2MNK$。
 - BLAS L1/L2/L3 分别对应向量、矩阵-向量、矩阵-矩阵；只有 L3 有高复用。
 - 算术强度 = FLOPs / Bytes；Roofline 时间取「算力」与「带宽」两个上界的较大者。
-- 分块让 AI 从 $0.25$ 升到 $b/4$； $b=128$ 时约 $32$ FLOP/byte。
+- 分块让 AI 从 $0.25$ 升到 $b/4$；$b=128$ 时约 $32$ FLOP/byte。
 - prefill 计算受限、decode 访存受限；decode 速度上界约为带宽除以每步读取字节数。
 - **物理意义 / 现实对应**：算术强度 = 每搬 1 字节能换多少次浮点运算；拐点 = 峰值算力 ÷ 带宽，是「算得动」与「搬得动」的分界线。
 

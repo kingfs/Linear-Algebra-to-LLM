@@ -60,27 +60,27 @@ RWKV 更像“带遗忘的摘要”：旧状态按指数衰减，新信息按门
 
 标准 attention：
 
-```math
+$$
 O_t=\frac{\sum_{s\le t}\exp(q_t^\top k_s)v_s}{\sum_{s\le t}\exp(q_t^\top k_s)}
-```
+$$
 
 把 $\exp(q^\top k)$ 换成核特征 $\phi(q)^\top\phi(k)$：
 
-```math
+$$
 O_t=\frac{\phi(q_t)^\top\sum_{s\le t}\phi(k_s)v_s^\top}{\phi(q_t)^\top\sum_{s\le t}\phi(k_s)}
-```
+$$
 
 定义状态：
 
-```math
+$$
 S_t=S_{t-1}+\phi(k_t)v_t^\top,\qquad z_t=z_{t-1}+\phi(k_t)
-```
+$$
 
 则：
 
-```math
+$$
 O_t=\frac{\phi(q_t)^\top S_t}{\phi(q_t)^\top z_t}
-```
+$$
 
 - $S_t\in\mathbb{R}^{d_k\times d_v}$：固定大小状态；
 - 计算 $O(Td_kd_v)$；
@@ -90,9 +90,9 @@ O_t=\frac{\phi(q_t)^\top S_t}{\phi(q_t)^\top z_t}
 
 训练时可以并行：
 
-```math
+$$
 S_t=\sum_{s\le t}\phi(k_s)v_s^\top
-```
+$$
 
 用前缀和/分块矩阵乘算；推理时逐 token 更新 $S_t$。这就是“训练像 Transformer，推理像 RNN”。
 
@@ -100,10 +100,10 @@ S_t=\sum_{s\le t}\phi(k_s)v_s^\top
 
 RWKV 的 time-mix 是一个带指数衰减的加权 key-value 递推（WKV）：
 
-```math
+$$
 S_t=a_t\odot S_{t-1}+b_t\otimes v_t,\qquad
 o_t=q_t^\top S_t
-```
+$$
 
 - $a_t$：衰减/保留门（与位置/通道有关）；
 - $b_t$：写入门（由 key 得到）；
@@ -128,8 +128,8 @@ o_t=q_t^\top S_t
 
 因为标准 attention 的两个成本都来自“两两比较”：
 
-- 计算： $T^2$ 个分数；
-- 显存： $T$ 个 K/V（每层）。
+- 计算：$T^2$ 个分数；
+- 显存：$T$ 个 K/V（每层）。
 
 线性 attention 把“比较”换成“累加”：
 
@@ -156,11 +156,11 @@ RWKV 在此基础上加入**遗忘/门控**，让模型能“丢掉旧信息”�
 | 线性 attention | $O(TD^2)$ | $O(D^2)$ | 是（前缀和） |
 | RWKV | $O(TD^2)$ | $O(D^2)$ | 是（扫描/分块） |
 
-当 $T\gg D$ 时，线性 attention 更省；当 $T$ 小、 $D$ 大时， $TD^2$ 可能更大。
+当 $T\gg D$ 时，线性 attention 更省；当 $T$ 小、$D$ 大时，$TD^2$ 可能更大。
 
 ### 4.2 为什么状态是 $D\times D$
 
-$S_t=\sum \phi(k_s)v_s^\top$： $\phi(k_s)\in\mathbb{R}^{d_k}$， $v_s\in\mathbb{R}^{d_v}$，所以 $S_t$ 是 $d_k\times d_v$。多头时每个头一个状态。
+$S_t=\sum \phi(k_s)v_s^\top$：$\phi(k_s)\in\mathbb{R}^{d_k}$，$v_s\in\mathbb{R}^{d_v}$，所以 $S_t$ 是 $d_k\times d_v$。多头时每个头一个状态。
 
 ### 4.3 数值稳定
 
@@ -168,22 +168,22 @@ $S_t=\sum \phi(k_s)v_s^\top$： $\phi(k_s)\in\mathbb{R}^{d_k}$， $v_s\in\mathbb
 
 ### 4.4 表达力边界
 
-线性 attention 的核是“可分解”的： $\phi(q)^\top\phi(k)$，不能表示任意 $q,k$ 的交互。这限制了精确匹配/检索。混合少量全量 attention 可以补。
+线性 attention 的核是“可分解”的：$\phi(q)^\top\phi(k)$，不能表示任意 $q,k$ 的交互。这限制了精确匹配/检索。混合少量全量 attention 可以补。
 
 ## 5. 例子
 
 ### 5.1 128k 的账
 
-标准 attention 7B、32 层、 $H_{kv}=32,d_k=128$：128k KV 约 64 GiB。  
+标准 attention 7B、32 层、$H_{kv}=32,d_k=128$：128k KV 约 64 GiB。  
 线性 attention/RWKV：每头状态 $d_k\times d_v$（例如 $128\times128$ 元素、fp16 约 32 KiB），32 个头每层约 1 MiB，32 层约 32 MiB，与 $T$ 无关。
 
 ### 5.2 RWKV 的 token shift
 
 RWKV 在 time-mix/channel-mix 前做 token shift：
 
-```math
+$$
 \tilde x_t=(1-\mu)x_t+\mu x_{t-1}
-```
+$$
 
 让当前 token 混合前一个 token 的信息，补局部模式；这是它用很小的成本获得“短程卷积”效果的方式。
 
@@ -226,7 +226,7 @@ RWKV 在 time-mix/channel-mix 前做 token shift：
    RWKV 的 WKV 可以写成扫描/分块形式，训练可并行。
 
 4. **“线性 attention 一定更快”**  
-   短序列/大 $D$ 时， $TD^2$ 可能大于 $T^2D$；kernel 效率也重要。
+   短序列/大 $D$ 时，$TD^2$ 可能大于 $T^2D$；kernel 效率也重要。
 
 5. **“RWKV 能完全替代 Transformer”**  
    精确检索弱；实际多为混合/特定场景。
@@ -243,7 +243,7 @@ RWKV 在 time-mix/channel-mix 前做 token shift：
 
 **出现位置**：RWKV/RetNet/GLA/DeltaNet 模型、边缘推理、长流式应用；Qwen3.8-Flash-Next 的 GatedDeltaNet 属于这一类线性/递归 mixer。
 
-**形状**： $Q,K,V\in\mathbb{R}^{B\times H\times T\times d}$；状态 $S\in\mathbb{R}^{B\times H\times d_k\times d_v}$。
+**形状**：$Q,K,V\in\mathbb{R}^{B\times H\times T\times d}$；状态 $S\in\mathbb{R}^{B\times H\times d_k\times d_v}$。
 
 **为什么需要**：不懂线性 attention，你会把“没有 KV”当成“没有状态”，把“线性”当成“一定快”；其实是用状态容量换成本。
 
@@ -269,7 +269,7 @@ def la_step(S, z, q, k, v, phi):
 <details>
 <summary>参考答案</summary>
 
-1. $S_t=S_{t-1}+\phi(k_t)v_t^\top$， $O_t=\phi(q_t)^\top S_t/(\phi(q_t)^\top z_t)$；所有历史先累加，不需要两两打分。
+1. $S_t=S_{t-1}+\phi(k_t)v_t^\top$，$O_t=\phi(q_t)^\top S_t/(\phi(q_t)^\top z_t)$；所有历史先累加，不需要两两打分。
 2. $O(TD^2)$；短 $T$/大 $D$ 时可能大于 $O(T^2D)$。
 3. RWKV 的 WKV 是带指数衰减/门控的线性 attention 递推；本质相同，参数化不同。
 4. 核化状态是有损摘要；混合少量全量 attention 或检索模块。
@@ -279,7 +279,7 @@ def la_step(S, z, q, k, v, phi):
 
 ## 10. 一页速记
 
-- 线性 attention： $S_t=S_{t-1}+\phi(k_t)v_t^\top$， $O_t=\phi(q_t)^\top S_t/(\phi(q_t)^\top z_t)$。
+- 线性 attention：$S_t=S_{t-1}+\phi(k_t)v_t^\top$，$O_t=\phi(q_t)^\top S_t/(\phi(q_t)^\top z_t)$。
 - 计算 $O(TD^2)$，状态 $O(D^2)$，无 KV；训练可并行，推理像 RNN。
 - RWKV = 带衰减/门控的 WKV + token shift；边缘/流式友好。
 - 弱点是精确检索/复制；混合 attention 可补。

@@ -56,7 +56,7 @@ flowchart TD
 
 ## 一条主线
 
-```math
+$$
 \underbrace{X\in\mathbb{R}^{n\times D}}_{\text{样本}}
 \xrightarrow{\ \hat{\boldsymbol\mu},\ \hat\Sigma\ }
 \underbrace{\mathcal{N}(\boldsymbol\mu,\Sigma)}_{\text{椭圆}}
@@ -64,7 +64,7 @@ flowchart TD
 \underbrace{V,\Lambda}_{\text{主轴/方差}}
 \xrightarrow{\ \Lambda^{-1/2}V^\top\ }
 \underbrace{\operatorname{Cov}(\mathbf{z})=I}_{\text{白化}}
-```
+$$
 
 **同一个 $\Sigma$：在 9.2 是等高线，在 9.3 是主轴，在 9.4 是要被消掉的对象。**
 
@@ -72,17 +72,17 @@ flowchart TD
 
 | 位置 | 用到的数学 | 形状/量级 |
 |---|---|---|
-| 激活统计 | 样本均值、协方差 | $[N,D]\to[D,D]$， $D=4096$ 时 16.7M 个数 |
+| 激活统计 | 样本均值、协方差 | $[N,D]\to[D,D]$，$D=4096$ 时 16.7M 个数 |
 | LayerNorm / RMSNorm | 逐 token 的标量均值/方差 | 每个 token $O(D)$ |
 | 表征可视化/压缩 | PCA、解释方差比 | $V_k\in[D,k]$ |
 | KV Cache 低秩 | 截断 SVD / PCA | 压缩比由奇异值谱决定 |
 | 扩散/VAE 采样 | 高斯先验、Cholesky | $\mathbf{x}=\boldsymbol\mu+L\mathbf{z}$ |
-| 解码 | softmax 温度、马尔可夫链 | logits $[B,T,V]$， $V\sim10^5$ |
+| 解码 | softmax 温度、马尔可夫链 | logits $[B,T,V]$，$V\sim10^5$ |
 
 ## 自测（读完再做）
 
-1. 为什么样本协方差除以 $n-1$？ $`n<D`$ 时会发生什么？
-2. $`\Sigma=\begin{bmatrix}2&1\\1&2\end{bmatrix}`$ 的特征值、椭圆半轴、相关系数各是多少？
+1. 为什么样本协方差除以 $n-1$？$n<D$ 时会发生什么？
+2. $\Sigma=\begin{bmatrix}2&1\\1&2\end{bmatrix}$ 的特征值、椭圆半轴、相关系数各是多少？
 3. PCA 为什么必须先中心化？若第一主成分解释 90% 方差，相对重建误差是多少？
 4. 白化与标准化有什么区别？PCA 白化与 ZCA 白化又差在哪？
 5. 行随机矩阵的稳态方程是什么？为什么是 $\boldsymbol\pi P=\boldsymbol\pi$ 而不是 $P\boldsymbol\pi=\boldsymbol\pi$？
@@ -91,11 +91,11 @@ flowchart TD
 <details>
 <summary>自测答案</summary>
 
-1. 样本均值用掉一个自由度，离差平方和的期望是 $(n-1)\sigma^2$，除 $n-1$ 才无偏。 $`n<D`$ 时中心化矩阵秩 $\le n-1$，协方差奇异，不能求逆、写密度或做全白化。
-2. 特征值 $3$ 与 $1$；半轴 $\sqrt3\approx1.732$ 与 $1$，方向 $(1,1)/\sqrt2$、 $(1,-1)/\sqrt2$；相关系数 $\rho=1/(\sqrt2\cdot\sqrt2)=0.5$。
+1. 样本均值用掉一个自由度，离差平方和的期望是 $(n-1)\sigma^2$，除 $n-1$ 才无偏。$n<D$ 时中心化矩阵秩 $\le n-1$，协方差奇异，不能求逆、写密度或做全白化。
+2. 特征值 $3$ 与 $1$；半轴 $\sqrt3\approx1.732$ 与 $1$，方向 $(1,1)/\sqrt2$、$(1,-1)/\sqrt2$；相关系数 $\rho=1/(\sqrt2\cdot\sqrt2)=0.5$。
 3. 不中心化时第一主成分偏向均值方向，整体偏移被误当成方差。相对重建误差是 $\sqrt{1-0.9}\approx0.316$（Frobenius 意义）。
 4. 标准化只除以各维标准差，得到相关系数矩阵；白化还要旋转去相关，得到单位阵。PCA 白化输出轴对齐主成分，ZCA 白化保留原坐标方向，两者相差旋转 $V$。
-5. $\boldsymbol\pi P=\boldsymbol\pi$， $\pi_i\ge0$， $\sum_i\pi_i=1$。因为本节约定每行是「从该状态出发的去向分布」，分布左乘行向量；列随机的 6.6 写作 $P\boldsymbol\pi=\boldsymbol\pi$，本质是转置。
+5. $\boldsymbol\pi P=\boldsymbol\pi$，$\pi_i\ge0$，$\sum_i\pi_i=1$。因为本节约定每行是「从该状态出发的去向分布」，分布左乘行向量；列随机的 6.6 写作 $P\boldsymbol\pi=\boldsymbol\pi$，本质是转置。
 6. $P_{i\to j}\propto\exp(z_j/T)$ 在 $T\to0$ 时退化为 one-hot，链变成确定性映射；高概率 token 被反复选中，容易进入「A→B→A→B」式循环。
 
 </details>

@@ -18,9 +18,9 @@ llm_hooks: [rope, long-context, position]
 
 ## 0. 场景引入
 
-「猫追狗」和「狗追猫」的 token 集合相同，attention 只看内容时输出一样——顺序信息必须由外部注入。早期 Transformer 把位置向量直接加到 embedding 上（[Vaswani 等, 2017](#ref-vaswani-2017)）： $H^{(0)}=E[T]+P$（ $P$ 是位置向量），而 [RoPE](#ref-su-2021) 换成了旋转。
+「猫追狗」和「狗追猫」的 token 集合相同，attention 只看内容时输出一样——顺序信息必须由外部注入。早期 Transformer 把位置向量直接加到 embedding 上（[Vaswani 等, 2017](#ref-vaswani-2017)）：$H^{(0)}=E[T]+P$（$P$ 是位置向量），而 [RoPE](#ref-su-2021) 换成了旋转。
 
-现在有一个具体现场：一个代码助手要给整个仓库做问答，仓库是 3.2 万 token 的源码加文档；模型训练时的上下文只有 8000， $d_k=128$， $\text{base}=10^4$，32 层。
+现在有一个具体现场：一个代码助手要给整个仓库做问答，仓库是 3.2 万 token 的源码加文档；模型训练时的上下文只有 8000，$d_k=128$，$\text{base}=10^4$，32 层。
 
 上线前要拍板：把位置 0 到 31999 直接喂进去（裸外推），还是先把位置除以 4（位置插值 PI），还是把 base 从 1 万调到 4 万（NTK-aware 缩放）？
 
@@ -48,49 +48,49 @@ llm_hooks: [rope, long-context, position]
 
 ### 1.1 它在现实世界里对应什么
 
-RoPE 像一排转速不同的表盘：每一对维度是一只指针，位置是时间，第 $i$ 只表盘的角速度是 $\theta_i$；token 在位置 $m$ 时，指针转过 $m\theta_i$。两个 token 的匹配分数只看两只指针的夹角，而夹角只由「时间差」 $n-m$ 决定。
+RoPE 像一排转速不同的表盘：每一对维度是一只指针，位置是时间，第 $i$ 只表盘的角速度是 $\theta_i$；token 在位置 $m$ 时，指针转过 $m\theta_i$。两个 token 的匹配分数只看两只指针的夹角，而夹角只由「时间差」$n-m$ 决定。
 
-量级上， $d_k=128$、base $=10^4$ 时，最快的表盘 $\theta_0=1$ rad/token，转一圈只要 $2\pi\approx6.3$ 个 token；最慢的 $\theta_{63}=(10^4)^{-126/128}\approx1.16\times10^{-4}$，转一圈要约 $2\pi/\theta_{63}\approx5.4\times10^4$ 个 token。快表盘分辨相邻词序，慢表盘分辨段落级远近——这就是「多尺度」的具体含义。
+量级上，$d_k=128$、base $=10^4$ 时，最快的表盘 $\theta_0=1$ rad/token，转一圈只要 $2\pi\approx6.3$ 个 token；最慢的 $\theta_{63}=(10^4)^{-126/128}\approx1.16\times10^{-4}$，转一圈要约 $2\pi/\theta_{63}\approx5.4\times10^4$ 个 token。快表盘分辨相邻词序，慢表盘分辨段落级远近——这就是「多尺度」的具体含义。
 
-**这个类比在哪里失效**：表盘可以无限精确地读数，而 fp32 存 $\cos(m\theta)$ 时， $m$ 大、 $\theta$ 小，相位分辨率会被尾数吃掉；更重要的是，模型只在训练见过的角度区间里学过「怎么读表」，转到新角度并不自动正确。
+**这个类比在哪里失效**：表盘可以无限精确地读数，而 fp32 存 $\cos(m\theta)$ 时，$m$ 大、$\theta$ 小，相位分辨率会被尾数吃掉；更重要的是，模型只在训练见过的角度区间里学过「怎么读表」，转到新角度并不自动正确。
 
 ## 2. 定义
 
 ### 2.1 二维旋转
 
-```math
+$$
 R(\theta)=\begin{bmatrix}\cos\theta&-\sin\theta\\\sin\theta&\cos\theta\end{bmatrix}
-```
+$$
 
-性质： $R(\theta)^\top R(\phi)=R(\phi-\theta)$， $\det R=1$， $R^\top=R^{-1}$。
+性质：$R(\theta)^\top R(\phi)=R(\phi-\theta)$，$\det R=1$，$R^\top=R^{-1}$。
 
 ### 2.2 RoPE 的频率
 
 把 $d_k$ 维分成 $d_k/2$ 个二维对。第 $i$ 对的旋转角：
 
-```math
+$$
 \theta_i=\text{base}^{-2i/d_k},\qquad i=0,1,\dots,d_k/2-1
-```
+$$
 
 位置 $m$ 的总旋转：
 
-```math
+$$
 R_m=\operatorname{diag}\big(R(m\theta_0),R(m\theta_1),\dots\big)
-```
+$$
 
 对 query/key：
 
-```math
+$$
 \mathbf{q}_m'=R_m\mathbf{q}_m,\qquad \mathbf{k}_n'=R_n\mathbf{k}_n
-```
+$$
 
 ### 2.3 相对位置性质
 
-```math
+$$
 (\mathbf{q}_m')^\top\mathbf{k}_n'
 =\mathbf{q}_m^\top R_m^\top R_n\mathbf{k}_n
 =\mathbf{q}_m^\top R_{n-m}\mathbf{k}_n
-```
+$$
 
 右边只依赖 $n-m$，不依赖绝对位置 $m,n$。
 
@@ -98,12 +98,12 @@ R_m=\operatorname{diag}\big(R(m\theta_0),R(m\theta_1),\dots\big)
 
 对每一对 $(x_{2i},x_{2i+1})$：
 
-```math
+$$
 \begin{bmatrix}x'_{2i}\\x'_{2i+1}\end{bmatrix}
 =\begin{bmatrix}\cos(m\theta_i)&-\sin(m\theta_i)\\
 \sin(m\theta_i)&\cos(m\theta_i)\end{bmatrix}
 \begin{bmatrix}x_{2i}\\x_{2i+1}\end{bmatrix}
-```
+$$
 
 通常只对 Q、K 应用，不对 V 应用。
 
@@ -124,9 +124,9 @@ R_m=\operatorname{diag}\big(R(m\theta_0),R(m\theta_1),\dots\big)
 
 这是 RoPE 最容易让人觉得「玄学」的地方。其实它对应**对数刻度的多尺度覆盖**：
 
-- 第 $i=0$ 对（最高频）： $\theta_0=1$ rad/token，周期 $2\pi\approx6$ token —— 分辨「相邻词、括号配对、缩进」这类**超短距离**结构。
-- 第 $i=d_k/2-1$ 对（最低频）： $\theta_{\max}\approx\text{base}^{-1}$，周期 $\approx2\pi\text{base}$ —— 分辨「函数边界、类定义、段落」这类**长距离**结构。
-- 中间各对按几何级数均匀填充： $\theta_{i+1}/\theta_i=\text{base}^{-2/d_k}$，在对数坐标下等间距。
+- 第 $i=0$ 对（最高频）：$\theta_0=1$ rad/token，周期 $2\pi\approx6$ token —— 分辨「相邻词、括号配对、缩进」这类**超短距离**结构。
+- 第 $i=d_k/2-1$ 对（最低频）：$\theta_{\max}\approx\text{base}^{-1}$，周期 $\approx2\pi\text{base}$ —— 分辨「函数边界、类定义、段落」这类**长距离**结构。
+- 中间各对按几何级数均匀填充：$\theta_{i+1}/\theta_i=\text{base}^{-2/d_k}$，在对数坐标下等间距。
 
 **为什么不是线性间距？** 经验上，位置线索的可用性随距离迅速下降（近处要求细分辨率，远处只需要粗定位）。对数分布正好把有限的 $d_k/2$ 对频率按这个尺度梯度分配：高频密集覆盖短距离，低频稀疏覆盖长距离。这属于设计直觉而非定理；它和小波变换、多极展开、Fourier feature mapping 的多尺度思想一致。
 
@@ -136,34 +136,34 @@ R_m=\operatorname{diag}\big(R(m\theta_0),R(m\theta_1),\dots\big)
 
 ### 3.2 反事实：用「加绝对位置」代替旋转
 
-假设不用旋转，而是给 Q/K 加上位置向量： $\mathbf{q}'_m=\mathbf{q}_m+\mathbf{p}_m$， $\mathbf{k}'_n=\mathbf{k}_n+\mathbf{p}_n$。展开内积：
+假设不用旋转，而是给 Q/K 加上位置向量：$\mathbf{q}'_m=\mathbf{q}_m+\mathbf{p}_m$，$\mathbf{k}'_n=\mathbf{k}_n+\mathbf{p}_n$。展开内积：
 
-```math
+$$
 (\mathbf{q}'_m)^\top\mathbf{k}'_n
 =\mathbf{q}_m^\top\mathbf{k}_n+\mathbf{q}_m^\top\mathbf{p}_n+\mathbf{p}_m^\top\mathbf{k}_n+\mathbf{p}_m^\top\mathbf{p}_n
-```
+$$
 
-后三项分别依赖 $n$、 $m$ 和 $(m,n)$，没有一项能写成 $n-m$ 的函数。取最简单的 $\mathbf{p}_t=(t,0)$、 $\mathbf{q}=\mathbf{k}=(1,0)$，分数就是 $(1+m)(1+n)$。
+后三项分别依赖 $n$、$m$ 和 $(m,n)$，没有一项能写成 $n-m$ 的函数。取最简单的 $\mathbf{p}_t=(t,0)$、$\mathbf{q}=\mathbf{k}=(1,0)$，分数就是 $(1+m)(1+n)$。
 
-手算两组「相对距离都是 1」的位置： $(m,n)=(1,2)$ 得 $2\times3=6$； $(m,n)=(100,101)$ 得 $101\times102=10{,}302$。同一个相对距离，分数差了 1700 多倍；而且分数随绝对位置平方增长，两个位置相差几十，logit 就差出几千，softmax 直接饱和成 one-hot；若再省掉减最大值， $e^{10302}$ 还会溢出成 `nan`。
+手算两组「相对距离都是 1」的位置：$(m,n)=(1,2)$ 得 $2\times3=6$；$(m,n)=(100,101)$ 得 $101\times102=10{,}302$。同一个相对距离，分数差了 1700 多倍；而且分数随绝对位置平方增长，两个位置相差几十，logit 就差出几千，softmax 直接饱和成 one-hot；若再省掉减最大值，$e^{10302}$ 还会溢出成 `nan`。
 
-这就是「相加」和「旋转」的分水岭：加法把位置混进内容，内积里多出 $m$、 $n$ 的交叉项；旋转是正交变换， $R_m^\top R_n=R_{n-m}$ 把交叉项结构性地消掉，且 $`\|R_m\mathbf{q}\|=\|\mathbf{q}\|`$，分数不会随位置膨胀。
+这就是「相加」和「旋转」的分水岭：加法把位置混进内容，内积里多出 $m$、$n$ 的交叉项；旋转是正交变换，$R_m^\top R_n=R_{n-m}$ 把交叉项结构性地消掉，且 $\|R_m\mathbf{q}\|=\|\mathbf{q}\|$，分数不会随位置膨胀。
 
-代价也要承认：要真正做到「只依赖相对位置」，Q 和 K 必须转同样的角度、用同一组频率；只转 Q 不转 K， $R_m^\top$ 单独留在内积里，性质立刻失效（见练习 4）。
+代价也要承认：要真正做到「只依赖相对位置」，Q 和 K 必须转同样的角度、用同一组频率；只转 Q 不转 K，$R_m^\top$ 单独留在内积里，性质立刻失效（见练习 4）。
 
 ## 4. 性质与推导
 
 ### 4.1 正交性
 
-$R_m^\top R_m=I$，所以 $`\|\mathbf{q}_m'\|=\|\mathbf{q}_m\|`$。RoPE 不改变 Q/K 的范数，只改变方向。
+$R_m^\top R_m=I$，所以 $\|\mathbf{q}_m'\|=\|\mathbf{q}_m\|$。RoPE 不改变 Q/K 的范数，只改变方向。
 
 ### 4.2 相对位置
 
 上面的推导：
 
-```math
+$$
 R_m^\top R_n=R(-m\theta)R(n\theta)=R((n-m)\theta)
-```
+$$
 
 因此内积只依赖 $n-m$。
 
@@ -173,37 +173,37 @@ R_m^\top R_n=R(-m\theta)R(n\theta)=R((n-m)\theta)
 
 ### 4.4 外推与插值
 
-训练长度之外， $\theta_i$ 与 $m$ 的组合可能超出训练分布。常见做法：位置插值（把 $m$ 缩放）、NTK-aware 调整 base、YaRN 等。它们改的是频率/位置映射，不改变 RoPE 的代数结构。
+训练长度之外，$\theta_i$ 与 $m$ 的组合可能超出训练分布。常见做法：位置插值（把 $m$ 缩放）、NTK-aware 调整 base、YaRN 等。它们改的是频率/位置映射，不改变 RoPE 的代数结构。
 
 ### 4.5 计算
 
-对每个 token、每个 pair 做一次 2×2 旋转： $O(Td_k)$，相比 attention 的 $O(T^2d_k)$ 可忽略。
+对每个 token、每个 pair 做一次 2×2 旋转：$O(Td_k)$，相比 attention 的 $O(T^2d_k)$ 可忽略。
 
 ## 5. 例子
 
 ### 5.1 手算：二维旋转
 
-设 $\mathbf{q}=(1,0)$，位置 $m=1$， $\theta=90^\circ$：
+设 $\mathbf{q}=(1,0)$，位置 $m=1$，$\theta=90^\circ$：
 
-```math
+$$
 \mathbf{q}'=R(90^\circ)\begin{bmatrix}1\\0\end{bmatrix}=\begin{bmatrix}0\\1\end{bmatrix}
-```
+$$
 
 设 $\mathbf{k}=(1,0)$，位置 $n=2$，则 $\mathbf{k}'=R(180^\circ)(1,0)=(-1,0)$。
 
-```math
+$$
 (\mathbf{q}')^\top\mathbf{k}'=0\cdot(-1)+1\cdot0=0
-```
+$$
 
-用相对位置公式： $R_{n-m}=R(90^\circ)$， $\mathbf{q}^\top R(90^\circ)\mathbf{k}=(1,0)^\top(0,1)=0$，一致。
+用相对位置公式：$R_{n-m}=R(90^\circ)$，$\mathbf{q}^\top R(90^\circ)\mathbf{k}=(1,0)^\top(0,1)=0$，一致。
 
 ### 5.2 手算：两个频率
 
-$d_k=4$， $\text{base}=10000$：
+$d_k=4$，$\text{base}=10000$：
 
-```math
+$$
 \theta_0=1,\qquad \theta_1=10000^{-2/4}=0.01
-```
+$$
 
 位置 $m=10$：第一对转 $10$ rad（约 $573^\circ$），第二对转 $0.1$ rad。
 高频对区分近距离，低频对区分远距离——这就是「多尺度」。
@@ -214,16 +214,16 @@ $d_k=4$， $\text{base}=10000$：
 
 ### 5.4 场景闭环：8k 训练、32k 推理，位置怎么映射
 
-回到第 0 节的代码助手。 $L=32$ 层， $H=32$ 个头， $d_k=128$，训练长度 8000，推理 $T=32{,}000$，fp16。
+回到第 0 节的代码助手。$L=32$ 层，$H=32$ 个头，$d_k=128$，训练长度 8000，推理 $T=32{,}000$，fp16。
 
-**输入**： $B=1$， $T=32{,}000$，base $=10^4$， $\theta_i=(10^4)^{-2i/128}$， $i=0,\dots,63$。
+**输入**：$B=1$，$T=32{,}000$，base $=10^4$，$\theta_i=(10^4)^{-2i/128}$，$i=0,\dots,63$。
 
 **计算**：
 
-- RoPE 本身的乘加：每 token 每对 4 次乘法加 2 次加法（约 6 FLOP），Q、K 各一遍： $2\times T\times L\times(d_k/2)\times6\approx2\times3.2\times10^4\times32\times64\times6\approx7.9\times10^8$ FLOP，约 0.8 GFLOP。
-- 同一次前向的 attention： $4T^2DL\approx4\times(3.2\times10^4)^2\times4096\times32\approx5.4\times10^{14}$ FLOP，约 540 TFLOP。RoPE 只占约 $1.5\times10^{-6}$。
-- 角度检查：最低频 $\theta_{63}=(10^4)^{-126/128}\approx1.16\times10^{-4}$，位置 32000 时转 $3.7$ rad，训练最多只到 $0.92$ rad；位置插值取 $m'=m/4$， $32000/4=8000$，角度正好回到 $0.92$ rad。
-- KV Cache： $2\times L\times H\times d_k\times T\times2\ \text{B}=2\times32\times32\times128\times32{,}000\times2\approx1.7\times10^{10}\ \text{B}\approx16\ \text{GiB}$。
+- RoPE 本身的乘加：每 token 每对 4 次乘法加 2 次加法（约 6 FLOP），Q、K 各一遍：$2\times T\times L\times(d_k/2)\times6\approx2\times3.2\times10^4\times32\times64\times6\approx7.9\times10^8$ FLOP，约 0.8 GFLOP。
+- 同一次前向的 attention：$4T^2DL\approx4\times(3.2\times10^4)^2\times4096\times32\approx5.4\times10^{14}$ FLOP，约 540 TFLOP。RoPE 只占约 $1.5\times10^{-6}$。
+- 角度检查：最低频 $\theta_{63}=(10^4)^{-126/128}\approx1.16\times10^{-4}$，位置 32000 时转 $3.7$ rad，训练最多只到 $0.92$ rad；位置插值取 $m'=m/4$，$32000/4=8000$，角度正好回到 $0.92$ rad。
+- KV Cache：$2\times L\times H\times d_k\times T\times2\ \text{B}=2\times32\times32\times128\times32{,}000\times2\approx1.7\times10^{10}\ \text{B}\approx16\ \text{GiB}$。
 
 **输出决策**：选位置插值 $s=4$ 加少量继续训练，而不是裸外推；若 16 GiB KV 仍放不下，先上 GQA 或 KV 量化，再考虑缩短上下文。
 
@@ -256,9 +256,9 @@ $d_k=4$， $\text{base}=10000$：
 
 **形状**：RoPE 不改变形状，只改变数值：
 
-```math
+$$
 Q,K:[B,H,T,d_k]\ \longrightarrow\ Q',K':[B,H,T,d_k]
-```
+$$
 
 **实现（成对旋转）**：
 
@@ -277,14 +277,14 @@ def rope(x, positions, base=10000.0):
     return out
 ```
 
-**可检验结论**：对任意位置 $m,n$， $\langle R_m\mathbf{q},R_n\mathbf{k}\rangle$ 只依赖 $n-m$。可固定 $\mathbf{q},\mathbf{k}$，改变 $m,n$ 但保持差不变，验证内积不变。
+**可检验结论**：对任意位置 $m,n$，$\langle R_m\mathbf{q},R_n\mathbf{k}\rangle$ 只依赖 $n-m$。可固定 $\mathbf{q},\mathbf{k}$，改变 $m,n$ 但保持差不变，验证内积不变。
 
-**算错时用户看到什么**：只旋转 Q 不旋转 K，相对位置性质失效，长文里代词指代会错乱，用户看到「它」指到了错误的段落；把 base 从 $10^4$ 写成 $10^3$ 或 $10^6$，各频段的角速度整体错位，短文本还正常、一到几千 token 就开始复读；cos/sin 表按训练长度预计算并缓存，推理超过该长度却复用旧表，超出部分会被静默截断成同一个位置——不报错，只是所有长距离信息都消失了；用 fp16 存大位置的相位， $m\theta$ 的有效位数不够，远距离 token 几乎无法区分。
+**算错时用户看到什么**：只旋转 Q 不旋转 K，相对位置性质失效，长文里代词指代会错乱，用户看到「它」指到了错误的段落；把 base 从 $10^4$ 写成 $10^3$ 或 $10^6$，各频段的角速度整体错位，短文本还正常、一到几千 token 就开始复读；cos/sin 表按训练长度预计算并缓存，推理超过该长度却复用旧表，超出部分会被静默截断成同一个位置——不报错，只是所有长距离信息都消失了；用 fp16 存大位置的相位，$m\theta$ 的有效位数不够，远距离 token 几乎无法区分。
 
 ## 9. 练习
 
 1. **概念**：RoPE 为什么不增加参数？它和可学习位置编码的本质区别是什么？
-2. **计算**： $R(30^\circ)$ 作用于 $(1,0)$，结果是什么？
+2. **计算**：$R(30^\circ)$ 作用于 $(1,0)$，结果是什么？
 3. **计算**：验证 $R(\alpha)^\top R(\beta)=R(\beta-\alpha)$（用 $2\times2$ 矩阵乘法）。
 4. **场景**：如果只对 Q 旋转、不对 K 旋转，相对位置性质还成立吗？
 5. **开放**：长上下文外推时，为什么「调整 base」可能有效？它改变了什么？
@@ -295,14 +295,14 @@ def rope(x, positions, base=10000.0):
 1. 角度由位置和固定频率算出，无学习参数；可学习编码有一张 $T_{\max}\times D$ 表，且不能自然外推。
 2. $(\cos30^\circ,\sin30^\circ)\approx(0.866,0.5)$。
 3. 用和角公式展开即可；几何上先转 $\beta$ 再转 $-\alpha$，净旋转 $\beta-\alpha$。
-4. 不成立； $R_m^\top$ 只作用于 Q，内积会依赖 $m$ 和 $n$ 的绝对位置组合。
+4. 不成立；$R_m^\top$ 只作用于 Q，内积会依赖 $m$ 和 $n$ 的绝对位置组合。
 5. base 控制频率间隔；增大 base 让低频变化更慢，使训练长度外的位置角变化更平缓，从而缓解分布外推问题，但不改变 RoPE 的代数形式。
 
 </details>
 
 ## 10. 一页速记
 
-- RoPE：对 Q/K 按位置旋转， $\theta_i=\text{base}^{-2i/d_k}$。
+- RoPE：对 Q/K 按位置旋转，$\theta_i=\text{base}^{-2i/d_k}$。
 - $R_m^\top R_n=R_{n-m}$，点积只依赖相对位置。
 - 正交、保范数、零参数、只作用于 Q/K；形状不变，按二维对旋转。
 - 外推需插值/调 base，代数性质不保证泛化。
