@@ -127,7 +127,7 @@ A=QR
 \mathbf{v}=\sum_i\langle\mathbf{v},\mathbf{q}_i\rangle\mathbf{q}_i
 ```
 
-**证明**：设 $\mathbf{v}$ 在 $`\operatorname{span}\{\mathbf{q}_i\}`$ 中，则它可唯一写成 $\mathbf{v}=\sum_i c_i\mathbf{q}_i$（系数存在性： $\mathbf{q}_i$ 线性无关且张成该空间）。两边与 $\mathbf{q}_j$ 做内积，由正交性 $\langle\mathbf{q}_i,\mathbf{q}_j\rangle=\delta_{ij}$ 只剩 $j$ 项，得 $c_j=\langle\mathbf{v},\mathbf{q}_j\rangle$。
+**证明**：设 $\mathbf{v}$ 在 $`\operatorname{span}\{\mathbf{q}_i\}`$ 中，则它可唯一写成 $\mathbf{v}=\sum_i c_i\mathbf{q}_i$（系数存在性： $\mathbf{q}_i$ 线性无关且张成该空间）。两边与 $\mathbf{q}_j$ 做内积，由正交性 $`\langle\mathbf{q}_i,\mathbf{q}_j\rangle=\delta_{ij}`$ 只剩 $j$ 项，得 $c_j=\langle\mathbf{v},\mathbf{q}_j\rangle$。
 
 这把「解方程」降级为「做点积」，是数值线性代数偏爱正交基的根本原因。正交矩阵还保范数、保内积，误差不会被放大（[第 10.2 节](../10-数值线性代数/02-矩阵范数与条件数.md)）。
 
@@ -151,7 +151,7 @@ A=QR
 
 ### 4.1 Gram–Schmidt 为什么有效
 
-归纳证明：假设 $\mathbf{q}_1,\dots,\mathbf{q}_{j-1}$ 已标准正交。令
+归纳证明：假设 $`\mathbf{q}_1,\dots,\mathbf{q}_{j-1}`$ 已标准正交。令
 
 ```math
 \mathbf{u}_j=\mathbf{v}_j-\sum_{i<j}\langle\mathbf{v}_j,\mathbf{q}_i\rangle\mathbf{q}_i
@@ -321,7 +321,7 @@ R\hat{\mathbf{c}}=Q^\top\mathbf{y}
 
 - 内积空间 = 向量空间 + 内积（长度、角度）。
 - **物理意义 / 现实对应**：内积 = 两段声音有多像；正交化 = 干扰抵消，把已分离出来的声音从混合里减掉。
-- 标准正交基： $\langle\mathbf{q}_i,\mathbf{q}_j\rangle=\delta_{ij}$。
+- 标准正交基： $`\langle\mathbf{q}_i,\mathbf{q}_j\rangle=\delta_{ij}`$。
 - 正交基下坐标 = 点积； $\mathbf{v}=\sum\langle\mathbf{v},\mathbf{q}_i\rangle\mathbf{q}_i$。
 - Gram–Schmidt：逐个减去已有方向的投影。
 - $A=QR$： $Q$ 正交， $R$ 上三角；最小二乘用 $R\hat{\mathbf{c}}=Q^\top\mathbf{y}$。

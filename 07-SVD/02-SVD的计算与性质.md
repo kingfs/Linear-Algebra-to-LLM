@@ -157,12 +157,12 @@ $\lambda_2$ 落在 $\lambda_1$ 的一个 ulp 以下，在算出来的矩阵里�
 
 | 性质 | 式子 | 说明 |
 |---|---|---|
-| 谱范数（spectral norm） | $\|A\|_2=\sigma_1$ | 最大拉伸倍数 |
-| 最小奇异值 | $\sigma_{\min}=1/\|A^{+}\|_2$ | 可逆时 $\sigma_n=1/\|A^{-1}\|$ |
+| 谱范数（spectral norm） | $`\Vert A\Vert_2=\sigma_1`$ | 最大拉伸倍数 |
+| 最小奇异值 | $`\sigma_{\min}=1/\Vert A^{+}\Vert_2`$ | 可逆时 $`\sigma_n=1/\Vert A^{-1}\Vert`$ |
 | 条件数 | $\kappa_2(A)=\sigma_1/\sigma_r$ | 误差放大上界；见 4.6 |
 | 秩 | $`\operatorname{rank}(A)=\#\{\sigma_i>0\}`$ | 数值上用阈值判 |
-| Frobenius | $\|A\|_F^2=\sum\sigma_i^2$ | 见 4.1 |
-| 扰动稳定 | $\lvert\sigma_i(A+E)-\sigma_i(A)\rvert\le\|E\|_2$ | Weyl 不等式：奇异值对扰动不敏感 |
+| Frobenius | $`\Vert A\Vert_F^2=\sum\sigma_i^2`$ | 见 4.1 |
+| 扰动稳定 | $`\lvert\sigma_i(A+E)-\sigma_i(A)\rvert\le\Vert E\Vert_2`$ | Weyl 不等式：奇异值对扰动不敏感 |
 
 最后一条值得强调：**奇异值稳定，奇异向量不一定**。 $\sigma_i$ 与 $\sigma_{i+1}$ 很接近时，对应的两个方向可以剧烈旋转； $\sigma_i$ 与 $\sigma_{i+1}$ 相距很远时， $\mathbf{u}_i,\mathbf{v}_i$ 才稳定。
 
@@ -175,7 +175,7 @@ $\lambda_2$ 落在 $\lambda_1$ 的一个 ulp 以下，在算出来的矩阵里�
 | 取值 | 可为负、可为复数 | 一定非负实数 |
 | 与转置 | $A,A^\top$ 特征值相同 | 奇异值相同，向量互换 |
 | 关系 | 正规矩阵： $\sigma_i=\lvert\lambda_i\rvert$ | 一般矩阵： $\sigma_i\neq\lvert\lambda_i\rvert$ |
-| 扰动 | 特征值可能剧变（非正规矩阵） | $\lvert\Delta\sigma\rvert\le\|E\|_2$ |
+| 扰动 | 特征值可能剧变（非正规矩阵） | $`\lvert\Delta\sigma\rvert\le\Vert E\Vert_2`$ |
 
 正规矩阵（normal matrix）指 $A^\top A=AA^\top$，包含对称、反对称、正交矩阵。只有在这类矩阵上，SVD 与特征分解才「几乎同一件事」。
 
