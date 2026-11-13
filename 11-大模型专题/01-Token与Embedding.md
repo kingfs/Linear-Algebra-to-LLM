@@ -57,12 +57,12 @@ llm_hooks: [embedding-table, hidden-state, logit-lens]
 
 量级算式（这节最值得记住的工程数字）：
 
-$$
+```math
 \underbrace{4096}_{D}\times\underbrace{2\text{ B}}_{\text{fp16}}=8\text{ KiB/行},\qquad
 16384\text{ token}\times8\text{ KiB}=128\text{ MiB}
-$$
+```
 
-$B=8$、$T=2048$ 的 batch 共 16384 个 token，就算每一行都不重复，读满也只有 128 MiB；3 TB/s 的 HBM 上理论约 45 µs。对比同一批 token 过一层 FFN 的 $2\times16384\times8\times4096^2\approx4.4\times10^{12}$ FLOPs：查表几乎不费算力，**它只吃带宽，而且吃得很少**。
+$B=8$、 $T=2048$ 的 batch 共 16384 个 token，就算每一行都不重复，读满也只有 128 MiB；3 TB/s 的 HBM 上理论约 45 µs。对比同一批 token 过一层 FFN 的 $2\times16384\times8\times4096^2\approx4.4\times10^{12}$ FLOPs：查表几乎不费算力，**它只吃带宽，而且吃得很少**。
 
 **这个类比在哪里失效**：电话簿相邻的页至少内容相关，embedding 相邻的两行（ID $k$ 与 $k+1$）在内存里紧挨着，语义上却毫无关系——BPE 合并出来的相邻 ID 尤其如此，所以「按 ID 排序后就近访问更快」是错觉。更常见的误判是：真实瓶颈往往不在 gather 本身，而在它后面紧跟着的 GEMM 与同步；把 18 ms 全归给「查表慢」，会让你优化错地方。
 
@@ -72,39 +72,39 @@ $B=8$、$T=2048$ 的 batch 共 16384 个 token，就算每一行都不重复，�
 
 分词器把文本切成 token，并映射为整数 ID：
 
-$$
+```math
 \text{文本}\ \xrightarrow{\text{tokenizer}}\ (t_1,\dots,t_T),\qquad t_i\in\{0,\dots,V-1\}
-$$
+```
 
 $V$ 是词表大小。token 不一定是词，可能是子词、字符或字节（最常见的子词切分是 [BPE](#ref-sennrich-2016)）。
 
 ### 2.2 Embedding 表
 
-$$
+```math
 E\in\mathbb{R}^{V\times D}
-$$
+```
 
 第 $k$ 行 $E[k,:]$ 是 token $k$ 的向量。查表：
 
-$$
+```math
 \mathbf{x}_i=E[t_i,:]\in\mathbb{R}^{D}
-$$
+```
 
 对 batch：
 
-$$
+```math
 X=E[\mathbf{ids}]\in\mathbb{R}^{B\times T\times D}
-$$
+```
 
-其中 $\mathbf{ids}\in\mathbb{N}^{B\times T}$ 是 ID 矩阵（$T$ 在这里是序列长度，仅作为维度出现）。
+其中 $\mathbf{ids}\in\mathbb{N}^{B\times T}$ 是 ID 矩阵（ $T$ 在这里是序列长度，仅作为维度出现）。
 
 ### 2.3 隐藏状态
 
 经过第 $l$ 层后的表示：
 
-$$
+```math
 H^{(l)}\in\mathbb{R}^{B\times T\times D}
-$$
+```
 
 $H^{(0)}=X+(\text{位置信息})$。最终层 $H^{(L)}$ 用于预测下一个 token。
 
@@ -112,9 +112,9 @@ $H^{(0)}=X+(\text{位置信息})$。最终层 $H^{(L)}$ 用于预测下一个 to
 
 若 $\mathbf{e}_k\in\mathbb{R}^V$ 是 one-hot，则
 
-$$
+```math
 E^\top\mathbf{e}_k=E[k,:]^\top
-$$
+```
 
 **查表 = one-hot 向量乘 embedding 矩阵**。这解释了为什么 embedding 层本质上是一个线性层，只是输入是 one-hot、计算被优化成索引。
 
@@ -132,7 +132,7 @@ $$
 
 先破一个直觉：**参数量一点没省**。one-hot 喂进第一层，权重矩阵仍是 $V\times D=128000\times4096$，和 $E$ 是同一个矩阵（[第 2.4 节](../02-向量空间/04-基与维数.md)的 $E^\top\mathbf{e}_k=E[k,:]$ 已经说明两条路算出同一个数）。差别全在**怎么算**。
 
-取 $B=8$、$T=2048$，共 16384 个 token：
+取 $B=8$、 $T=2048$，共 16384 个 token：
 
 | 量 | 查表 | one-hot 乘矩阵 |
 |---|---|---|
@@ -141,17 +141,17 @@ $$
 | 首层 FLOPs | $\approx0$（gather） | $2\times16384\times128000\times4096\approx1.7\times10^{13}$ |
 | 反向梯度 | 只写被采样的行 | 稠密 $128000\times4096$ |
 
-**单 token 就差 64 倍**（$128000\times4$ B 对 $4096\times2$ B）。那 $1.7\times10^{13}$ FLOPs 在 300 TFLOP/s 上要 57 ms，只为了算出一个「查表」的结果。反向更糟：Adam 要存一阶、二阶矩，稠密梯度意味着每步额外 $5.24\times10^8\times8\text{ B}\approx4.2$ GB 优化器状态，而查表版本只更新被采样到的几百行。
+**单 token 就差 64 倍**（ $128000\times4$ B 对 $4096\times2$ B）。那 $1.7\times10^{13}$ FLOPs 在 300 TFLOP/s 上要 57 ms，只为了算出一个「查表」的结果。反向更糟：Adam 要存一阶、二阶矩，稠密梯度意味着每步额外 $5.24\times10^8\times8\text{ B}\approx4.2$ GB 优化器状态，而查表版本只更新被采样到的几百行。
 
-再放大一档：$B=32$、$T=4096$ 时是 13.1 万个 token，one-hot 激活要 $13.1\times10^4\times500\text{ KiB}\approx62$ GiB，直接 OOM；embedding 只要 1 GiB。**等价的是数学，不是成本**——「embedding 层就是一个线性层」这句话必须补上后半句：工程上它被换成了索引。
+再放大一档： $B=32$、 $T=4096$ 时是 13.1 万个 token，one-hot 激活要 $13.1\times10^4\times500\text{ KiB}\approx62$ GiB，直接 OOM；embedding 只要 1 GiB。**等价的是数学，不是成本**——「embedding 层就是一个线性层」这句话必须补上后半句：工程上它被换成了索引。
 
 ## 4. 性质与推导
 
 ### 4.1 参数量
 
-$$
+```math
 \#\text{params}=V\times D
-$$
+```
 
 对 $V=128000,D=4096$：约 5.24 亿。小模型里 embedding 占比很高；大模型里占比下降。
 
@@ -159,9 +159,9 @@ $$
 
 输出层把隐藏状态映射到词表 logits：
 
-$$
+```math
 \text{logits}=H W_{\text{vocab}},\qquad W_{\text{vocab}}\in\mathbb{R}^{D\times V}
-$$
+```
 
 若令 $W_{\text{vocab}}=E^\top$，则输入 embedding 与输出 unembedding 共享参数（[weight tying](#ref-press-wolf-2017)），省下 $V\times D$ 参数。很多语言模型这样做。
 
@@ -169,9 +169,9 @@ $$
 
 纯 embedding 没有顺序感：「猫追狗」和「狗追猫」的 token 集合相同。因此要加位置编码（[第 11.5 节](05-位置编码与RoPE.md)）：
 
-$$
+```math
 H^{(0)}=E[\mathbf{ids}]+P
-$$
+```
 
 其中 $P\in\mathbb{R}^{T\times D}$ 是位置编码（可学习或固定）。
 
@@ -179,9 +179,9 @@ $$
 
 同一 token 在不同位置的初始向量相同；经过 attention 后，
 
-$$
+```math
 \mathbf{h}_i^{(l)}=\mathbf{h}_i^{(l-1)}+\sum_j \alpha_{ij}W_V\mathbf{h}_j^{(l-1)}
-$$
+```
 
 其中 $\alpha_{ij}$ 依赖整句。因此「猫」在「猫坐在垫子上」与「猫在键盘上」中的最终表示不同。
 
@@ -189,9 +189,9 @@ $$
 
 ### 5.1 手算：小词表查表
 
-设 $V=5$，$D=3$，词表 `["<pad>", "猫", "狗", "汽车", "苹果"]`，
+设 $V=5$， $D=3$，词表 `["<pad>", "猫", "狗", "汽车", "苹果"]`，
 
-$$
+```math
 E=\begin{bmatrix}
 0&0&0\\
 0.9&0.1&0.1\\
@@ -199,13 +199,13 @@ E=\begin{bmatrix}
 0.1&0.9&0.1\\
 0.1&0.1&0.9
 \end{bmatrix}
-$$
+```
 
 句子「猫 狗」的 ID 是 $[1,2]$，查表得
 
-$$
+```math
 X=\begin{bmatrix}0.9&0.1&0.1\\0.8&0.2&0.1\end{bmatrix}\in\mathbb{R}^{2\times3}
-$$
+```
 
 ### 5.2 场景：一个 token 的旅程
 
@@ -220,7 +220,7 @@ flowchart TD
     G --> H["softmax<br/>下一个 token 的概率"]
 ```
 
-**注意**：$E$ 只在第 0 层使用；后面每层都有新的权重矩阵，但隐藏维度始终是 $D$。
+**注意**： $E$ 只在第 0 层使用；后面每层都有新的权重矩阵，但隐藏维度始终是 $D$。
 
 ### 5.3 场景：logit lens
 
@@ -228,25 +228,25 @@ flowchart TD
 
 ### 5.4 场景闭环：一次补全请求的账
 
-把 §0 那个插件的一次 Tab 补全完整算一遍。模型 $V=128000$、$D=4096$、$L=32$，$B=1$，上下文 $T=2048$。
+把 §0 那个插件的一次 Tab 补全完整算一遍。模型 $V=128000$、 $D=4096$、 $L=32$， $B=1$，上下文 $T=2048$。
 
 **输入规模**：2048 个整数 ID（`int32` 约 8 KiB）；查表得到 $2048\times4096$ 个 fp16，即 16 MiB 的 `[1,2048,4096]`。
 
 **计算**：
 
-- 查表：$2048\times8\text{ KiB}=16$ MiB 随机读，3 TB/s 下约 5 µs，算力为 0；
-- 位置编码相加：$2048\times4096=8.4\times10^6$ 次加法，不到 0.01 ms；
+- 查表： $2048\times8\text{ KiB}=16$ MiB 随机读，3 TB/s 下约 5 µs，算力为 0；
+- 位置编码相加： $2048\times4096=8.4\times10^6$ 次加法，不到 0.01 ms；
 - 之后 32 层：每层 $\approx2\times2048\times12\times4096^2\approx8.2\times10^{11}$ FLOPs，共 $2.6\times10^{13}$ FLOPs，按 300 TFLOP/s 估约 **88 ms**。
 
 **输出决策**：在词表上取 top-5 候选交给补全 UI；若最高概率低于 $0.3$，改成灰色幽灵文本而不是直接插入。
 
-**成本**：显存 1.05 GB（embedding 表）+ 1.07 GB（KV Cache，$2\times2048\times4096\times2\text{ B}\times32$）+ 激活。查表只占延迟的 $5\ \mu s/88\text{ ms}\approx0.006\%$——**把 embedding 优化得再快也没用**；真正的成本是那 1 GB 常驻显存，它挤掉了本来能给更大 batch 用的空间。
+**成本**：显存 1.05 GB（embedding 表）+ 1.07 GB（KV Cache， $2\times2048\times4096\times2\text{ B}\times32$）+ 激活。查表只占延迟的 $`5\ \mu s/88\text{ ms}\approx0.006\%`$——**把 embedding 优化得再快也没用**；真正的成本是那 1 GB 常驻显存，它挤掉了本来能给更大 batch 用的空间。
 
 **失败条件与兜底**：
 
 - **tokenizer 版本漂移**：词表顺序变了而权重没重训，ID 整体平移，查表命中「别人的行」。兜底：把 tokenizer 的哈希写进权重元数据，启动时比对，不一致拒绝加载。
-- **长尾 token 膨胀**：仓库内部缩写被切成 3–4 个 byte 级 token，$T$ 从 2048 涨到 3000 以上，attention 的 $T^2$ 项涨 2 倍多。兜底：监控「每字符 token 数」，超过 0.8 就退回字符级缓存。
-- **检索那 18 ms 太紧**：把检索向量 int8 量化到 88 MB，$88\text{ MB}/20\text{ GB/s}\approx4.4$ ms，代价是召回率按同类量化方案估算会掉一小截，必须用仓库自己的标注集复测。
+- **长尾 token 膨胀**：仓库内部缩写被切成 3–4 个 byte 级 token， $T$ 从 2048 涨到 3000 以上，attention 的 $T^2$ 项涨 2 倍多。兜底：监控「每字符 token 数」，超过 0.8 就退回字符级缓存。
+- **检索那 18 ms 太紧**：把检索向量 int8 量化到 88 MB， $88\text{ MB}/20\text{ GB/s}\approx4.4$ ms，代价是召回率按同类量化方案估算会掉一小截，必须用仓库自己的标注集复测。
 
 ## 6. 常见误区
 
@@ -274,11 +274,11 @@ flowchart TD
 
 **形状链**：
 
-$$
+```math
 [B,T]\xrightarrow{E}[B,T,D]\xrightarrow{+P}[B,T,D]
-$$
+```
 
-**参数量**：$V\times D$（可选择性绑定输出层）。
+**参数量**： $V\times D$（可选择性绑定输出层）。
 
 **可检验结论**：若两个 token 的 ID 相同，它们的初始 embedding 逐元素相等；若不同，则不一定正交（取决于训练）。对随机初始化的 $E$，两行近似正交；训练后相似词会靠近。
 
@@ -297,8 +297,8 @@ print(np.allclose(X[0, 0], E[1]))  # True
 ## 9. 练习
 
 1. **概念**：为什么 embedding 比 one-hot 更适合表达语义相似？
-2. **计算**：$V=32000$，$D=1024$，embedding 参数量是多少？若输出层绑定权重，总共省了多少参数？
-3. **计算**：一个 batch 有 $B=4$、$T=512$、$D=768$，隐藏状态张量有多少个元素？fp16 下占多少 MiB？
+2. **计算**： $V=32000$， $D=1024$，embedding 参数量是多少？若输出层绑定权重，总共省了多少参数？
+3. **计算**：一个 batch 有 $B=4$、 $T=512$、 $D=768$，隐藏状态张量有多少个元素？fp16 下占多少 MiB？
 4. **场景**：为什么「同一个词在不同句子中表示不同」不能由 embedding 表解释？
 5. **开放**：如果词表里有 10 万个 token，但实际训练只用到 5 万个，未使用 token 的 embedding 会怎样？有什么风险？
 
@@ -316,7 +316,7 @@ print(np.allclose(X[0, 0], E[1]))  # True
 ## 10. 一页速记
 
 - token → ID → 查 $E\in\mathbb{R}^{V\times D}$ → `[B,T,D]`。
-- **物理意义 / 现实对应**：embedding 表是一本「符号 → 向量」的对照表，查表就是按行号取一段内存（gather）；$VD$ 是这张表的存储账，它只负责翻译，不负责理解。
+- **物理意义 / 现实对应**：embedding 表是一本「符号 → 向量」的对照表，查表就是按行号取一段内存（gather）； $VD$ 是这张表的存储账，它只负责翻译，不负责理解。
 - 查表 = one-hot 乘 $E$；参数量 $VD$。
 - 初始 embedding 与上下文无关；隐藏状态与上下文相关。
 - 位置编码在 embedding 之后加入。

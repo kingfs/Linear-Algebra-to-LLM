@@ -18,19 +18,19 @@ llm_hooks: [decode, prefill, paged-attention]
 
 ## 0. 场景引入
 
-你维护一家电商的多轮客服机器人：基座 8B，fp16 权重约 16 GB（$\approx15$ GiB），独占一张 80 GB 的卡（$\approx74.5$ GiB），扣去权重与运行时开销后剩下约 59 GiB 留给 KV Cache。
+你维护一家电商的多轮客服机器人：基座 8B，fp16 权重约 16 GB（ $\approx15$ GiB），独占一张 80 GB 的卡（ $\approx74.5$ GiB），扣去权重与运行时开销后剩下约 59 GiB 留给 KV Cache。
 
 客服对话的特点是多轮、话长：一次会话平均 30 轮、累计 6000 token，高峰期要同时服务 24 个会话。
 
-先把账算粗。这个模型 32 层、32 个头、$d_k=128$，每层 K/V 的宽度是 $d=H d_k=4096$，所以**每 token 每层要存 $2d$ 个元素（K、V 各 $d$ 个），fp16 每元素 2 B，共 $4d$ 字节 $=16$ KiB**，32 层就是每 token 512 KiB。一个 6000 token 的会话约 3 GiB，24 个会话就是 70 GiB——比 59 GiB 的预算多 11 GiB。
+先把账算粗。这个模型 32 层、32 个头、 $d_k=128$，每层 K/V 的宽度是 $d=H d_k=4096$，所以**每 token 每层要存 $2d$ 个元素（K、V 各 $d$ 个），fp16 每元素 2 B，共 $4d$ 字节 $=16$ KiB**，32 层就是每 token 512 KiB。一个 6000 token 的会话约 3 GiB，24 个会话就是 70 GiB——比 59 GiB 的预算多 11 GiB。
 
 也就是说，权重还没加载完，**KV Cache 会先把卡撑爆**：第 24 个会话进来时整个推理进程 OOM，正在聊的 23 个会话一起断线。
 
 那就不缓存？生成第 1000 个 token 时，需要让它关注前 999 个 token。如果每一步都把整段序列重新算一遍 attention，总计算量是
 
-$$
+```math
 O(1^2+2^2+\cdots+T^2)=O(T^3)
-$$
+```
 
 生成 4096 个 token 会慢到不可接受。
 
@@ -44,7 +44,7 @@ $$
 
 1. 70 GiB 是怎么从 $B,H,T,d_k,L$ 乘出来的，哪一项最容易漏？
 2. 为什么 decode 每步的 FLOPs 少得可以忽略，时间却主要花在搬数据上？
-3. 给定显存预算和并发目标，你该先动 $T$、$H_{kv}$ 还是 dtype？
+3. 给定显存预算和并发目标，你该先动 $T$、 $H_{kv}$ 还是 dtype？
 
 ## 1. 直觉
 
@@ -64,9 +64,9 @@ $$
 
 它的代价可以用**算术强度**一眼看出。一步 decode 要读约 $4dTL$ 字节的缓存，只做约 $4TdL$ 次浮点运算：
 
-$$
+```math
 \frac{4TdL\ \text{FLOPs}}{4dTL\ \text{bytes}}=1\ \text{FLOP/字节}
-$$
+```
 
 而一张高端 GPU 每搬 1 字节能换的算力约 $10^{15}\ \text{FLOP/s}\div3\times10^{12}\ \text{B/s}\approx300\ \text{FLOP/字节}$（按 H100 量级估算，不计每步固定要读的那份权重）。差两个数量级，所以这一步的时间花在**搬数据**上，不在算数上。
 
@@ -78,47 +78,47 @@ $$
 
 对第 $l$ 层、第 $h$ 个头，缓存：
 
-$$
+```math
 K_{\text{cache}}^{(l,h)}\in\mathbb{R}^{T\times d_k},\qquad
 V_{\text{cache}}^{(l,h)}\in\mathbb{R}^{T\times d_v}
-$$
+```
 
 批量与多头：
 
-$$
+```math
 K,V\in\mathbb{R}^{B\times H\times T_{\text{cache}}\times d_k}
-$$
+```
 
 ### 2.2 单步解码
 
 给定新 token 的隐藏状态 $\mathbf{x}_t$：
 
-$$
+```math
 \mathbf{q}_t=\mathbf{x}_tW_Q,\qquad
 \mathbf{k}_t=\mathbf{x}_tW_K,\qquad
 \mathbf{v}_t=\mathbf{x}_tW_V
-$$
+```
 
 把 $\mathbf{k}_t,\mathbf{v}_t$ 追加到缓存，然后
 
-$$
+```math
 \mathbf{s}_t=\frac{\mathbf{q}_tK_{\text{cache}}^\top}{\sqrt{d_k}}\in\mathbb{R}^{1\times T},\qquad
 \mathbf{o}_t=\operatorname{softmax}(\mathbf{s}_t)V_{\text{cache}}\in\mathbb{R}^{1\times d_v}
-$$
+```
 
 ### 2.3 显存公式
 
-$$
+```math
 \#\text{elements}=2\times B\times H\times T\times d_k
-$$
+```
 
 （K、V 各一份。）字节数再乘每个元素的字节数。
 
-对 [GQA](#ref-ainslie-2023)（$H_{kv}$ 组 KV）：
+对 [GQA](#ref-ainslie-2023)（ $H_{kv}$ 组 KV）：
 
-$$
+```math
 \#\text{elements}=2\times B\times H_{kv}\times T\times d_k
-$$
+```
 
 ### 2.4 Prefill 与 Decode
 
@@ -135,13 +135,13 @@ $$
 
 **反事实一：不缓存。** 生成第 $t$ 个 token 时，把前面 $t$ 个 token 的 K、V 全部重新投影一遍。单步多花 $4d^2t$ 次浮点运算（K、V 各一次 $d\times d$ 乘），累计
 
-$$
+```math
 \sum_{t=1}^{T}4d^2t=2d^2T^2
-$$
+```
 
-取 $d=4096$、$T=4096$：这个式子是 $2\times4096^2\times4096^2\approx5.6\times10^{14}$，即约 560 TFLOP。有缓存时同样的 K/V 投影只做一次，$4d^2T\approx2.7\times10^{11}$，约 275 GFLOP。两者相差 $T/2=2048$ 倍——**序列越长，重算越荒谬**，而这还只算了投影，没算 attention 本身的增长。
+取 $d=4096$、 $T=4096$：这个式子是 $2\times4096^2\times4096^2\approx5.6\times10^{14}$，即约 560 TFLOP。有缓存时同样的 K/V 投影只做一次， $4d^2T\approx2.7\times10^{11}$，约 275 GFLOP。两者相差 $T/2=2048$ 倍——**序列越长，重算越荒谬**，而这还只算了投影，没算 attention 本身的增长。
 
-**反事实二：缓存存 fp32。** 每 token 每层从 $4d=16$ KiB 变成 $8d=32$ KiB，字节数直接翻倍。$T=4096$、$L=32$ 时，单会话从 2 GiB 变成 4 GiB；§0 那 59 GiB 的预算能容纳的会话数从 29 个掉到 14 个。
+**反事实二：缓存存 fp32。** 每 token 每层从 $4d=16$ KiB 变成 $8d=32$ KiB，字节数直接翻倍。 $T=4096$、 $L=32$ 时，单会话从 2 GiB 变成 4 GiB；§0 那 59 GiB 的预算能容纳的会话数从 29 个掉到 14 个。
 
 fp32 换来的是 K 的方向更准，但工程上的常见折中是「权重 fp16、缓存 fp8/int8、softmax 用 fp32 累加」，而不是把整个缓存翻倍。这个取舍要在[第 11.9 节](09-量化.md)（量化）里算误差，不能只凭「精度高一点总没错」。
 
@@ -153,16 +153,16 @@ fp32 换来的是 K 的方向更准，但工程上的常见折中是「权重 fp
 |---|---|---|
 | 生成 $T$ 个 token 的 attention | $O(T^3d)$ | $O(T^2d)$（prefill）+ $O(T^2d)$（decode 累计） |
 
-更准确地说，decode 每步 $O(Td)$，$T$ 步累计 $O(T^2d)$。
+更准确地说，decode 每步 $O(Td)$， $T$ 步累计 $O(T^2d)$。
 
 ### 4.2 显存估算
 
 对 $B=1,H=32,T=4096,d_k=128$，fp16（2 字节）：
 
-$$
+```math
 2\times1\times32\times4096\times128\times2
 =67{,}108{,}864\ \text{字节}=64\ \text{MiB}
-$$
+```
 
 **单层 64 MiB**；32 层约 2 GiB。这还没算模型权重和激活。
 
@@ -186,38 +186,38 @@ RoPE 旋转后的 K 被缓存；位置信息已经写进 K 的方向，所以缓
 
 $B=1,H=32,T=2048,d_k=128$，fp16：
 
-$$
+```math
 2\times32\times2048\times128\times2
 =33{,}554{,}432\ \text{字节}=32\ \text{MiB}
-$$
+```
 
 32 层约 1 GiB。
 
 ### 5.2 手算：GQA
 
-同样的模型，$H_{kv}=8$：
+同样的模型， $H_{kv}=8$：
 
-$$
+```math
 2\times8\times2048\times128\times2=8{,}388{,}608\ \text{字节}=8\ \text{MiB}
-$$
+```
 
 单层，32 层 256 MiB。
 
 ### 5.3 场景：为什么 batch 大会 OOM
 
-缓存大小与 $B$ 成正比。$B=16$ 时，上面的 1 GiB 变成 16 GiB，直接挤爆显存。这就是推理服务要限制并发/上下文长度、或用 PagedAttention 管理碎片的原因。
+缓存大小与 $B$ 成正比。 $B=16$ 时，上面的 1 GiB 变成 16 GiB，直接挤爆显存。这就是推理服务要限制并发/上下文长度、或用 PagedAttention 管理碎片的原因。
 
 ### 5.4 场景闭环：把 §0 的客服服务算到底
 
-**输入**：$B=24$ 并发、$T=6000$、$L=32$、$d=H d_k=4096$、fp16、单卡 80 GB（可用约 74.5 GiB，权重约 15 GiB）。
+**输入**： $B=24$ 并发、 $T=6000$、 $L=32$、 $d=H d_k=4096$、fp16、单卡 80 GB（可用约 74.5 GiB，权重约 15 GiB）。
 
 **计算**：
 
-- 显存：$4dTL\cdot B=4\times4096\times6000\times32\times24$ 字节 $=7.5\times10^{10}$ B $\approx70$ GiB；加权重约 15 GiB，共约 85 GiB $>$ 74.5 GiB，**容量先崩**。
-- 带宽：一个 decode step 要把整批缓存读一遍，$85$ GiB 按 3 TB/s 估算约 30 ms/step；每步产出 24 个 token，合计约 800 token/s，折合每会话 33 token/s。
+- 显存： $4dTL\cdot B=4\times4096\times6000\times32\times24$ 字节 $=7.5\times10^{10}$ B $\approx70$ GiB；加权重约 15 GiB，共约 85 GiB $>$ 74.5 GiB，**容量先崩**。
+- 带宽：一个 decode step 要把整批缓存读一遍， $85$ GiB 按 3 TB/s 估算约 30 ms/step；每步产出 24 个 token，合计约 800 token/s，折合每会话 33 token/s。
 - 算力：一步 $4TdL\cdot B\approx7.5\times10^{10}$ FLOPs，按 $10^{15}$ FLOP/s 只要 0.075 ms——比搬数据便宜约 400 倍。
 
-**输出决策**：先压 $T$，不加卡。$T$ 从 6000 砍到 3000，单会话 1.5 GiB，24 会话 35 GiB，加权重 15 GiB 共 50 GiB，摘要再占 3.5 GiB，仍留约 20 GiB 给激活与碎片；把砍掉的历史压成 300 token 的滚动摘要（$300\times512$ KiB $\approx150$ MiB/会话）挂在窗口前面，订单号一类的信息还能捞回来。
+**输出决策**：先压 $T$，不加卡。 $T$ 从 6000 砍到 3000，单会话 1.5 GiB，24 会话 35 GiB，加权重 15 GiB 共 50 GiB，摘要再占 3.5 GiB，仍留约 20 GiB 给激活与碎片；把砍掉的历史压成 300 token 的滚动摘要（ $300\times512$ KiB $\approx150$ MiB/会话）挂在窗口前面，订单号一类的信息还能捞回来。
 
 **成本**：每步内存流量从 85 GiB 降到约 54 GiB，step 时间约 30 ms → 19 ms，每会话吞吐约 33 → 52 token/s；代价是摘要要额外调用一次模型（每 10 轮对 3000 token 摘要一次，相当于这 10 轮正常生成量的 1.5 倍 prefill，按小模型估算只占整机算力的零头）。
 
@@ -267,7 +267,7 @@ $$
 ## 9. 练习
 
 1. **概念**：为什么 decode 阶段是带宽受限，而 prefill 是计算受限？
-2. **计算**：$B=2,H=32,T=8192,d_k=128$，fp16，单层 KV Cache 多少 MiB？32 层呢？
+2. **计算**： $B=2,H=32,T=8192,d_k=128$，fp16，单层 KV Cache 多少 MiB？32 层呢？
 3. **计算**：若用 GQA $H_{kv}=8$，重算第 2 题。
 4. **场景**：为什么长上下文推理的吞吐往往受显存带宽限制，而不是 FLOPs？
 5. **开放**：如果缓存命中率很低（每个请求的 prompt 都不同），prefix caching 还有意义吗？

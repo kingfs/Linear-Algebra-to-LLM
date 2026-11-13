@@ -11,7 +11,7 @@
 - 一张图和 1600 万参数的权重，凭什么能压到十分之一而「看起来没变」？
 - 为什么大模型微调只改 0.1% 的参数也能有效？
 
-SVD 是这些问题的统一答案。它的核心陈述只有一句：$A=U\Sigma V^\top$，而且对任意矩阵都成立。剩下的工作，是理解 $\sigma_i$ 的几何与数值含义，并学会用它做**压缩、求逆、降维、约束**。
+SVD 是这些问题的统一答案。它的核心陈述只有一句： $A=U\Sigma V^\top$，而且对任意矩阵都成立。剩下的工作，是理解 $\sigma_i$ 的几何与数值含义，并学会用它做**压缩、求逆、降维、约束**。
 
 本模块的路线：**几何（7.1）→ 计算与性质（7.2）→ 低秩近似（7.3）→ 伪逆与数值秩（7.4）→ 三个应用（7.5）**。
 
@@ -62,18 +62,18 @@ flowchart LR
 
 ## 本模块的大模型钩子
 
-- **权重谱**：$\|W\|_2=\sigma_1$ 是这一层的 Lipschitz 常数；谱衰减快意味着可压缩（7.1、7.2）
-- **LoRA**：$\Delta W=BA$，参数量 $2Dr$、秩至多 $r$；$D=4096,r=16$ 时占全参数 $0.78\%$（7.3、7.5）
+- **权重谱**： $`\|W\|_2=\sigma_1`$ 是这一层的 Lipschitz 常数；谱衰减快意味着可压缩（7.1、7.2）
+- **LoRA**： $\Delta W=BA$，参数量 $2Dr$、秩至多 $r$； $D=4096,r=16$ 时占全参数 $`0.78\%`$（7.3、7.5）
 - **模型与 KV 压缩**：截断 SVD 的误差被 $\sigma_{k+1}$ 精确控制；KV Cache 可低秩近似（7.3）
-- **数值稳定性**：$\kappa=\sigma_1/\sigma_r$ 决定误差放大倍数；bf16 下秩有精度天花板（7.2、7.4）
-- **闭式编辑**：$\Delta W=(Y-WH)H^{+}$ 是「改动最小」的权重编辑，秩 $\le K$（7.4）
+- **数值稳定性**： $\kappa=\sigma_1/\sigma_r$ 决定误差放大倍数；bf16 下秩有精度天花板（7.2、7.4）
+- **闭式编辑**： $\Delta W=(Y-WH)H^{+}$ 是「改动最小」的权重编辑，秩 $\le K$（7.4）
 - **表征分析**：中心化后对激活做 SVD，前几个主成分解释表示的主要方差（7.5）
 
 ## 自测（读完再做）
 
-1. $A=\begin{bmatrix}3&0\\0&-2\end{bmatrix}$ 的奇异值是多少？$U,\Sigma,V$ 分别是什么？
+1. $`A=\begin{bmatrix}3&0\\0&-2\end{bmatrix}`$ 的奇异值是多少？ $U,\Sigma,V$ 分别是什么？
 2. 为什么 $\operatorname{rank}(A)$ 等于非零奇异值的个数，而不是非零特征值的个数？
-3. $A$ 是 $100\times100$ 矩阵，奇异值 $\sigma_{10}=0.5$、$\sigma_1=10$。保留秩 9 的 Frobenius 误差至少是多少？谱误差呢？
+3. $A$ 是 $100\times100$ 矩阵，奇异值 $\sigma_{10}=0.5$、 $\sigma_1=10$。保留秩 9 的 Frobenius 误差至少是多少？谱误差呢？
 4. 什么情况下 $A^{+}A=I$？给出一个反例说明一般不成立。
 5. 为什么要先中心化再做 PCA？不中心化会得到什么？
 6. LoRA 的 $A,B$ 为什么不能直接当作 $\Delta W$ 的奇异向量？
@@ -81,12 +81,12 @@ flowchart LR
 <details>
 <summary>自测答案</summary>
 
-1. $\sigma=(3,2)$；$A$ 把 $+y$ 翻成 $-y$，所以 $U=\begin{bmatrix}1&0\\0&-1\end{bmatrix}$、$\Sigma=\operatorname{diag}(3,2)$、$V=I_2$。检验：$\lvert\det A\rvert=6=\sigma_1\sigma_2$。
-2. 奇异值非零当且仅当 $A\mathbf{v}_i=\sigma_i\mathbf{u}_i\neq\mathbf{0}$，即 $\mathbf{v}_i$ 不被压进零空间；非零奇异值的个数恰是列空间维数。特征值可能为 0 但秩不为 0（如 $\begin{bmatrix}0&1\\0&0\end{bmatrix}$ 特征值全 0、秩 1），故不能用特征值判断。
+1. $\sigma=(3,2)$； $A$ 把 $+y$ 翻成 $-y$，所以 $`U=\begin{bmatrix}1&0\\0&-1\end{bmatrix}`$、 $\Sigma=\operatorname{diag}(3,2)$、 $V=I_2$。检验： $\lvert\det A\rvert=6=\sigma_1\sigma_2$。
+2. 奇异值非零当且仅当 $A\mathbf{v}_i=\sigma_i\mathbf{u}_i\neq\mathbf{0}$，即 $\mathbf{v}_i$ 不被压进零空间；非零奇异值的个数恰是列空间维数。特征值可能为 0 但秩不为 0（如 $`\begin{bmatrix}0&1\\0&0\end{bmatrix}`$ 特征值全 0、秩 1），故不能用特征值判断。
 3. Frobenius 误差 $=\sqrt{\sum_{i>9}\sigma_i^2}\ge\sigma_{10}=0.5$，仅知道 $\sigma_{10}=0.5$ 时下界是 $0.5$；谱误差恰为 $\sigma_{10}=0.5$。
-4. 满列秩（$r=n$）时 $A^{+}A=I$；若 $A=\begin{bmatrix}1&1\\2&2\end{bmatrix}$ 秩 1，则 $A^{+}A=\frac12\begin{bmatrix}1&1\\1&1\end{bmatrix}\neq I$。
+4. 满列秩（ $r=n$）时 $A^{+}A=I$；若 $`A=\begin{bmatrix}1&1\\2&2\end{bmatrix}`$ 秩 1，则 $`A^{+}A=\frac12\begin{bmatrix}1&1\\1&1\end{bmatrix}\neq I`$。
 5. 不中心化时第一主成分指向数据均值方向，解释的是「位置」而非「变化」；中心化把问题变成围绕均值的形状。
-6. $BA$ 只是秩 $\le r$ 的一种参数化，$A,B$ 通常既不正交、也不按奇异值排序；要读出谱，得对训练后的 $\Delta W$ 再做一次 SVD。
+6. $BA$ 只是秩 $\le r$ 的一种参数化， $A,B$ 通常既不正交、也不按奇异值排序；要读出谱，得对训练后的 $\Delta W$ 再做一次 SVD。
 
 </details>
 

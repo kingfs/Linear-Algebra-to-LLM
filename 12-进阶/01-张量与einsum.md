@@ -18,9 +18,9 @@ llm_hooks: [attention-einsum, shape-debug]
 
 ## 0. 场景引入
 
-凌晨 1 点，你在给一个 7B 模型接 flash-attention 的兼容路径。$Q,K,V$ 的形状都是 `[B,H,T,d] = [8,32,2048,128]`，fp16。你按老习惯写 `reshape + transpose + matmul`，跑通了；同事用一行 `einsum("bhid,bhjd->bhij")` 得到同样结果，还顺手指出你的 `transpose` 顺序在另一种头数下会静默错位。你翻出上周的小模型单测——那里恰好 $H=T=8$，两种写法形状相同，测试一路绿灯；换成 $H=32,T=2048$ 才露馅。
+凌晨 1 点，你在给一个 7B 模型接 flash-attention 的兼容路径。 $Q,K,V$ 的形状都是 `[B,H,T,d] = [8,32,2048,128]`，fp16。你按老习惯写 `reshape + transpose + matmul`，跑通了；同事用一行 `einsum("bhid,bhjd->bhij")` 得到同样结果，还顺手指出你的 `transpose` 顺序在另一种头数下会静默错位。你翻出上周的小模型单测——那里恰好 $H=T=8$，两种写法形状相同，测试一路绿灯；换成 $H=32,T=2048$ 才露馅。
 
-先算两个数：$Q$ 有 $8\times32\times2048\times128\approx6.7\times10^7$ 个元素，fp16 占 134 MB；打分矩阵 $S$ 是 `[B,H,T,T]`，$8\times32\times2048^2\approx1.07\times10^9$ 个元素，fp16 占 2.15 GB。一次 $QK^\top$ 是 275 GFLOP，按 300 TFLOP/s 算约 0.9 ms；把 $S$ 写进显存再读出来（4.3 GB 往返）按 2 TB/s 算要 2.1 ms。
+先算两个数： $Q$ 有 $8\times32\times2048\times128\approx6.7\times10^7$ 个元素，fp16 占 134 MB；打分矩阵 $S$ 是 `[B,H,T,T]`， $8\times32\times2048^2\approx1.07\times10^9$ 个元素，fp16 占 2.15 GB。一次 $QK^\top$ 是 275 GFLOP，按 300 TFLOP/s 算约 0.9 ms；把 $S$ 写进显存再读出来（4.3 GB 往返）按 2 TB/s 算要 2.1 ms。
 
 **决策**：先用 einsum 写「参考实现」，再用 `bmm` 写「快实现」，两者对拍。**代价**是参考实现多占 4.3 GB 激活，32 层全留就是 137 GB，80 GB 卡直接 OOM，所以它只能活在单元测试里；换来的是对拍一次几秒钟，而重跑一次 8 卡 3 天的训练是 576 卡·时。
 
@@ -45,7 +45,7 @@ einsum 的核心是「轴的名字」：
 
 ![einsum 的轴对应：共享轴、保留轴与被求和的轴](../figures/out/einsum.svg)
 
-*图：`bhid,bhjd->bhij` 的轴对应关系。$b,h$ 两边共享并保留；$d$ 在输入中出现但输出没有，被求和；$i,j$ 是输出保留的自由轴。*
+<i>图：`bhid,bhjd->bhij` 的轴对应关系。 $b,h$ 两边共享并保留； $d$ 在输入中出现但输出没有，被求和； $i,j$ 是输出保留的自由轴。</i>
 
 类比边界：einsum 不是万能的——它不表达非线性、广播规则也不如 `+`/`*` 灵活；复杂算子仍要手写。
 
@@ -65,7 +65,7 @@ SQL 可以只读索引、流式地吐结果；einsum 在多数实现里会把中
 
 ### 1.3 量级
 
-同一层，$B=8,H=32,T=2048,d=128$：275 GFLOP，$S$ 占 2.15 GB fp16。按 300 TFLOP/s 与 2 TB/s 估，计算 0.9 ms、写回 1.1 ms——在这个尺寸下，einsum 的写法直接决定你是算力受限还是带宽受限。
+同一层， $B=8,H=32,T=2048,d=128$：275 GFLOP， $S$ 占 2.15 GB fp16。按 300 TFLOP/s 与 2 TB/s 估，计算 0.9 ms、写回 1.1 ms——在这个尺寸下，einsum 的写法直接决定你是算力受限还是带宽受限。
 
 ## 2. 定义
 
@@ -73,17 +73,17 @@ SQL 可以只读索引、流式地吐结果；einsum 在多数实现里会把中
 
 $n$ 阶张量是带 $n$ 个索引的数组：
 
-$$
+```math
 X_{i_1 i_2\cdots i_n}\in\mathbb{R}^{d_1\times\cdots\times d_n}
-$$
+```
 
 标量 0 阶，向量 1 阶，矩阵 2 阶。深度学习里常见 4 阶：`[B,H,T,d]`。把张量写成多索引数组、并系统整理它的运算与分解，可以接着读 [Kolda 与 Bader](#ref-kolda-bader-2009) 的综述。
 
 ### 2.2 einsum 语法
 
-$$
+```math
 \texttt{"input1, input2, ... -> output"}(A, B, \dots)
-$$
+```
 
 einsum 的语法是[爱因斯坦求和约定](#ref-einstein-1916)的程序化版本，规则：
 
@@ -115,16 +115,16 @@ einsum 的语法是[爱因斯坦求和约定](#ref-einstein-1916)的程序化版
 
 ### 3.1 反事实一：下标顺序写反，形状不变、语义全错
 
-取 $T=2,d=2$（$B=H=1$），$Q=\begin{bmatrix}1&0\\1&0\end{bmatrix}$，$K=\begin{bmatrix}1&0\\0&1\end{bmatrix}$，$V=I_2$。正确写法 `"bhid,bhjd->bhij"` 给
+取 $T=2,d=2$（ $B=H=1$）， $`Q=\begin{bmatrix}1&0\\1&0\end{bmatrix}`$， $`K=\begin{bmatrix}1&0\\0&1\end{bmatrix}`$， $V=I_2$。正确写法 `"bhid,bhjd->bhij"` 给
 
-$$
+```math
 S=QK^\top=\begin{bmatrix}1&0\\1&0\end{bmatrix}\begin{bmatrix}1&0\\0&1\end{bmatrix}^{\!\top}
 =\begin{bmatrix}1&0\\1&0\end{bmatrix}
-$$
+```
 
-按行 softmax：$A=\begin{bmatrix}0.731&0.269\\0.731&0.269\end{bmatrix}$；输出 $O=AV$ 两行都是 $(0.731,0.269)$——两个 token 都以 73% 的权重取 key 1。
+按行 softmax： $`A=\begin{bmatrix}0.731&0.269\\0.731&0.269\end{bmatrix}`$；输出 $O=AV$ 两行都是 $(0.731,0.269)$——两个 token 都以 73% 的权重取 key 1。
 
-若把输出写成 `"bhid,bhjd->bhji"`，拿到的是 $S^\top=\begin{bmatrix}1&1\\0&0\end{bmatrix}$。再对最后一维 softmax，$A'=\begin{bmatrix}0.5&0.5\\0.5&0.5\end{bmatrix}$，$O'$ 两行都是 $(0.5,0.5)$。**形状仍是 $2\times2$，不抛异常，行和也仍是 1**：所有「形状检查」都通过，但注意力从「query 挑 key」变成了「query 之间平均」。第二个 token 原本 73% 看 key 1，现在只看 50%。
+若把输出写成 `"bhid,bhjd->bhji"`，拿到的是 $`S^\top=\begin{bmatrix}1&1\\0&0\end{bmatrix}`$。再对最后一维 softmax， $`A'=\begin{bmatrix}0.5&0.5\\0.5&0.5\end{bmatrix}`$， $O'$ 两行都是 $(0.5,0.5)$。**形状仍是 $2\times2$，不抛异常，行和也仍是 1**：所有「形状检查」都通过，但注意力从「query 挑 key」变成了「query 之间平均」。第二个 token 原本 73% 看 key 1，现在只看 50%。
 
 抓它的办法只有一个：保留一个三行的循环版参考实现，在 $T=2$ 的非对称例子上对拍。这就是 §5.4 要把 einsum 版留在单测里的原因。
 
@@ -162,35 +162,35 @@ einsum 可能有多种 contraction order。`"ij,jk,kl->il"` 可以先算 $ij,jk$
 
 ### 5.1 手算：矩阵乘
 
-$$
+```math
 A=\begin{bmatrix}1&2&3\\4&5&6\end{bmatrix},\qquad
 B=\begin{bmatrix}1&0\\0&1\\1&1\end{bmatrix}
-$$
+```
 
 `"ik,kj->ij"`：
 
-$$
+```math
 (AB)_{11}=1\cdot1+2\cdot0+3\cdot1=4,\quad
 (AB)_{12}=1\cdot0+2\cdot1+3\cdot1=5
-$$
+```
 
-$$
+```math
 AB=\begin{bmatrix}4&5\\10&11\end{bmatrix}
-$$
+```
 
 ### 5.2 手算：注意力分数
 
-$T=3,d_k=2$，$Q=K=I_3$ 的前两列（仅示意）：
+$T=3,d_k=2$， $Q=K=I_3$ 的前两列（仅示意）：
 
-$$
+```math
 Q=\begin{bmatrix}1&0\\0&1\\0&0\end{bmatrix}
-$$
+```
 
 `"bhid,bhjd->bhij"` 在 $B=H=1$ 时就是 $QK^\top$：
 
-$$
+```math
 QK^\top=\begin{bmatrix}1&0&0\\0&1&0\\0&0&0\end{bmatrix}
-$$
+```
 
 第 3 个 token 与谁都正交，分数全 0。
 
@@ -208,7 +208,7 @@ Y = np.einsum("bhtd,de->bhte", O.transpose(0,2,1,3).reshape(B,T,D), Wo)
 
 ### 5.4 场景闭环：一层 attention 的形状账
 
-**输入**：$B=8,H=32,T=2048,d=128$，fp16；$Q,K,V$ 各 134 MB。
+**输入**： $B=8,H=32,T=2048,d=128$，fp16； $Q,K,V$ 各 134 MB。
 
 **计算**：`"bhid,bhjd->bhij"` 做 $2BHT^2d=2.75\times10^{11}$ FLOP，得到 2.15 GB 的 $S$；softmax 后 `"bhij,bhjd->bhid"` 再做 275 GFLOP，得到 134 MB 的 $O$。
 
@@ -243,10 +243,10 @@ Y = np.einsum("bhtd,de->bhte", O.transpose(0,2,1,3).reshape(B,T,D), Wo)
 
 **用 einsum 读 attention**：
 
-$$
+```math
 S_{bhij}=\sum_d Q_{bhid}K_{bhjd},\qquad
 O_{bhid}=\sum_j A_{bhij}V_{bhjd}
-$$
+```
 
 这两个式子直接对应两行 einsum；比 `transpose().reshape().matmul()` 更难写错。
 
@@ -268,7 +268,7 @@ $$
 
 1. **概念**：einsum 中「输出里没出现的字母」意味着什么？
 2. **写出 einsum**：批量矩阵乘、转置、迹、外积、行和。
-3. **计算**：用 `"ij,jk->ik"` 手算 $\begin{bmatrix}1&2\\3&4\end{bmatrix}\begin{bmatrix}0&1\\1&0\end{bmatrix}$。
+3. **计算**：用 `"ij,jk->ik"` 手算 $`\begin{bmatrix}1&2\\3&4\end{bmatrix}\begin{bmatrix}0&1\\1&0\end{bmatrix}`$。
 4. **场景**：写出多头 attention 中 $AV$ 的 einsum，并说明哪个字母被求和。
 5. **开放**：为什么 `"ij,jk,kl->il"` 的收缩顺序会影响性能？举一个数量级例子。
 
@@ -277,8 +277,8 @@ $$
 
 1. 该轴被求和（contracted）；输出中不会保留它。
 2. `"bik,bkj->bij"`；`"ij->ji"`；`"ii->"`；`"i,j->ij"`；`"ij->i"`。
-3. $\begin{bmatrix}2&1\\4&3\end{bmatrix}$。
-4. `"bhij,bhjd->bhid"`；$j$（key 位置）被求和。
+3. $`\begin{bmatrix}2&1\\4&3\end{bmatrix}`$。
+4. `"bhij,bhjd->bhid"`； $j$（key 位置）被求和。
 5. 不同顺序的中间张量大小不同；例如 $i=j=k=l=1000$ 时，先算 $ij,jk$ 得 $1000^3$ 次运算，再乘 $kl$ 又 $1000^3$；若先算 $jk,kl$ 同理，但若维度差异大，中间结果可能爆炸或缩减，FLOPs 差几个数量级。
 
 </details>
@@ -298,7 +298,7 @@ $$
 这一页的知识不是凭空来的。下面列出本页直接借用的原始工作与权威整理；正文中的人名、定理名已链接到对应条目。链接优先指向 DOI、arXiv 或可长期访问的原文存档。
 
 - <a id="ref-einstein-1916"></a>**爱因斯坦（Albert Einstein, 1916）**：*Die Grundlage der allgemeinen Relativitätstheorie*。广义相对论里「同一指标重复即求和、不写 $\sum$」的书写约定，就是本页 §2.2 那五条规则的源头。[Annalen der Physik（Wiley）](https://doi.org/10.1002/andp.19163540702)
-- <a id="ref-kolda-bader-2009"></a>**Kolda 与 Bader（2009）**：*Tensor Decompositions and Applications*。把张量定义为多索引数组、并统一其记法与乘法的综述，本页「$n$ 阶张量」的写法沿用它。[SIAM Review](https://doi.org/10.1137/07070111X)
+- <a id="ref-kolda-bader-2009"></a>**Kolda 与 Bader（2009）**：*Tensor Decompositions and Applications*。把张量定义为多索引数组、并统一其记法与乘法的综述，本页「 $n$ 阶张量」的写法沿用它。[SIAM Review](https://doi.org/10.1137/07070111X)
 - <a id="ref-smith-gray-2018"></a>**Smith 与 Gray（2018）**：*opt_einsum - A Python package for optimizing contraction order for einsum-like expressions*。本页 §4.3「收缩顺序影响 FLOPs」的工程答案：把 $n$ 个张量的收缩顺序当作路径搜索来优化。[JOSS](https://doi.org/10.21105/joss.00753)
 
 ---

@@ -20,13 +20,13 @@ llm_hooks: [representation-analysis, dimensionality-reduction, kv-cache]
 
 门禁闸机要在 **300 ms** 内回答一个问题：这张脸是不是员工本人。摄像头给出 **112×112** 的灰度图，展平成 **12 544** 维向量；人脸库有 **8 万**张底图，fp32 存下来是
 
-$$
+```math
 8\times10^4\times12\,544\times4\ \text{B}\approx4.0\ \text{GB}
-$$
+```
 
 闸机只有 **512 MB** 内存，而且必须离线跑。
 
-不降维的代价算得出来：一次比对 12 544 次乘加，8 万次比对就是 $1.0\times10^9$ 次乘加，300 ms 内跑不完，4 GB 也塞不进内存。那直接对 12 544 维估协方差？那是 $12\,544^2\approx1.57\times10^8$ 个数（628 MB），特征分解还要 $O(D^3)$ 量级，同样不可行。
+不降维的代价算得出来：一次比对 12 544 次乘加，8 万次比对就是 $1.0\times10^9$ 次乘加，300 ms 内跑不完，4 GB 也塞不进内存。那直接对 12 544 维估协方差？那是 $`12\,544^2\approx1.57\times10^8`$ 个数（628 MB），特征分解还要 $O(D^3)$ 量级，同样不可行。
 
 机会藏在数据里：这 12 544 个像素中，大部分记录的是光照和传感器噪声，真正区分人与人的变化集中在少数几个方向上。**[主成分分析（principal component analysis, PCA）](#ref-pearson-1901)** 就是找这几个方向的方法。
 
@@ -85,25 +85,25 @@ $$
 
 **约定**：9.1 的样本协方差用 $1/(n-1)$，本节用 $1/n$；两者只差常数 $n/(n-1)$，特征向量与解释方差比不变，但本节的 $\lambda_i$ 与 $n$ 配套使用。第一主成分是
 
-$$
+```math
 \mathbf{v}_1=\arg\max_{\|\mathbf{v}\|_2=1}\ \mathbf{v}^\top S\mathbf{v}
-$$
+```
 
 $\mathbf{v}^\top S\mathbf{v}$ 就是数据在 $\mathbf{v}$ 方向上的投影方差。
 
 ### 2.3 特征分解形式
 
-$S$ 对称半正定，特征分解 $S=V\Lambda V^\top$，其中 $\Lambda=\operatorname{diag}(\lambda_1,\dots,\lambda_D)$、$\lambda_1\ge\cdots\ge\lambda_D\ge0$。$V$ 的列是主成分方向，$\lambda_i$ 是沿该方向的方差。**主成分得分（scores）** $Z=X_cV$ 满足 $\frac1nZ^\top Z=\Lambda$，即各列不相关。
+$S$ 对称半正定，特征分解 $S=V\Lambda V^\top$，其中 $\Lambda=\operatorname{diag}(\lambda_1,\dots,\lambda_D)$、 $\lambda_1\ge\cdots\ge\lambda_D\ge0$。 $V$ 的列是主成分方向， $\lambda_i$ 是沿该方向的方差。**主成分得分（scores）** $Z=X_cV$ 满足 $\frac1nZ^\top Z=\Lambda$，即各列不相关。
 
 ### 2.4 SVD 形式
 
-对中心化矩阵做瘦 SVD：$X_c=U\Sigma V^\top$。则 $X_c^\top X_c=V\Sigma^2V^\top$，所以
+对中心化矩阵做瘦 SVD： $X_c=U\Sigma V^\top$。则 $X_c^\top X_c=V\Sigma^2V^\top$，所以
 
-$$
+```math
 \lambda_i=\frac{\sigma_i^2}{n},\qquad Z=X_cV=U\Sigma
-$$
+```
 
-两种做法给出同一组方向；SVD 不必显式构造 $D\times D$ 的 $S$，在 $n<D$ 时更省。
+两种做法给出同一组方向；SVD 不必显式构造 $D\times D$ 的 $S$，在 $`n<D`$ 时更省。
 
 ### 2.5 解释方差比
 
@@ -111,15 +111,15 @@ $$
 
 ### 2.6 投影与重建
 
-取前 $k$ 个主成分 $V_k\in\mathbb{R}^{D\times k}$，则 $\mathbf{z}=V_k^\top(\mathbf{x}-\hat{\boldsymbol\mu})\in\mathbb{R}^k$，重建 $\hat{\mathbf{x}}=V_k\mathbf{z}+\hat{\boldsymbol\mu}$。矩阵形式的重建是 $X_cV_kV_k^\top$；$V_kV_k^\top$ 是到前 $k$ 个主成分子空间的**正交投影矩阵（orthogonal projection matrix）**（[第 1.6 节](../01-向量与几何/06-正交与投影.md)）。
+取前 $k$ 个主成分 $V_k\in\mathbb{R}^{D\times k}$，则 $\mathbf{z}=V_k^\top(\mathbf{x}-\hat{\boldsymbol\mu})\in\mathbb{R}^k$，重建 $\hat{\mathbf{x}}=V_k\mathbf{z}+\hat{\boldsymbol\mu}$。矩阵形式的重建是 $X_cV_kV_k^\top$； $V_kV_k^\top$ 是到前 $k$ 个主成分子空间的**正交投影矩阵（orthogonal projection matrix）**（[第 1.6 节](../01-向量与几何/06-正交与投影.md)）。
 
 ## 3. 为什么这样定义
 
-**为什么必须中心化？** 不中心化时，$\frac1nX^\top X$ 是二阶矩而不是协方差，第一主成分会偏向均值方向。极端例子：所有点都在 $\mathbf{1}$ 附近，第一主成分几乎就是均值方向，投影后看起来「方差很大」，其实只是整体偏移。
+**为什么必须中心化？** 不中心化时， $\frac1nX^\top X$ 是二阶矩而不是协方差，第一主成分会偏向均值方向。极端例子：所有点都在 $\mathbf{1}$ 附近，第一主成分几乎就是均值方向，投影后看起来「方差很大」，其实只是整体偏移。
 
-**为什么特征向量就是最优方向？** 这是带约束的优化。用拉格朗日乘子（[第 8.8 节](../08-微积分与优化/08-拉格朗日乘子.md)）：$\mathcal{L}=\mathbf{v}^\top S\mathbf{v}-\lambda(\mathbf{v}^\top\mathbf{v}-1)$，对 $\mathbf{v}$ 求导得 $2S\mathbf{v}-2\lambda\mathbf{v}=0$，即 $S\mathbf{v}=\lambda\mathbf{v}$。代回目标，值正好是 $\lambda$。
+**为什么特征向量就是最优方向？** 这是带约束的优化。用拉格朗日乘子（[第 8.8 节](../08-微积分与优化/08-拉格朗日乘子.md)）： $\mathcal{L}=\mathbf{v}^\top S\mathbf{v}-\lambda(\mathbf{v}^\top\mathbf{v}-1)$，对 $\mathbf{v}$ 求导得 $2S\mathbf{v}-2\lambda\mathbf{v}=0$，即 $S\mathbf{v}=\lambda\mathbf{v}$。代回目标，值正好是 $\lambda$。
 
-**为什么主成分彼此正交？** $S$ 对称，由谱定理（[第 6.4 节](../06-特征值/04-对称矩阵与谱定理.md)）存在一组标准正交特征向量。正交意味着得分之间协方差为 0：$Z^\top Z/n=\Lambda$ 是对角阵。
+**为什么主成分彼此正交？** $S$ 对称，由谱定理（[第 6.4 节](../06-特征值/04-对称矩阵与谱定理.md)）存在一组标准正交特征向量。正交意味着得分之间协方差为 0： $Z^\top Z/n=\Lambda$ 是对角阵。
 
 **为什么 SVD 与特征分解等价？** 因为 $S=X_c^\top X_c/n$，而 $X_c=U\Sigma V^\top$ 给出 $X_c^\top X_c=V\Sigma^2V^\top$。右奇异向量就是 $S$ 的特征向量，奇异值平方除以 $n$ 就是特征值。
 
@@ -131,11 +131,11 @@ $$
 
 不中心化，直接算二阶矩 $\frac1nX^\top X$：
 
-$$
+```math
 \frac14\begin{bmatrix}488&44\\44&8\end{bmatrix}=\begin{bmatrix}122&11\\11&2\end{bmatrix}
-$$
+```
 
-迹 $124$、行列式 $244-121=123$，所以特征值是 $123$ 与 $1$。第一特征向量满足 $-x+11y=0$，即 $(11,1)$——**正好是均值方向**。解释方差比 $123/124\approx99.2\%$，漂亮得可疑。
+迹 $124$、行列式 $244-121=123$，所以特征值是 $123$ 与 $1$。第一特征向量满足 $-x+11y=0$，即 $(11,1)$——**正好是均值方向**。解释方差比 $`123/124\approx99.2\%`$，漂亮得可疑。
 
 它捕捉到的是什么？「所有样本都在图像中央、像素值都在 100 上下」这个常量偏移。这个方向方差巨大，却和「这是谁」无关。中心化就是把这一层公共底色减掉。
 
@@ -145,9 +145,9 @@ $$
 
 但协方差矩阵是
 
-$$
+```math
 S=\begin{bmatrix}1&1\\1&1\end{bmatrix}
-$$
+```
 
 特征值 $2$ 与 $0$：数据只沿一条 $45^\circ$ 直线变化，另一个方向完全没有波动。保留 1 维，重建误差就是 0。
 
@@ -157,19 +157,19 @@ $$
 
 ### 4.1 第一主成分的拉格朗日推导
 
-最大化 $\mathbf{v}^\top S\mathbf{v}$ 受约束 $\|\mathbf{v}\|=1$。拉格朗日条件 $S\mathbf{v}=\lambda\mathbf{v}$，左乘 $\mathbf{v}^\top$ 得 $\mathbf{v}^\top S\mathbf{v}=\lambda\mathbf{v}^\top\mathbf{v}=\lambda$。所以所有单位方向中，投影方差的最大值就是最大特征值 $\lambda_1$，取得它的方向是 $\mathbf{v}_1$。
+最大化 $\mathbf{v}^\top S\mathbf{v}$ 受约束 $`\|\mathbf{v}\|=1`$。拉格朗日条件 $S\mathbf{v}=\lambda\mathbf{v}$，左乘 $\mathbf{v}^\top$ 得 $\mathbf{v}^\top S\mathbf{v}=\lambda\mathbf{v}^\top\mathbf{v}=\lambda$。所以所有单位方向中，投影方差的最大值就是最大特征值 $\lambda_1$，取得它的方向是 $\mathbf{v}_1$。
 
 ### 4.2 总方差与重建误差
 
-$$
+```math
 \sum_{i=1}^{D}\lambda_i=\operatorname{tr}(S)=\frac1n\|X_c\|_F^2
-$$
+```
 
 投影到前 $k$ 维保留方差 $\sum_{i\le k}\lambda_i$，丢掉 $\sum_{i>k}\lambda_i$。对每个样本，重建误差是到子空间的距离平方；对所有样本求和：
 
-$$
+```math
 \|X_c-X_cV_kV_k^\top\|_F^2=\sum_{i>k}\sigma_i^2=n\sum_{i>k}\lambda_i
-$$
+```
 
 这也说明 PCA 截断与 7.3 的截断 SVD 是同一件事，只是作用在中心化数据上。
 
@@ -183,29 +183,29 @@ $\eta_{\le k}$ 是相对总方差的比例，不是相对任务信息的比例�
 
 数据（已中心化）：
 
-$$
+```math
 X=\begin{bmatrix}1&2\\2&1\\-1&-2\\-2&-1\end{bmatrix},
 \qquad
 S=\frac14X^\top X=\frac14\begin{bmatrix}10&8\\8&10\end{bmatrix}=\begin{bmatrix}2.5&2\\2&2.5\end{bmatrix}
-$$
+```
 
-特征值 $\lambda_1=4.5$（方向 $(1,1)/\sqrt2$）、$\lambda_2=0.5$（方向 $(1,-1)/\sqrt2$）。解释方差比 $4.5/5=0.9$ 与 $0.5/5=0.1$。
+特征值 $\lambda_1=4.5$（方向 $(1,1)/\sqrt2$）、 $\lambda_2=0.5$（方向 $(1,-1)/\sqrt2$）。解释方差比 $4.5/5=0.9$ 与 $0.5/5=0.1$。
 
 取 $k=1$，样本 $(1,2)$ 的得分
 
-$$
+```math
 z_1=\frac{(1,2)\cdot(1,1)}{\sqrt2}=\frac{3}{\sqrt2}\approx2.121,
 \qquad
 \hat{\mathbf{x}}=\frac{3}{2}\begin{bmatrix}1\\1\end{bmatrix}=\begin{bmatrix}1.5\\1.5\end{bmatrix}
-$$
+```
 
 残差 $(1,2)-(1.5,1.5)=(-0.5,0.5)$，平方长度 $0.5$。四个点对称，总误差 $4\times0.5=2$。
 
-**核对**：$n\lambda_2=4\times0.5=2$ ✓；总方差 $n\operatorname{tr}(S)=4\times5=20=\|X\|_F^2$ ✓；相对误差 $\sqrt{2/20}=\sqrt{0.1}\approx0.316=\sqrt{1-0.9}$ ✓。SVD 侧：$X$ 的奇异值为 $\sqrt{18}=3\sqrt2$ 与 $\sqrt2$，$\sigma_i^2/n=18/4=4.5$、$2/4=0.5$ ✓。
+**核对**： $n\lambda_2=4\times0.5=2$ ✓；总方差 $`n\operatorname{tr}(S)=4\times5=20=\|X\|_F^2`$ ✓；相对误差 $\sqrt{2/20}=\sqrt{0.1}\approx0.316=\sqrt{1-0.9}$ ✓。SVD 侧： $X$ 的奇异值为 $\sqrt{18}=3\sqrt2$ 与 $\sqrt2$， $\sigma_i^2/n=18/4=4.5$、 $2/4=0.5$ ✓。
 
 ### 5.2 场景：4096 维激活降到 2 维
 
-$N=8192$ 个 token、$D=4096$。取前两个主成分得到 $[8192,2]$ 的坐标，可以散点图。若前两个特征值占 35%，这张图只保住三分之一的总方差；它可能显示主要结构，也可能把细微但任务相关的结构压扁。看图前先报解释方差比，是负责任的做法。
+$N=8192$ 个 token、 $D=4096$。取前两个主成分得到 $[8192,2]$ 的坐标，可以散点图。若前两个特征值占 35%，这张图只保住三分之一的总方差；它可能显示主要结构，也可能把细微但任务相关的结构压扁。看图前先报解释方差比，是负责任的做法。
 
 ### 5.3 场景闭环：8 万张底图、512 MB、300 ms
 
@@ -221,7 +221,7 @@ $N=8192$ 个 token、$D=4096$。取前两个主成分得到 $[8192,2]$ 的坐标
 
 - **PCA 不监督「身份」**：方差最大的方向可能是光照、姿态或摄像头差异，不是「区分这两张脸」的方向。兜底：改用有监督的度量学习（如对比损失），或保留更多维。
 - **侧脸与遮挡**：训练底图多为正脸，侧脸在主子空间里的重建误差大，距离天然偏远。兜底：按姿态分桶，每桶一套基底与阈值。
-- **阈值漂移**：换摄像头、换季节光照，$d_{\min}$ 的分布整体平移。兜底：用当天的通过/拒绝日志在线校准阈值，而不是写死一个数。
+- **阈值漂移**：换摄像头、换季节光照， $d_{\min}$ 的分布整体平移。兜底：用当天的通过/拒绝日志在线校准阈值，而不是写死一个数。
 
 ## 6. 常见误区
 
@@ -243,11 +243,11 @@ $N=8192$ 个 token、$D=4096$。取前两个主成分得到 $[8192,2]$ 的坐标
 
 **出现位置**：激活可视化、表征相似性分析、embedding 压缩、KV Cache 的低秩近似、LoRA 子空间分析，以及「这层到底用了几维」的诊断。
 
-**形状**：$X\in\mathbb{R}^{N\times D}$，中心化后做 SVD，$V_k\in\mathbb{R}^{D\times k}$，得分 $Z\in\mathbb{R}^{N\times k}$。$D=4096,k=128$ 时投影矩阵有 $4096\times128=524{,}288$ 个参数（fp32 约 2 MiB）；协方差矩阵有 $4096^2=16{,}777{,}216$ 个元素（约 64 MiB）。
+**形状**： $X\in\mathbb{R}^{N\times D}$，中心化后做 SVD， $V_k\in\mathbb{R}^{D\times k}$，得分 $Z\in\mathbb{R}^{N\times k}$。 $D=4096,k=128$ 时投影矩阵有 $4096\times128=524{,}288$ 个参数（fp32 约 2 MiB）；协方差矩阵有 $4096^2=16{,}777{,}216$ 个元素（约 64 MiB）。
 
-**为什么需要**：$D=4096$ 时显式协方差是 $O(D^2)$ 存储、$O(D^3)$ 特征分解；$N<D$ 时它还奇异。直接对 $X_c$ 做 SVD 的代价是 $O(ND\min(N,D))$，并且可以只算前 $k$ 个奇异值/向量（截断或随机化 SVD），把成本压到与 $k$ 成正比。
+**为什么需要**： $D=4096$ 时显式协方差是 $O(D^2)$ 存储、 $O(D^3)$ 特征分解； $`N<D`$ 时它还奇异。直接对 $X_c$ 做 SVD 的代价是 $O(ND\min(N,D))$，并且可以只算前 $k$ 个奇异值/向量（截断或随机化 SVD），把成本压到与 $k$ 成正比。
 
-**可检验结论**：解释方差比等于 $\sigma_i^2/\sum_j\sigma_j^2$；重建的相对 Frobenius 误差是 $\sqrt{1-\eta_{\le k}}$。若谱衰减很慢（$\eta_{\le128}$ 只有 20%），说明这层激活本质上是高维的，PCA 降维会明显损伤信息。
+**可检验结论**：解释方差比等于 $\sigma_i^2/\sum_j\sigma_j^2$；重建的相对 Frobenius 误差是 $\sqrt{1-\eta_{\le k}}$。若谱衰减很慢（ $\eta_{\le128}$ 只有 20%），说明这层激活本质上是高维的，PCA 降维会明显损伤信息。
 
 ```python
 import numpy as np
@@ -275,7 +275,7 @@ print(ratio[:3], ratio[:128].sum())         # 前 128 个累计比
 
 1. 不中心化时，协方差被二阶矩 $X^\top X/n$ 替代，第一主成分偏向均值方向，整体偏移被误当成方差；极端情况下第一主成分几乎等于 $\mathbf{1}$ 方向。
 2. 该子空间内所有方向方差相同，主成分方向不唯一，任意正交基都可以；数值上特征向量可能不稳定，但投影子空间确定。
-3. $S=\frac14X^\top X=\begin{bmatrix}5&3\\3&5\end{bmatrix}$，特征值 $8,2$，比值 $0.8,0.2$，方向 $(1,1)/\sqrt2$、$(1,-1)/\sqrt2$。$(3,1)$ 得分 $4/\sqrt2=2\sqrt2$，重建 $(2,2)$，残差 $(1,-1)$ 平方长度 2；四个点总误差 $8=4\times2$。
+3. $`S=\frac14X^\top X=\begin{bmatrix}5&3\\3&5\end{bmatrix}`$，特征值 $8,2$，比值 $0.8,0.2$，方向 $(1,1)/\sqrt2$、 $(1,-1)/\sqrt2$。 $(3,1)$ 得分 $4/\sqrt2=2\sqrt2$，重建 $(2,2)$，残差 $(1,-1)$ 平方长度 2；四个点总误差 $8=4\times2$。
 4. $\lambda_i=\sigma_i^2/n=3.6,0.4$；总方差 4.0，比值 $0.9,0.1$。
 5. 不能。95% 是相对总方差，不保证剩下的 5% 与类别无关；需要看降维前后的分类/检索指标、被丢方向的类别可分性，以及交叉验证。
 
@@ -284,7 +284,7 @@ print(ratio[:3], ratio[:128].sum())         # 前 128 个累计比
 ## 10. 一页速记
 
 - PCA = 中心化 + 找 $\mathbf{v}$ 最大化 $\mathbf{v}^\top S\mathbf{v}$，解为 $S\mathbf{v}=\lambda\mathbf{v}$。
-- 等价地：对 $X_c$ 做 SVD，$\lambda_i=\sigma_i^2/n$，方向是右奇异向量。
+- 等价地：对 $X_c$ 做 SVD， $\lambda_i=\sigma_i^2/n$，方向是右奇异向量。
 - 解释方差比 $\lambda_i/\sum_j\lambda_j$，累计比用来选 $k$。
 - 重建 $X_cV_kV_k^\top$，误差平方和 $=n\sum_{i>k}\lambda_i$。
 - 不中心化会偏；单位不可比时先标准化；方差大不等于任务重要。

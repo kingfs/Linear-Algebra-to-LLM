@@ -20,7 +20,7 @@ llm_hooks: [architecture, ssm, long-context, inference]
 
 你要做一个 256k 的流式日志助手：输入持续到来，模型要一边读一边总结，不能等整段文本结束。
 
-标准 attention 的做法是缓存所有历史 K/V：256k 时每层 KV 约 128 GiB（7B 全 attention 估算），而且每来一个 token 都要读一遍。Mamba 的做法是：每层维护一个 $D\times N$ 的状态（$N$ 通常 16），逐 token 更新；不管上下文多长，状态大小不变。
+标准 attention 的做法是缓存所有历史 K/V：256k 时每层 KV 约 128 GiB（7B 全 attention 估算），而且每来一个 token 都要读一遍。Mamba 的做法是：每层维护一个 $D\times N$ 的状态（ $N$ 通常 16），逐 token 更新；不管上下文多长，状态大小不变。
 
 代价是：状态是“有损摘要”。问“第 137 页第 3 行是什么”，它可能答不出来；问“这段日志的趋势是什么”，它很擅长。
 
@@ -47,35 +47,35 @@ llm_hooks: [architecture, ssm, long-context, inference]
 
 ### 2.1 连续时间 SSM
 
-$$
+```math
 h'(t)=A h(t)+B x(t),\qquad y(t)=C h(t)+D x(t)
-$$
+```
 
 - $h(t)\in\mathbb{R}^N$：状态；
 - $A\in\mathbb{R}^{N\times N}$：状态转移；
-- $B\in\mathbb{R}^{N\times1}$、$C\in\mathbb{R}^{1\times N}$：写入/读出；
+- $B\in\mathbb{R}^{N\times1}$、 $C\in\mathbb{R}^{1\times N}$：写入/读出；
 - $D$：跳连（skip）。
 
 ### 2.2 离散化
 
 用步长 $\Delta$ 把连续系统变成递推：
 
-$$
+```math
 h_t=\bar A h_{t-1}+\bar B x_t,\qquad y_t=C h_t+D x_t
-$$
+```
 
 一种常见离散化（零阶保持）：
 
-$$
+```math
 \bar A=\exp(\Delta A),\qquad
 \bar B=(\Delta A)^{-1}(\exp(\Delta A)-I)\Delta B
-$$
+```
 
 S4 一类早期 SSM 见 [S4](#ref-gu-2021)。Mamba 的实现常写成更简单的形式：
 
-$$
+```math
 h_t=\exp(\Delta_t A)h_{t-1}+\Delta_t B_t x_t
-$$
+```
 
 其中 $A$ 取对角负值，保证稳定。
 
@@ -83,10 +83,10 @@ $$
 
 Mamba 让 $\Delta_t,B_t,C_t$ 由输入 $x_t$ 线性投影得到：
 
-$$
+```math
 \Delta_t=\operatorname{softplus}(W_\Delta x_t+b_\Delta),\qquad
 B_t=W_B x_t,\qquad C_t=W_C x_t
-$$
+```
 
 - $\Delta_t$ 大：多写新信息、少保留旧状态；
 - $\Delta_t$ 小：多保留旧状态、少写新信息。
@@ -109,7 +109,7 @@ x -> in_proj -> conv1d -> SiLU -> SSM(selective scan) -> * gate -> out_proj
 
 ### 2.5 [Mamba-2](#ref-dao-2024) 与 SSD
 
-Mamba-2 把状态空间写成“结构化状态空间对偶”（SSD），用矩阵乘/张量核加速，支持多头；$A$ 简化为标量乘单位阵，训练更快。它仍然是“固定状态 + 线性时间”，不是 attention。
+Mamba-2 把状态空间写成“结构化状态空间对偶”（SSD），用矩阵乘/张量核加速，支持多头； $A$ 简化为标量乘单位阵，训练更快。它仍然是“固定状态 + 线性时间”，不是 attention。
 
 ## 3. 为什么这样定义
 
@@ -127,19 +127,19 @@ Mamba 的输入相关 $\Delta,B,C$ 让“写/忘/读”变成可学习的函数�
 
 对长度 $T$、隐藏维 $D$、状态维 $N$：
 
-- 计算：$O(TDN)$；
-- 状态内存：$O(DN)$，与 $T$ 无关；
+- 计算： $O(TDN)$；
+- 状态内存： $O(DN)$，与 $T$ 无关；
 - 没有 KV Cache；
-- 训练：并行扫描，$O(T)$ 深度；
-- 推理：逐 token 递推，$O(1)$ 状态。
+- 训练：并行扫描， $O(T)$ 深度；
+- 推理：逐 token 递推， $O(1)$ 状态。
 
 ### 4.2 为什么是“线性时间”
 
 展开递推：
 
-$$
+```math
 h_t=\sum_{k=1}^{t}\left(\prod_{j=k+1}^{t}\bar A_j\right)\bar B_k x_k
-$$
+```
 
 每个 $x_k$ 对 $h_t$ 的贡献是一个衰减的核；不需要像 attention 那样两两比较所有 token。因此 $T$ 线性，而不是 $T^2$。
 
@@ -172,7 +172,7 @@ $$
 
 ### 5.1 1.4B Mamba 的账
 
-假设 $D=2048$、$N=16$、24 层：
+假设 $D=2048$、 $N=16$、24 层：
 
 - 每层状态约 $D\times N=32{,}768$ 个元素；fp16 约 64 KiB；
 - 24 层约 1.5 MiB/序列，与上下文长度无关；
@@ -256,16 +256,16 @@ def ssm_step(h, x, A, B, C, D, dt):
 
 ## 9. 练习
 
-1. 写出连续 SSM 与离散递推；$\Delta$ 的作用是什么？
+1. 写出连续 SSM 与离散递推； $\Delta$ 的作用是什么？
 2. Mamba 的“选择性”体现在哪些参数上？为什么它重要？
-3. 计算：$D=2048,N=16$、24 层、fp16，状态多少 MiB/序列？
+3. 计算： $D=2048,N=16$、24 层、fp16，状态多少 MiB/序列？
 4. 为什么 Mamba 不擅长“逐字检索”？混合架构怎么补？
 5. Mamba-2 的 SSD 主要解决什么问题？
 
 <details>
 <summary>参考答案</summary>
 
-1. $h'=Ah+Bx,y=Ch+Dx$；$h_t=\exp(\Delta A)h_{t-1}+\Delta B x_t$；$\Delta$ 控制写/忘的步长。
+1. $h'=Ah+Bx,y=Ch+Dx$； $h_t=\exp(\Delta A)h_{t-1}+\Delta B x_t$； $\Delta$ 控制写/忘的步长。
 2. $\Delta,B,C$ 由输入投影；让模型按内容决定记/忘/读。
 3. $2048\times16\times24\times2$ B ≈ 1.5 MiB/序列。
 4. 状态是固定容量摘要，不能无损保留每个 token；混合少量 attention 层做精确回看。
@@ -275,8 +275,8 @@ def ssm_step(h, x, A, B, C, D, dt):
 
 ## 10. 一页速记
 
-- SSM：$h_t=\bar A h_{t-1}+\bar B x_t$，$y_t=C h_t+D x_t$；状态固定。
-- Mamba 的选择性：$\Delta,B,C$ 由输入决定；$\Delta$ 控制写/忘。
+- SSM： $h_t=\bar A h_{t-1}+\bar B x_t$， $y_t=C h_t+D x_t$；状态固定。
+- Mamba 的选择性： $\Delta,B,C$ 由输入决定； $\Delta$ 控制写/忘。
 - 计算 $O(TDN)$，状态 $O(DN)$，无 KV；擅长长流式，弱在精确检索。
 - Mamba-2/SSD 用矩阵乘/张量核加速；Jamba 用 Mamba+attention+MoE 补短板。
 - 长上下文不是“免费”：用状态容量换显存/计算。
